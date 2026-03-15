@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle, AlertCircle, CalendarCheck } from 'lucide-react'
 
@@ -244,4 +245,3 @@ function FaqItem({ q, a }) {
   )
 }
 
-import { useState } from 'react'
