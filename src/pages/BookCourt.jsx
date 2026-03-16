@@ -3,8 +3,8 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
          isSameDay, isToday, isPast, startOfDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, CalendarCheck, Clock, User, CreditCard,
-         CheckCircle, LogIn, AlertTriangle, Ban } from 'lucide-react'
-import { useNavigate, Link } from 'react-router-dom'
+         CheckCircle, LogIn, AlertTriangle, Ban, Star, Shield } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { COURTS, TIME_SLOTS, PRICING, WEEKLY_HOUR_LIMIT, SESSION_DURATION } from '../data/courts'
@@ -12,7 +12,7 @@ import { COURTS, TIME_SLOTS, PRICING, WEEKLY_HOUR_LIMIT, SESSION_DURATION } from
 const STEPS = ['Date', 'Terrain & Heure', 'Détails', 'Confirmation']
 
 export default function BookCourt() {
-  const { user } = useAuth()
+  const { user, paySeasonPass } = useAuth()
   const navigate = useNavigate()
   const {
     isSlotBooked,
@@ -26,13 +26,15 @@ export default function BookCourt() {
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedCourt, setSelectedCourt] = useState(null)
   const [selectedTime, setSelectedTime] = useState(null)
-  const [isResident, setIsResident] = useState(null)
-  const [form, setForm] = useState({ name: user?.name || '', email: user?.email || '' })
+  const [isResident, setIsResident] = useState(
+    user?.seasonPassPaid ? user.seasonPassType : null
+  )
   const [submitted, setSubmitted] = useState(false)
+  const [payingPass, setPayingPass] = useState(false)
 
-  const daysInMonth = useMemo(() => {
-    return eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) })
-  }, [currentMonth])
+  const daysInMonth = useMemo(() =>
+    eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) })
+  , [currentMonth])
 
   const firstDayOfWeek = useMemo(() => {
     const d = startOfMonth(currentMonth).getDay()
@@ -41,11 +43,16 @@ export default function BookCourt() {
 
   const weekHours = user && selectedDate ? getUserWeekHours(user.id, selectedDate) : 0
   const weekFull = weekHours >= WEEKLY_HOUR_LIMIT
-  const price = isResident === 'resident' ? PRICING.resident : isResident === 'nonResident' ? PRICING.nonResident : null
 
-  function getDateStr(date) {
-    return format(date, 'yyyy-MM-dd')
-  }
+  const hasSeasonPass = user?.seasonPassPaid === true
+  const passType = user?.seasonPassType
+  const price = passType === 'resident' ? PRICING.resident
+    : passType === 'nonResident' ? PRICING.nonResident
+    : isResident === 'resident' ? PRICING.resident
+    : isResident === 'nonResident' ? PRICING.nonResident
+    : null
+
+  function getDateStr(date) { return format(date, 'yyyy-MM-dd') }
 
   function getSlotStatus(courtId, date, slot) {
     const dateStr = getDateStr(date)
@@ -60,7 +67,11 @@ export default function BookCourt() {
   }
 
   function handleConfirm() {
-    if (!user || !selectedDate || !selectedCourt || !selectedTime || !isResident) return
+    if (!user || !selectedDate || !selectedCourt || !selectedTime) return
+    const type = passType || isResident
+    if (!hasSeasonPass) {
+      paySeasonPass(type)
+    }
     addBooking({
       userId: user.id,
       userName: user.name,
@@ -68,13 +79,13 @@ export default function BookCourt() {
       courtId: selectedCourt,
       date: getDateStr(selectedDate),
       slot: selectedTime,
-      isResident: isResident === 'resident',
-      price,
+      isResident: type === 'resident',
+      price: hasSeasonPass ? 0 : price,
     })
     setSubmitted(true)
   }
 
-  // --- Not logged in ---
+  // ── Not logged in ──
   if (!user) {
     return (
       <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
@@ -82,56 +93,57 @@ export default function BookCourt() {
           <div style={{ width: 72, height: 72, background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
             <LogIn size={32} color="#94a3b8" />
           </div>
-          <h2 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.5rem', marginBottom: '0.75rem' }}>
-            Connexion requise
-          </h2>
+          <h2 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.5rem', marginBottom: '0.75rem' }}>Connexion requise</h2>
           <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: 1.7 }}>
             Vous devez être connecté pour réserver un terrain. Créez un compte gratuitement ou connectez-vous.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="btn-primary" onClick={() => navigate('/login')}>
-              <LogIn size={18} /> Se connecter
-            </button>
-            <button className="btn-secondary" onClick={() => navigate('/register')}>
-              Créer un compte
-            </button>
+            <button className="btn-primary" onClick={() => navigate('/login')}><LogIn size={18} /> Se connecter</button>
+            <button className="btn-secondary" onClick={() => navigate('/register')}>Créer un compte</button>
           </div>
         </div>
       </div>
     )
   }
 
-  // --- Booking confirmed ---
+  // ── Confirmed ──
   if (submitted) {
+    const finalType = passType || isResident
     return (
       <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
         <div style={{
           background: '#fff', borderRadius: '1.5rem', padding: 'clamp(2rem, 5vw, 3rem)',
-          textAlign: 'center', maxWidth: 520, width: '100%',
+          textAlign: 'center', maxWidth: 540, width: '100%',
           border: '2px solid #dcfce7', boxShadow: '0 20px 60px rgba(22,101,52,0.1)',
         }}>
-          <div style={{
-            width: 80, height: 80,
-            background: 'linear-gradient(135deg, #14532d, #22c55e)',
-            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 1.5rem',
-          }}>
+          <div style={{ width: 80, height: 80, background: 'linear-gradient(135deg, #14532d, #22c55e)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
             <CheckCircle size={40} color="#fff" />
           </div>
-          <h2 style={{ fontSize: '1.875rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>
-            Réservation confirmée !
-          </h2>
+          <h2 style={{ fontSize: '1.875rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Réservation confirmée !</h2>
           <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: 1.7 }}>
             Votre terrain a été réservé. Une confirmation a été envoyée à <strong>{user.email}</strong>.
           </p>
+
+          {!hasSeasonPass && (
+            <div style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', borderRadius: '0.875rem', padding: '1rem 1.25rem', marginBottom: '1.25rem', textAlign: 'left', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+              <Star size={20} color="#4ade80" style={{ flexShrink: 0, marginTop: 2 }} />
+              <div>
+                <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Laissez saisonnier activé !</div>
+                <div style={{ fontSize: '0.875rem', color: '#bbf7d0', lineHeight: 1.6 }}>
+                  Votre passe de {finalType === 'resident' ? '$30 (résident)' : '$50 (non-résident)'} est maintenant actif pour tout l'été. Vous n'aurez plus à payer pour vos prochaines réservations.
+                </div>
+              </div>
+            </div>
+          )}
+
           <div style={{ background: '#f8fafc', borderRadius: '1rem', padding: '1.5rem', marginBottom: '2rem', textAlign: 'left' }}>
             {[
               { label: 'Terrain', value: `Terrain ${selectedCourt}` },
               { label: 'Date', value: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }) },
               { label: 'Heure', value: selectedTime },
               { label: 'Durée', value: '2 heures' },
-              { label: 'Statut', value: isResident === 'resident' ? 'Résident de Donnacona' : 'Non-résident' },
-              { label: 'Total', value: `$${price}` },
+              { label: 'Passe saisonnier', value: finalType === 'resident' ? 'Résident · $30/été' : 'Non-résident · $50/été' },
+              { label: 'Payé aujourd\'hui', value: hasSeasonPass ? '$0 (déjà payé)' : `$${price}` },
             ].map(r => (
               <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.625rem', marginBottom: '0.625rem', borderBottom: '1px solid #e2e8f0' }}>
                 <span style={{ color: '#64748b', fontSize: '0.9rem' }}>{r.label}</span>
@@ -145,9 +157,11 @@ export default function BookCourt() {
               </span>
             </div>
           </div>
+
           <button className="btn-primary" style={{ width: '100%' }} onClick={() => {
             setStep(0); setSelectedDate(null); setSelectedCourt(null);
-            setSelectedTime(null); setIsResident(null); setSubmitted(false);
+            setSelectedTime(null); setSubmitted(false);
+            if (!user.seasonPassPaid) setIsResident(null)
           }}>
             Faire une autre réservation
           </button>
@@ -161,31 +175,54 @@ export default function BookCourt() {
       <div className="container" style={{ maxWidth: 900 }}>
 
         {/* Header */}
-        <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
+        <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
           <span className="section-tag">Réservation en ligne</span>
           <h1 className="section-title">Réserver un terrain</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Bonjour, <strong>{user.name}</strong> — chaque session dure <strong>2 heures</strong>. Maximum <strong>{WEEKLY_HOUR_LIMIT}h/semaine</strong>.
+            Bonjour, <strong>{user.name}</strong> — sessions de <strong>2 heures</strong>, de <strong>6h00 à 22h00</strong>. Max <strong>{WEEKLY_HOUR_LIMIT}h/semaine</strong>.
           </p>
         </div>
 
-        {/* Weekly quota banner */}
-        <WeekBanner weekHours={weekHours} selectedDate={selectedDate} />
+        {/* Season pass status banner */}
+        {hasSeasonPass ? (
+          <div style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', borderRadius: '0.875rem', padding: '0.875rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <Star size={18} color="#4ade80" style={{ flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <span style={{ fontWeight: 700 }}>Passe saisonnier actif</span>
+              <span style={{ color: '#bbf7d0', marginLeft: '0.5rem', fontSize: '0.9rem' }}>
+                {passType === 'resident' ? 'Résident · $30 payé' : 'Non-résident · $50 payé'} — Réservations gratuites jusqu'à la fin de l'été
+              </span>
+            </div>
+            <div style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', padding: '0.25rem 0.75rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700 }}>
+              ÉTÉ 2026
+            </div>
+          </div>
+        ) : (
+          <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: '0.875rem', padding: '0.875rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <Star size={18} color="#b45309" style={{ flexShrink: 0, marginTop: 2 }} />
+            <p style={{ fontSize: '0.9rem', color: '#78350f', lineHeight: 1.6 }}>
+              <strong>Passe saisonnier requis.</strong> Lors de votre première réservation, vous paierez une seule fois le passe d'été ($30 résident ou $50 non-résident). Ce passe sera valide pour toutes vos réservations jusqu'à la fin de l'été.
+            </p>
+          </div>
+        )}
+
+        {/* Weekly quota */}
+        {selectedDate && <WeekBanner weekHours={weekHours} />}
 
         {/* Step indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2.5rem', gap: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', gap: 0 }}>
           {STEPS.map((s, i) => (
             <div key={s} style={{ display: 'flex', alignItems: 'center' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.375rem' }}>
                 <div style={{
-                  width: 36, height: 36, borderRadius: '50%',
+                  width: 34, height: 34, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontWeight: 700, fontSize: '0.875rem',
                   background: i < step ? '#166534' : i === step ? '#166534' : '#e2e8f0',
                   color: i <= step ? '#fff' : '#94a3b8',
                   transition: 'all 0.3s',
                 }}>
-                  {i < step ? <CheckCircle size={16} /> : i + 1}
+                  {i < step ? <CheckCircle size={15} /> : i + 1}
                 </div>
                 <span style={{ fontSize: '0.7rem', fontWeight: 600, color: i <= step ? '#166534' : '#94a3b8', whiteSpace: 'nowrap' }}>{s}</span>
               </div>
@@ -208,11 +245,10 @@ export default function BookCourt() {
               {weekFull && selectedDate && (
                 <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#dc2626', display: 'flex', gap: '0.625rem', marginBottom: '1.25rem', fontSize: '0.9rem' }}>
                   <Ban size={17} style={{ flexShrink: 0, marginTop: 2 }} />
-                  Vous avez atteint votre limite de {WEEKLY_HOUR_LIMIT}h pour cette semaine. Choisissez une date dans une autre semaine.
+                  Limite de {WEEKLY_HOUR_LIMIT}h atteinte pour cette semaine. Choisissez une date dans une autre semaine.
                 </div>
               )}
 
-              {/* Month nav */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                 <NavBtn onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}><ChevronLeft size={18} /></NavBtn>
                 <span style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#0f172a' }}>
@@ -234,16 +270,15 @@ export default function BookCourt() {
                   const sel = selectedDate && isSameDay(day, selectedDate)
                   const today = isToday(day)
                   return (
-                    <button key={day.toISOString()} disabled={past} onClick={() => { setSelectedDate(day); setSelectedCourt(null); setSelectedTime(null) }}
+                    <button key={day.toISOString()} disabled={past}
+                      onClick={() => { setSelectedDate(day); setSelectedCourt(null); setSelectedTime(null) }}
                       style={{
                         aspectRatio: '1', borderRadius: '0.625rem',
                         border: today && !sel ? '2px solid #22c55e' : '2px solid transparent',
                         background: sel ? '#166534' : 'transparent',
                         color: past ? '#cbd5e1' : sel ? '#fff' : today ? '#166534' : '#0f172a',
                         fontWeight: sel || today ? 700 : 500,
-                        fontSize: '0.9rem',
-                        cursor: past ? 'not-allowed' : 'pointer',
-                        transition: 'all 0.15s',
+                        fontSize: '0.9rem', cursor: past ? 'not-allowed' : 'pointer', transition: 'all 0.15s',
                       }}
                       onMouseEnter={e => { if (!past && !sel) e.currentTarget.style.background = '#f1f5f9' }}
                       onMouseLeave={e => { if (!sel) e.currentTarget.style.background = 'transparent' }}
@@ -262,8 +297,10 @@ export default function BookCourt() {
               )}
 
               <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="btn-primary" disabled={!selectedDate || (weekFull && selectedDate)} onClick={() => setStep(1)}
-                  style={{ opacity: (!selectedDate || (weekFull && selectedDate)) ? 0.5 : 1, cursor: (!selectedDate || (weekFull && selectedDate)) ? 'not-allowed' : 'pointer' }}>
+                <button className="btn-primary"
+                  disabled={!selectedDate || (weekFull && !!selectedDate)}
+                  onClick={() => setStep(1)}
+                  style={{ opacity: (!selectedDate || weekFull) ? 0.5 : 1, cursor: (!selectedDate || weekFull) ? 'not-allowed' : 'pointer' }}>
                   Suivant : Terrain & Heure <ChevronRight size={18} />
                 </button>
               </div>
@@ -277,10 +314,9 @@ export default function BookCourt() {
                 <Clock size={22} color="#166534" /> Choisir un terrain et une heure
               </h3>
               <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.9375rem' }}>
-                {format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })} · Sessions de 2 heures
+                {format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })} · Sessions de 2h · Ouvert de 6h00 à 22h00
               </p>
 
-              {/* Courts */}
               <div style={{ marginBottom: '1.75rem' }}>
                 <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.875rem' }}>Choisir un terrain</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.875rem' }}>
@@ -295,13 +331,7 @@ export default function BookCourt() {
                           background: sel ? `${c.color}12` : '#fff',
                           cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s',
                         }}>
-                        <div style={{
-                          width: 40, height: 40, borderRadius: '50%',
-                          background: sel ? c.color : '#f1f5f9',
-                          color: sel ? '#fff' : '#64748b',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontWeight: 700, fontSize: '1rem', margin: '0 auto 0.625rem',
-                        }}>{c.id}</div>
+                        <div style={{ width: 40, height: 40, borderRadius: '50%', background: sel ? c.color : '#f1f5f9', color: sel ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1rem', margin: '0 auto 0.625rem' }}>{c.id}</div>
                         <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem', marginBottom: '0.25rem' }}>{c.name}</div>
                         <div style={{ fontSize: '0.75rem', color: free > 0 ? '#166534' : '#ef4444', fontWeight: 600 }}>
                           {free} créneau{free !== 1 ? 'x' : ''} libre{free !== 1 ? 's' : ''}
@@ -312,11 +342,10 @@ export default function BookCourt() {
                 </div>
               </div>
 
-              {/* Time slots */}
               {selectedCourt && (
                 <div>
                   <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.875rem' }}>Choisir un créneau (2h)</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(145px, 1fr))', gap: '0.625rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))', gap: '0.625rem' }}>
                     {TIME_SLOTS.map(slot => {
                       const status = getSlotStatus(selectedCourt, selectedDate, slot)
                       const sel = selectedTime === slot
@@ -325,18 +354,11 @@ export default function BookCourt() {
                         <button key={slot} disabled={disabled} onClick={() => setSelectedTime(slot)}
                           style={{
                             padding: '0.75rem 0.625rem', borderRadius: '0.625rem',
-                            border: sel ? '2px solid #166534'
-                              : status === 'booked' ? '2px solid #fee2e2'
-                              : status === 'consecutive' ? '2px solid #fef3c7'
-                              : '2px solid #e2e8f0',
-                            background: sel ? '#166534'
-                              : status === 'booked' ? '#fef2f2'
-                              : status === 'consecutive' ? '#fffbeb'
-                              : '#fff',
+                            border: sel ? '2px solid #166534' : status === 'booked' ? '2px solid #fee2e2' : status === 'consecutive' ? '2px solid #fef3c7' : '2px solid #e2e8f0',
+                            background: sel ? '#166534' : status === 'booked' ? '#fef2f2' : status === 'consecutive' ? '#fffbeb' : '#fff',
                             color: sel ? '#fff' : status === 'booked' ? '#fca5a5' : status === 'consecutive' ? '#d97706' : '#334155',
                             fontSize: '0.875rem', fontWeight: 600,
-                            cursor: disabled ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.15s',
+                            cursor: disabled ? 'not-allowed' : 'pointer', transition: 'all 0.15s',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
                           }}
                           title={status === 'consecutive' ? 'Vous ne pouvez pas réserver deux créneaux consécutifs le même jour.' : ''}
@@ -350,9 +372,9 @@ export default function BookCourt() {
                     })}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', marginTop: '0.875rem', fontSize: '0.8125rem', color: '#64748b' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}><span style={{ width: 12, height: 12, borderRadius: 3, background: '#166534', display: 'inline-block' }} />Disponible</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}><span style={{ width: 12, height: 12, borderRadius: 3, background: '#fca5a5', display: 'inline-block' }} />Réservé</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}><span style={{ width: 12, height: 12, borderRadius: 3, background: '#fde68a', display: 'inline-block' }} />Consécutif interdit</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}><Dot color="#166534" />Disponible</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}><Dot color="#fca5a5" />Réservé</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}><Dot color="#fde68a" />Consécutif interdit</span>
                   </div>
                 </div>
               )}
@@ -361,7 +383,7 @@ export default function BookCourt() {
                 <button className="btn-secondary" onClick={() => setStep(0)}><ChevronLeft size={18} />Retour</button>
                 <button className="btn-primary" disabled={!selectedCourt || !selectedTime} onClick={() => setStep(2)}
                   style={{ opacity: (selectedCourt && selectedTime) ? 1 : 0.5, cursor: (selectedCourt && selectedTime) ? 'pointer' : 'not-allowed' }}>
-                  Suivant : Vos informations <ChevronRight size={18} />
+                  Suivant : Détails <ChevronRight size={18} />
                 </button>
               </div>
             </>
@@ -371,10 +393,10 @@ export default function BookCourt() {
           {step === 2 && (
             <>
               <h3 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '1.5rem', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <User size={22} color="#166534" /> Vos informations
+                <User size={22} color="#166534" /> Confirmation de la réservation
               </h3>
 
-              {/* Summary */}
+              {/* Booking summary */}
               <div style={{ background: '#f0fdf4', borderRadius: '0.875rem', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', flexWrap: 'wrap', gap: '1.25rem' }}>
                 {[
                   { label: 'Date', value: format(selectedDate, 'd MMM yyyy', { locale: fr }) },
@@ -389,7 +411,7 @@ export default function BookCourt() {
                 ))}
               </div>
 
-              {/* Weekly quota */}
+              {/* Weekly quota bar */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
                   <span style={{ fontWeight: 600, color: '#334155' }}>Heures utilisées cette semaine</span>
@@ -407,53 +429,78 @@ export default function BookCourt() {
                 </div>
               </div>
 
-              {/* Resident status */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ fontWeight: 700, color: '#0f172a', display: 'block', marginBottom: '0.875rem' }}>
-                  Êtes-vous résident(e) de Donnacona ?
-                </label>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                  {[
-                    { value: 'resident', label: '🏠 Résident — $30', desc: 'Preuve de résidence requise' },
-                    { value: 'nonResident', label: '🌍 Non-résident — $50', desc: 'Ouvert à tous les visiteurs' },
-                  ].map(opt => (
-                    <button key={opt.value} onClick={() => setIsResident(opt.value)}
-                      style={{
-                        flex: '1 1 180px', padding: '1rem 1.25rem', borderRadius: '0.875rem',
-                        border: isResident === opt.value ? '2px solid #166534' : '2px solid #e2e8f0',
-                        background: isResident === opt.value ? '#f0fdf4' : '#fff',
-                        cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                      }}>
-                      <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>{opt.label}</div>
-                      <div style={{ fontSize: '0.825rem', color: '#64748b' }}>{opt.desc}</div>
-                    </button>
-                  ))}
+              {/* Seasonal pass section */}
+              {hasSeasonPass ? (
+                <div style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', borderRadius: '0.875rem', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  <Shield size={28} color="#4ade80" style={{ flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Passe saisonnier actif ✓</div>
+                    <div style={{ color: '#bbf7d0', fontSize: '0.875rem' }}>
+                      {passType === 'resident' ? 'Résident · $30 payé au début de l\'été' : 'Non-résident · $50 payé au début de l\'été'}
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: '1.5rem', color: '#4ade80' }}>$0</div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={{ fontWeight: 700, color: '#0f172a', display: 'block', marginBottom: '0.875rem' }}>
+                      Choisir votre passe saisonnier <span style={{ color: '#dc2626' }}>*</span>
+                    </label>
+                    <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem', lineHeight: 1.6 }}>
+                      Ce montant est payé <strong>une seule fois</strong> au début de l'été et est valide pour toutes vos réservations jusqu'à la fin de l'été.
+                    </p>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      {[
+                        { value: 'resident', label: '🏠 Résident', price: '$30', desc: 'Valide tout l\'été · Preuve requise' },
+                        { value: 'nonResident', label: '🌍 Non-résident', price: '$50', desc: 'Valide tout l\'été · Ouvert à tous' },
+                      ].map(opt => (
+                        <button key={opt.value} onClick={() => setIsResident(opt.value)}
+                          style={{
+                            flex: '1 1 180px', padding: '1.125rem 1.25rem', borderRadius: '0.875rem',
+                            border: isResident === opt.value ? '2px solid #166534' : '2px solid #e2e8f0',
+                            background: isResident === opt.value ? '#f0fdf4' : '#fff',
+                            cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                          }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.25rem' }}>
+                            <span style={{ fontWeight: 700, color: '#0f172a' }}>{opt.label}</span>
+                            <span style={{ fontWeight: 900, fontSize: '1.25rem', color: '#166534' }}>{opt.price}</span>
+                          </div>
+                          <div style={{ fontSize: '0.825rem', color: '#64748b' }}>{opt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {price && (
-                <div style={{
-                  background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff',
-                  borderRadius: '0.875rem', padding: '1.25rem 1.5rem',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem',
-                }}>
-                  <div>
-                    <div style={{ fontSize: '0.8125rem', color: '#86efac', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total à payer</div>
-                    <div style={{ fontWeight: 800, fontSize: '1.75rem' }}>${price}</div>
-                  </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.875rem', color: '#bbf7d0' }}>
-                    2 heures · Terrain {selectedCourt}
-                  </div>
-                </div>
+                  {isResident && (
+                    <div style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', borderRadius: '0.875rem', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.8125rem', color: '#86efac', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Passe saisonnier — Paiement unique</div>
+                        <div style={{ fontWeight: 800, fontSize: '1.75rem' }}>${price}</div>
+                      </div>
+                      <div style={{ textAlign: 'right', fontSize: '0.875rem', color: '#bbf7d0' }}>
+                        Valide tout l'été<br />Réservations illimitées*
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               <div style={{ marginTop: '1.75rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <button className="btn-secondary" onClick={() => setStep(1)}><ChevronLeft size={18} />Retour</button>
-                <button className="btn-primary" disabled={!isResident} onClick={handleConfirm}
-                  style={{ opacity: isResident ? 1 : 0.5, cursor: isResident ? 'pointer' : 'not-allowed' }}>
-                  <CreditCard size={18} /> Confirmer & Payer ${price ?? '—'}
+                <button className="btn-primary"
+                  disabled={!hasSeasonPass && !isResident}
+                  onClick={handleConfirm}
+                  style={{ opacity: (hasSeasonPass || isResident) ? 1 : 0.5, cursor: (hasSeasonPass || isResident) ? 'pointer' : 'not-allowed' }}>
+                  <CreditCard size={18} />
+                  {hasSeasonPass ? 'Confirmer la réservation' : `Payer $${price ?? '—'} et confirmer`}
                 </button>
               </div>
+              {!hasSeasonPass && (
+                <p style={{ textAlign: 'center', fontSize: '0.8125rem', color: '#94a3b8', marginTop: '0.75rem' }}>
+                  * Maximum {WEEKLY_HOUR_LIMIT}h de réservation par semaine
+                </p>
+              )}
             </>
           )}
         </div>
@@ -464,34 +511,31 @@ export default function BookCourt() {
 
 function NavBtn({ onClick, children }) {
   return (
-    <button onClick={onClick} style={{
-      background: '#f1f5f9', border: 'none', width: 36, height: 36,
-      borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      cursor: 'pointer', transition: 'background 0.2s',
-    }}
+    <button onClick={onClick} style={{ background: '#f1f5f9', border: 'none', width: 36, height: 36, borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
-      onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}
-    >
+      onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}>
       {children}
     </button>
   )
 }
 
-function WeekBanner({ weekHours, selectedDate }) {
-  if (!selectedDate) return null
+function Dot({ color }) {
+  return <span style={{ width: 12, height: 12, borderRadius: 3, background: color, display: 'inline-block', flexShrink: 0 }} />
+}
+
+function WeekBanner({ weekHours }) {
   const pct = Math.min((weekHours / WEEKLY_HOUR_LIMIT) * 100, 100)
   const remaining = WEEKLY_HOUR_LIMIT - weekHours
   const color = weekHours >= WEEKLY_HOUR_LIMIT ? '#dc2626' : weekHours >= 4 ? '#d97706' : '#166534'
-  const bg = weekHours >= WEEKLY_HOUR_LIMIT ? '#fef2f2' : weekHours >= 4 ? '#fffbeb' : '#f0fdf4'
-  const border = weekHours >= WEEKLY_HOUR_LIMIT ? '#fecaca' : weekHours >= 4 ? '#fde68a' : '#bbf7d0'
-
+  const bg    = weekHours >= WEEKLY_HOUR_LIMIT ? '#fef2f2' : weekHours >= 4 ? '#fffbeb' : '#f0fdf4'
+  const border= weekHours >= WEEKLY_HOUR_LIMIT ? '#fecaca' : weekHours >= 4 ? '#fde68a' : '#bbf7d0'
   return (
-    <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: '0.875rem', padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
+    <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: '0.875rem', padding: '0.875rem 1.25rem', marginBottom: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-        <span style={{ fontWeight: 700, color, fontSize: '0.9375rem' }}>
-          {weekHours >= WEEKLY_HOUR_LIMIT ? '⛔ Limite hebdomadaire atteinte' : `⏱ Quota hebdomadaire — ${remaining}h restantes`}
+        <span style={{ fontWeight: 700, color, fontSize: '0.9rem' }}>
+          {weekHours >= WEEKLY_HOUR_LIMIT ? '⛔ Limite hebdomadaire atteinte' : `⏱ Quota semaine — ${remaining}h restantes`}
         </span>
-        <span style={{ fontWeight: 700, color, fontSize: '0.9375rem' }}>{weekHours}h / {WEEKLY_HOUR_LIMIT}h</span>
+        <span style={{ fontWeight: 700, color, fontSize: '0.9rem' }}>{weekHours}h / {WEEKLY_HOUR_LIMIT}h</span>
       </div>
       <div style={{ height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 4, transition: 'width 0.4s' }} />

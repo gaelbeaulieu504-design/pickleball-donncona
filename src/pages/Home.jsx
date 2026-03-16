@@ -102,7 +102,7 @@ export default function Home() {
               { value: '4', label: 'Terrains extérieurs' },
               { value: '$30', label: 'Tarif résident' },
               { value: '$50', label: 'Tarif non-résident' },
-              { value: '7h00', label: 'Ouverture' },
+              { value: '6h–22h', label: 'Heures d\'ouverture' },
             ].map(s => (
               <div key={s.label}>
                 <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#4ade80' }}>{s.value}</div>

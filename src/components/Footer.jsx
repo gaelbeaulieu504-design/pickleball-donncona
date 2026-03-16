@@ -97,12 +97,10 @@ export default function Footer() {
 
           {/* Hours */}
           <div>
-            <h4 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9375rem' }}>Hours</h4>
+            <h4 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9375rem' }}>Heures d'ouverture</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem' }}>
               {[
-                { day: 'Monday – Friday', hours: '7:00 AM – 10:00 PM' },
-                { day: 'Saturday', hours: '7:00 AM – 10:00 PM' },
-                { day: 'Sunday', hours: '8:00 AM – 9:00 PM' },
+                { day: 'Lundi – Dimanche', hours: '6h00 – 22h00' },
               ].map(h => (
                 <li key={h.day} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
                   <span>{h.day}</span>

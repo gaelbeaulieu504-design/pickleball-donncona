@@ -11,9 +11,9 @@ export default function Pricing() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="section-tag">Tarifs</span>
-          <h1 className="section-title">Tarifs simples et transparents</h1>
+          <h1 className="section-title">Passe saisonnier — payé une seule fois</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Un tarif fixe par terrain pour 2 heures. Aucuns frais cachés, aucun abonnement requis.
+            Payez une seule fois au début de l'été et réservez librement jusqu'à la fin de l'été. Sessions de 2 heures, de 6h00 à 22h00.
           </p>
         </div>
 
@@ -52,20 +52,22 @@ export default function Pricing() {
                 letterSpacing: '0.06em',
                 marginBottom: '1.5rem',
               }}>
-                🏠 DONNACONA RESIDENT
+                🏠 RÉSIDENT DE DONNACONA
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>$30</span>
-                <span style={{ color: '#86efac', marginLeft: '0.5rem', fontSize: '1rem' }}>/ 2h / terrain</span>
+              </div>
+              <div style={{ color: '#86efac', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 600 }}>
+                Passe saisonnier — paiement unique pour tout l'été
               </div>
 
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
                 {[
-                  'Réservation de 2 heures',
+                  'Payé une seule fois par été',
+                  'Sessions de 2h, de 6h00 à 22h00',
+                  'Max 6h de jeu par semaine',
                   'Les 4 terrains disponibles',
-                  'Réservation en ligne incluse',
-                  'Confirmation instantanée',
                   'Preuve de résidence requise',
                 ].map(f => (
                   <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
@@ -121,20 +123,22 @@ export default function Pricing() {
               letterSpacing: '0.06em',
               marginBottom: '1.5rem',
             }}>
-              🌍 NON-RESIDENT
+              🌍 NON-RÉSIDENT
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '4rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$50</span>
-              <span style={{ color: '#64748b', marginLeft: '0.5rem', fontSize: '1rem' }}>/ 2h / terrain</span>
+            </div>
+            <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 600 }}>
+              Passe saisonnier — paiement unique pour tout l'été
             </div>
 
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
               {[
-                'Réservation de 2 heures',
+                'Payé une seule fois par été',
+                'Sessions de 2h, de 6h00 à 22h00',
+                'Max 6h de jeu par semaine',
                 'Les 4 terrains disponibles',
-                'Réservation en ligne incluse',
-                'Confirmation instantanée',
                 'Ouvert à tous les visiteurs',
               ].map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>

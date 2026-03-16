@@ -74,33 +74,33 @@ export default function About() {
           {[
             {
               icon: <Users size={22} color="#166534" />,
-              title: 'Community Focused',
-              desc: 'A welcoming space for all ages and skill levels. Come meet fellow pickleball enthusiasts in Donnacona.',
+              title: 'Communauté accueillante',
+              desc: 'Un espace chaleureux pour tous les âges et niveaux. Rencontrez d\'autres amateurs de pickleball à Donnacona.',
             },
             {
               icon: <MapPin size={22} color="#166534" />,
-              title: 'Easy Access',
-              desc: 'Located in Donnacona, Québec with ample free on-site parking. Accessible for players of all abilities.',
+              title: 'Accès facile',
+              desc: 'Situé à Donnacona, Québec, avec un grand stationnement gratuit. Accessible à tous.',
             },
             {
               icon: <Clock size={22} color="#166534" />,
-              title: 'Extended Hours',
-              desc: 'Open 7 days a week from 7 AM. Flexible time slots let you play when it suits your schedule.',
+              title: 'Horaires étendus',
+              desc: 'Ouvert 7 jours sur 7, de 6h00 à 22h00. Des créneaux flexibles pour jouer quand vous le souhaitez.',
             },
             {
               icon: <Shield size={22} color="#166534" />,
-              title: 'Safe & Maintained',
-              desc: 'Courts are regularly maintained for optimal playing conditions. Safety is our top priority.',
+              title: 'Entretenu & sécuritaire',
+              desc: 'Les terrains sont entretenus régulièrement pour des conditions optimales. Votre sécurité est notre priorité.',
             },
             {
               icon: <CalendarCheck size={22} color="#166534" />,
-              title: 'Online Booking',
+              title: 'Réservation en ligne',
               desc: 'Réservez votre terrain 24h/7j depuis n\'importe quel appareil. Rapide et facile.',
             },
             {
               icon: <Wifi size={22} color="#166534" />,
-              title: 'Instant Confirmation',
-              desc: 'Receive immediate email confirmation with all your booking details as soon as you pay.',
+              title: 'Confirmation instantanée',
+              desc: 'Recevez une confirmation par courriel immédiatement après votre réservation.',
             },
           ].map(f => (
             <div key={f.title} style={{
@@ -146,13 +146,13 @@ export default function About() {
             gap: '0.875rem',
           }}>
             {[
-              { day: 'Monday', hours: '7:00 AM – 10:00 PM' },
-              { day: 'Tuesday', hours: '7:00 AM – 10:00 PM' },
-              { day: 'Wednesday', hours: '7:00 AM – 10:00 PM' },
-              { day: 'Thursday', hours: '7:00 AM – 10:00 PM' },
-              { day: 'Friday', hours: '7:00 AM – 10:00 PM' },
-              { day: 'Saturday', hours: '7:00 AM – 10:00 PM' },
-              { day: 'Sunday', hours: '8:00 AM – 9:00 PM' },
+              { day: 'Monday', hours: '6h00 – 22h00' },
+              { day: 'Tuesday', hours: '6h00 – 22h00' },
+              { day: 'Wednesday', hours: '6h00 – 22h00' },
+              { day: 'Thursday', hours: '6h00 – 22h00' },
+              { day: 'Friday', hours: '6h00 – 22h00' },
+              { day: 'Saturday', hours: '6h00 – 22h00' },
+              { day: 'Sunday', hours: '6h00 – 22h00' },
             ].map(h => {
               const today = new Date().toLocaleDateString('en-US', { weekday: 'long' })
               const isToday = h.day === today
