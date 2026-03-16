@@ -64,15 +64,14 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('pb_current_user')
   }
 
-  // Mark seasonal pass as paid for current user (with optional resident code)
-  function paySeasonPass(passType, residentCode = null) {
+  // Mark seasonal pass as paid for current user
+  function paySeasonPass(passType) {
     if (!user) return
     const users = getUsers()
     const idx = users.findIndex(u => u.id === user.id)
     if (idx === -1) return
     users[idx].seasonPassPaid = true
     users[idx].seasonPassType = passType
-    if (residentCode) users[idx].residentCode = residentCode.trim().toUpperCase()
     saveUsers(users)
     refreshUser(user.id)
   }
