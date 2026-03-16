@@ -1,16 +1,19 @@
 export const COURTS = [
-  { id: 1, name: 'Court 1', color: '#166534' },
-  { id: 2, name: 'Court 2', color: '#1d4ed8' },
-  { id: 3, name: 'Court 3', color: '#7c3aed' },
-  { id: 4, name: 'Court 4', color: '#b45309' },
-  { id: 5, name: 'Court 5', color: '#0e7490' },
-  { id: 6, name: 'Court 6', color: '#be185d' },
+  { id: 1, name: 'Terrain 1', color: '#166534' },
+  { id: 2, name: 'Terrain 2', color: '#1d4ed8' },
+  { id: 3, name: 'Terrain 3', color: '#7c3aed' },
+  { id: 4, name: 'Terrain 4', color: '#b45309' },
 ]
 
+// Each slot is a 2-hour block
 export const TIME_SLOTS = [
-  '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
-  '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM',
-  '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM',
+  '7h00 – 9h00',
+  '9h00 – 11h00',
+  '11h00 – 13h00',
+  '13h00 – 15h00',
+  '15h00 – 17h00',
+  '17h00 – 19h00',
+  '19h00 – 21h00',
 ]
 
 export const PRICING = {
@@ -18,19 +21,17 @@ export const PRICING = {
   nonResident: 50,
 }
 
-// Simulate some pre-booked slots (court id → set of "YYYY-MM-DD|HH:MM" keys)
-const seed = [
-  { court: 1, date: '2026-03-16', slot: '9:00 AM' },
-  { court: 1, date: '2026-03-16', slot: '10:00 AM' },
-  { court: 2, date: '2026-03-16', slot: '7:00 AM' },
-  { court: 3, date: '2026-03-17', slot: '2:00 PM' },
-  { court: 4, date: '2026-03-17', slot: '4:00 PM' },
-  { court: 2, date: '2026-03-18', slot: '11:00 AM' },
-  { court: 5, date: '2026-03-18', slot: '3:00 PM' },
-]
+export const WEEKLY_HOUR_LIMIT = 6      // hours per week
+export const SESSION_DURATION = 2       // hours per booking
 
+// Simulate some pre-booked slots
 export function buildBookedSet() {
-  const set = new Set()
-  seed.forEach(({ court, date, slot }) => set.add(`${court}|${date}|${slot}`))
-  return set
+  return new Set([
+    '1|2026-03-16|9h00 – 11h00',
+    '1|2026-03-16|11h00 – 13h00',
+    '2|2026-03-16|7h00 – 9h00',
+    '3|2026-03-17|13h00 – 15h00',
+    '4|2026-03-17|15h00 – 17h00',
+    '2|2026-03-18|11h00 – 13h00',
+  ])
 }
