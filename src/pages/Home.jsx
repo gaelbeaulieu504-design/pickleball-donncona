@@ -62,8 +62,8 @@ export default function Home() {
             marginBottom: '1.25rem',
             maxWidth: 700,
           }}>
-            Reserve Your<br />
-            <span style={{ color: '#4ade80' }}>Pickleball Court</span>
+            Réservez votre<br />
+            <span style={{ color: '#4ade80' }}>terrain de pickleball</span>
           </h1>
 
           <p style={{
@@ -73,7 +73,7 @@ export default function Home() {
             lineHeight: 1.7,
             marginBottom: '2.5rem',
           }}>
-            Play at Donnacona's newest pickleball courts. 6 premium outdoor courts available to book online — residents and visitors welcome.
+            Jouez sur les terrains de pickleball de Donnacona. 4 terrains extérieurs disponibles en ligne — résidents et visiteurs bienvenus.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '3rem' }}>
@@ -83,14 +83,14 @@ export default function Home() {
               onClick={() => navigate('/book')}
             >
               <CalendarCheck size={20} />
-              Book a Court
+              Réserver un terrain
             </button>
             <button
               className="btn-secondary"
               style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.3)', fontSize: '1.0625rem', padding: '1rem 2.25rem' }}
               onClick={() => navigate('/pricing')}
             >
-              View Pricing
+              Voir les tarifs
             </button>
           </div>
 
@@ -99,10 +99,10 @@ export default function Home() {
             display: 'flex', flexWrap: 'wrap', gap: '2rem',
           }}>
             {[
-              { value: '6', label: 'Outdoor Courts' },
-              { value: '$30', label: 'Resident Rate' },
-              { value: '$50', label: 'Non-resident Rate' },
-              { value: '7 AM', label: 'Opens Daily' },
+              { value: '4', label: 'Terrains extérieurs' },
+              { value: '$30', label: 'Tarif résident' },
+              { value: '$50', label: 'Tarif non-résident' },
+              { value: '7h00', label: 'Ouverture' },
             ].map(s => (
               <div key={s.label}>
                 <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#4ade80' }}>{s.value}</div>
@@ -126,10 +126,10 @@ export default function Home() {
       <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0', background: '#f8fafc' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-tag">Simple Process</span>
-            <h2 className="section-title">How It Works</h2>
+            <span className="section-tag">Processus simple</span>
+            <h2 className="section-title">Comment ça fonctionne</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Book your court in minutes — no account required.
+              Réservez votre terrain en quelques minutes — simple et rapide.
             </p>
           </div>
 
@@ -139,10 +139,10 @@ export default function Home() {
             gap: '1.5rem',
           }}>
             {[
-              { step: 1, icon: '📅', title: 'Choose a Date', desc: 'Pick any available date on our interactive calendar.' },
-              { step: 2, icon: '🎾', title: 'Select a Court', desc: 'Choose from our 6 outdoor courts based on availability.' },
-              { step: 3, icon: '🏠', title: 'Confirm Status', desc: 'Select resident or non-resident to see your price.' },
-              { step: 4, icon: '💳', title: 'Pay & Confirm', desc: 'Secure online payment and instant email confirmation.' },
+              { step: 1, icon: '📅', title: 'Choisir une date', desc: 'Sélectionnez une date disponible sur notre calendrier interactif.' },
+              { step: 2, icon: '🎾', title: 'Choisir un terrain', desc: 'Choisissez parmi nos 4 terrains extérieurs selon les disponibilités.' },
+              { step: 3, icon: '🏠', title: 'Résident ou non', desc: 'Indiquez votre statut pour connaître votre tarif (2h par session).' },
+              { step: 4, icon: '💳', title: 'Payer & confirmer', desc: 'Paiement sécurisé en ligne et confirmation instantanée par courriel.' },
             ].map(s => (
               <div key={s.step} style={{
                 background: '#fff',
@@ -176,7 +176,7 @@ export default function Home() {
           <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
             <button className="btn-primary" onClick={() => navigate('/book')}>
               <CalendarCheck size={18} />
-              Book a Court Now
+              Réserver un terrain
               <ChevronRight size={18} />
             </button>
           </div>
@@ -188,9 +188,9 @@ export default function Home() {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span className="section-tag">Pricing</span>
-            <h2 className="section-title">Simple, Transparent Pricing</h2>
+            <h2 className="section-title">Tarifs simples et transparents</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              One-hour court sessions. Proof of Donnacona residency may be required.
+              Sessions de 2 heures par terrain. Une preuve de résidence peut être exigée.
             </p>
           </div>
 
@@ -228,8 +228,8 @@ export default function Home() {
                 letterSpacing: '0.06em',
               }}>DONNACONA RESIDENT</div>
               <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>$30</div>
-              <div style={{ color: '#86efac', marginBottom: '1.5rem', marginTop: '0.25rem' }}>per hour / per court</div>
-              {['1-hour court reservation', 'Online booking', 'Proof of residency required'].map(f => (
+              <div style={{ color: '#86efac', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
+              {['Réservation de 2 heures', 'Réservation en ligne', 'Preuve de résidence requise'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
                   <CheckCircle size={15} color="#4ade80" />
                   <span style={{ fontSize: '0.9375rem' }}>{f}</span>
@@ -253,7 +253,7 @@ export default function Home() {
                 onMouseEnter={e => e.currentTarget.style.background = '#86efac'}
                 onMouseLeave={e => e.currentTarget.style.background = '#4ade80'}
               >
-                Book as Resident
+                Réserver (résident)
               </button>
             </div>
 
@@ -278,8 +278,8 @@ export default function Home() {
                 letterSpacing: '0.06em',
               }}>NON-RESIDENT</div>
               <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$50</div>
-              <div style={{ color: '#64748b', marginBottom: '1.5rem', marginTop: '0.25rem' }}>per hour / per court</div>
-              {['1-hour court reservation', 'Online booking', 'Open to all visitors'].map(f => (
+              <div style={{ color: '#64748b', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
+              {['Réservation de 2 heures', 'Réservation en ligne', 'Ouvert à tous les visiteurs'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
                   <CheckCircle size={15} color="#166534" />
                   <span style={{ fontSize: '0.9375rem', color: '#334155' }}>{f}</span>
@@ -290,7 +290,7 @@ export default function Home() {
                 className="btn-accent"
                 style={{ marginTop: '1.5rem', width: '100%' }}
               >
-                Book as Non-Resident
+                Réserver (non-résident)
               </button>
             </div>
           </div>
@@ -301,10 +301,10 @@ export default function Home() {
       <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0', background: '#f8fafc' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-tag">Our Facility</span>
-            <h2 className="section-title">World-Class Courts in Donnacona</h2>
+            <span className="section-tag">Nos installations</span>
+            <h2 className="section-title">Des terrains de qualité à Donnacona</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Everything you need for a great pickleball experience.
+              Tout ce qu'il vous faut pour une expérience de pickleball mémorable.
             </p>
           </div>
 
@@ -314,12 +314,12 @@ export default function Home() {
             gap: '1.25rem',
           }}>
             {[
-              { icon: '🎯', title: '6 Outdoor Courts', desc: 'Professional-grade outdoor pickleball courts with proper lighting.' },
-              { icon: '🅿️', title: 'Free Parking', desc: 'Easy access parking directly on site — no hassle.' },
-              { icon: '🤝', title: 'Community Focused', desc: 'A friendly, welcoming environment for all skill levels.' },
-              { icon: '📱', title: 'Easy Booking', desc: 'Book online 24/7 from any device in just a few clicks.' },
-              { icon: '⚡', title: 'Instant Confirmation', desc: 'Receive instant email confirmation after booking.' },
-              { icon: '🌿', title: 'Beautiful Setting', desc: "Located in the heart of Donnacona's community." },
+              { icon: '🎯', title: '4 terrains extérieurs', desc: 'Terrains extérieurs de qualité professionnelle avec éclairage.' },
+              { icon: '🅿️', title: 'Stationnement gratuit', desc: 'Accès facile au stationnement directement sur place.' },
+              { icon: '🤝', title: 'Communauté accueillante', desc: 'Un environnement convivial pour tous les niveaux.' },
+              { icon: '📱', title: 'Réservation facile', desc: 'Réservez en ligne 24h/7j depuis n\'importe quel appareil.' },
+              { icon: '⚡', title: 'Confirmation instantanée', desc: 'Recevez votre confirmation par courriel immédiatement.' },
+              { icon: '🌿', title: 'Cadre agréable', desc: 'Situé au cœur de la communauté de Donnacona.' },
             ].map(f => (
               <div key={f.title} style={{
                 background: '#fff',
@@ -355,10 +355,10 @@ export default function Home() {
         <div className="container">
           <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎾</div>
           <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, marginBottom: '1rem' }}>
-            Ready to Play?
+            Prêt à jouer ?
           </h2>
           <p style={{ color: '#bbf7d0', fontSize: '1.125rem', marginBottom: '2rem' }}>
-            Book your court today and enjoy Donnacona's favourite pickleball facility.
+            Réservez votre terrain aujourd'hui et profitez des installations de Donnacona.
           </p>
           <button
             className="btn-primary"
@@ -366,7 +366,7 @@ export default function Home() {
             onClick={() => navigate('/book')}
           >
             <CalendarCheck size={20} />
-            Book a Court Now
+            Réserver un terrain
           </button>
         </div>
       </section>
@@ -377,24 +377,19 @@ export default function Home() {
 function CourtIllustration() {
   return (
     <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
-      <svg viewBox="0 0 800 200" style={{ width: '100%', maxWidth: 800, height: 'auto' }}>
-        {/* 3 courts side by side */}
-        {[0, 1, 2].map(i => (
-          <g key={i} transform={`translate(${20 + i * 260}, 10)`}>
-            <rect x="0" y="0" width="240" height="180" fill="#1a7a3e" stroke="#4ade80" strokeWidth="2" rx="4" />
-            {/* Kitchen lines */}
-            <rect x="0" y="60" width="240" height="60" fill="none" stroke="#4ade80" strokeWidth="1.5" />
-            {/* Center line */}
-            <line x1="120" y1="0" x2="120" y2="60" stroke="#4ade80" strokeWidth="1.5" />
-            <line x1="120" y1="120" x2="120" y2="180" stroke="#4ade80" strokeWidth="1.5" />
-            {/* Net */}
-            <line x1="0" y1="90" x2="240" y2="90" stroke="#e2e8f0" strokeWidth="3" />
-            {/* Posts */}
+      <svg viewBox="0 0 820 200" style={{ width: '100%', maxWidth: 820, height: 'auto' }}>
+        {/* 4 courts side by side */}
+        {[0, 1, 2, 3].map(i => (
+          <g key={i} transform={`translate(${10 + i * 202}, 10)`}>
+            <rect x="0" y="0" width="188" height="180" fill="#1a7a3e" stroke="#4ade80" strokeWidth="2" rx="4" />
+            <rect x="0" y="55" width="188" height="70" fill="none" stroke="#4ade80" strokeWidth="1.5" />
+            <line x1="94" y1="0" x2="94" y2="55" stroke="#4ade80" strokeWidth="1.5" />
+            <line x1="94" y1="125" x2="94" y2="180" stroke="#4ade80" strokeWidth="1.5" />
+            <line x1="0" y1="90" x2="188" y2="90" stroke="#e2e8f0" strokeWidth="3" />
             <circle cx="0" cy="90" r="4" fill="#94a3b8" />
-            <circle cx="240" cy="90" r="4" fill="#94a3b8" />
-            {/* Court label */}
-            <text x="120" y="160" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="12" fontFamily="Inter, sans-serif" fontWeight="600">
-              Court {i + 1}
+            <circle cx="188" cy="90" r="4" fill="#94a3b8" />
+            <text x="94" y="163" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="12" fontFamily="Inter, sans-serif" fontWeight="600">
+              Terrain {i + 1}
             </text>
           </g>
         ))}

@@ -10,10 +10,10 @@ export default function Pricing() {
       <div className="container">
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <span className="section-tag">Pricing</span>
-          <h1 className="section-title">Simple, Transparent Pricing</h1>
+          <span className="section-tag">Tarifs</span>
+          <h1 className="section-title">Tarifs simples et transparents</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            One flat rate per court per hour. No hidden fees, no membership required.
+            Un tarif fixe par terrain pour 2 heures. Aucuns frais cachés, aucun abonnement requis.
           </p>
         </div>
 
@@ -57,16 +57,16 @@ export default function Pricing() {
 
               <div style={{ marginBottom: '1.5rem' }}>
                 <span style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>$30</span>
-                <span style={{ color: '#86efac', marginLeft: '0.5rem', fontSize: '1rem' }}>/ hour / court</span>
+                <span style={{ color: '#86efac', marginLeft: '0.5rem', fontSize: '1rem' }}>/ 2h / terrain</span>
               </div>
 
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
                 {[
-                  '1-hour court reservation',
-                  'All 6 courts available',
-                  'Online booking included',
-                  'Instant confirmation',
-                  'Proof of residency required',
+                  'Réservation de 2 heures',
+                  'Les 4 terrains disponibles',
+                  'Réservation en ligne incluse',
+                  'Confirmation instantanée',
+                  'Preuve de résidence requise',
                 ].map(f => (
                   <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                     <CheckCircle size={17} color="#4ade80" style={{ flexShrink: 0 }} />
@@ -97,7 +97,7 @@ export default function Pricing() {
                 onMouseLeave={e => { e.currentTarget.style.background = '#4ade80'; e.currentTarget.style.transform = 'none' }}
               >
                 <CalendarCheck size={19} />
-                Book as Resident
+                Réserver (résident)
               </button>
             </div>
           </div>
@@ -126,16 +126,16 @@ export default function Pricing() {
 
             <div style={{ marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '4rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$50</span>
-              <span style={{ color: '#64748b', marginLeft: '0.5rem', fontSize: '1rem' }}>/ hour / court</span>
+              <span style={{ color: '#64748b', marginLeft: '0.5rem', fontSize: '1rem' }}>/ 2h / terrain</span>
             </div>
 
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
               {[
-                '1-hour court reservation',
-                'All 6 courts available',
-                'Online booking included',
-                'Instant confirmation',
-                'Open to all visitors',
+                'Réservation de 2 heures',
+                'Les 4 terrains disponibles',
+                'Réservation en ligne incluse',
+                'Confirmation instantanée',
+                'Ouvert à tous les visiteurs',
               ].map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                   <CheckCircle size={17} color="#166534" style={{ flexShrink: 0 }} />
@@ -150,7 +150,7 @@ export default function Pricing() {
               style={{ width: '100%', fontSize: '1.0625rem', padding: '1rem' }}
             >
               <CalendarCheck size={19} />
-              Book as Non-Resident
+              Réserver (non-résident)
             </button>
           </div>
         </div>
@@ -169,24 +169,24 @@ export default function Pricing() {
         }}>
           <AlertCircle size={22} color="#b45309" style={{ flexShrink: 0, marginTop: 2 }} />
           <div>
-            <div style={{ fontWeight: 700, color: '#92400e', marginBottom: '0.375rem' }}>Proof of Residency</div>
+            <div style={{ fontWeight: 700, color: '#92400e', marginBottom: '0.375rem' }}>Preuve de résidence</div>
             <p style={{ color: '#78350f', fontSize: '0.9375rem', lineHeight: 1.7 }}>
-              To qualify for the resident rate, you must present valid proof of Donnacona residency at the facility. Acceptable documents include a government-issued ID with a Donnacona address, a recent utility bill, or an official municipal document. Failure to provide proof will result in the non-resident rate being charged.
+              Pour bénéficier du tarif résident, vous devez présenter une preuve de résidence valide à Donnacona. Les documents acceptés incluent : une pièce d'identité gouvernementale avec adresse à Donnacona, une facture de services publics récente ou un document municipal officiel. Sans preuve, le tarif non-résident s'applique.
             </p>
           </div>
         </div>
 
         {/* FAQ */}
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <h2 style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', fontSize: '1.5rem' }}>Frequently Asked Questions</h2>
+          <h2 style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', fontSize: '1.5rem' }}>Foire aux questions</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {[
-              { q: 'How long is each booking?', a: 'Each reservation is for 1 hour. You can book multiple consecutive hours if available.' },
-              { q: 'Can I cancel or reschedule my booking?', a: 'Yes, cancellations and reschedules are accepted up to 24 hours before your session. Contact us by phone or email.' },
-              { q: 'Is equipment provided?', a: 'Paddles and balls are available to rent at the facility. We recommend bringing your own paddle for the best experience.' },
-              { q: 'Do I need to create an account?', a: 'No account is needed. Simply fill in your name and email at checkout and you\'ll receive an instant confirmation.' },
-              { q: 'What is the maximum number of players per court?', a: 'Up to 4 players per court for doubles play, or 2 for singles. The booking fee covers the full court.' },
-              { q: 'Is the facility accessible?', a: 'Yes, the facility is wheelchair accessible with accessible parking spaces available.' },
+              { q: 'Quelle est la durée de chaque réservation ?', a: 'Chaque réservation est de 2 heures. Un utilisateur ne peut pas réserver deux créneaux consécutifs le même jour.' },
+              { q: 'Combien d\'heures puis-je réserver par semaine ?', a: 'Chaque utilisateur a un maximum de 6 heures par semaine (soit 3 sessions de 2 heures).' },
+              { q: 'Puis-je annuler ou reporter ma réservation ?', a: 'Oui, les annulations et reports sont acceptés jusqu\'à 24 heures avant votre session. Contactez-nous par téléphone ou courriel.' },
+              { q: 'De l\'équipement est-il fourni ?', a: 'Des palettes et des balles sont disponibles en location sur place. Nous recommandons d\'apporter votre propre palette.' },
+              { q: 'Combien de joueurs par terrain ?', a: 'Jusqu\'à 4 joueurs par terrain en double, ou 2 en simple. La réservation couvre l\'ensemble du terrain.' },
+              { q: 'L\'installation est-elle accessible ?', a: 'Oui, l\'installation est accessible aux personnes en fauteuil roulant avec des espaces de stationnement adaptés.' },
             ].map(item => (
               <FaqItem key={item.q} q={item.q} a={item.a} />
             ))}

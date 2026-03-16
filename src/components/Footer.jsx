@@ -40,7 +40,7 @@ export default function Footer() {
               </div>
             </div>
             <p style={{ fontSize: '0.9rem', lineHeight: 1.7, maxWidth: 260 }}>
-              Donnacona's premier pickleball facility. 6 outdoor courts, open to residents and visitors alike.
+              L'installation de pickleball de référence à Donnacona. 4 terrains extérieurs, ouverts aux résidents et aux visiteurs.
             </p>
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
               <a href="#" style={{

@@ -13,7 +13,7 @@ export default function About() {
           <span className="section-tag">About the Facility</span>
           <h1 className="section-title">Donnacona's Pickleball Courts</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Six premium outdoor courts in a welcoming community setting — built for everyone from beginners to competitive players.
+            Quatre terrains extérieurs de qualité dans un cadre communautaire accueillant — conçus pour tous les niveaux.
           </p>
         </div>
 
@@ -36,10 +36,10 @@ export default function About() {
               Our Facility
             </div>
             <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#fff', marginBottom: '1rem', lineHeight: 1.3 }}>
-              6 Outdoor Courts,<br />Open to All
+              4 Terrains extérieurs,<br />Ouverts à tous
             </h2>
             <p style={{ color: '#bbf7d0', lineHeight: 1.75, fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
-              Our facility features 6 regulation-size outdoor pickleball courts with premium court surfaces, permanent nets, and ample lighting. Whether you're picking up a paddle for the first time or sharpening your competitive game, these courts are for you.
+              Nos installations comprennent 4 terrains extérieurs de pickleball aux dimensions réglementaires, avec des surfaces de qualité, des filets permanents et un éclairage adéquat. Que vous débutiez ou que vous soyez un joueur compétitif, ces terrains sont pour vous.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
               {['Permanent Nets', 'Court Lighting', 'Accessible', 'Free Parking'].map(tag => (
@@ -95,7 +95,7 @@ export default function About() {
             {
               icon: <CalendarCheck size={22} color="#166534" />,
               title: 'Online Booking',
-              desc: 'Reserve your court 24/7 from any device. Fast, easy, and no account required.',
+              desc: 'Réservez votre terrain 24h/7j depuis n\'importe quel appareil. Rapide et facile.',
             },
             {
               icon: <Wifi size={22} color="#166534" />,
