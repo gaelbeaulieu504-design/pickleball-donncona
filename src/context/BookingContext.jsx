@@ -1,8 +1,19 @@
 import { createContext, useContext, useState } from 'react'
 import { startOfWeek, endOfWeek, parseISO, isWithinInterval } from 'date-fns'
-import { TIME_SLOTS } from '../data/courts'
+import { START_TIMES, coveredIndices, buildInitialBookings } from '../data/courts'
 
 const BookingContext = createContext(null)
+
+function loadBookings() {
+  try {
+    const stored = localStorage.getItem('pb_bookings')
+    if (stored) return JSON.parse(stored)
+    // First load: seed with demo bookings
+    const seed = buildInitialBookings()
+    localStorage.setItem('pb_bookings', JSON.stringify(seed))
+    return seed
+  } catch { return [] }
+}
 
 export function BookingProvider({ children }) {
   const [, forceUpdate] = useState(0)
@@ -16,10 +27,10 @@ export function BookingProvider({ children }) {
     forceUpdate(n => n + 1)
   }
 
-  // Get all bookings for a user in the current ISO week containing `date`
+  // Get bookings for a user in the ISO week containing `date`
   function getUserWeekBookings(userId, date) {
     const bookings = getBookings()
-    const weekStart = startOfWeek(date, { weekStartsOn: 1 }) // Monday
+    const weekStart = startOfWeek(date, { weekStartsOn: 1 })
     const weekEnd = endOfWeek(date, { weekStartsOn: 1 })
     return bookings.filter(b =>
       b.userId === userId &&
@@ -27,42 +38,52 @@ export function BookingProvider({ children }) {
     )
   }
 
-  // Hours used this week (each booking = 2 hours)
+  // Total hours booked this week
   function getUserWeekHours(userId, date) {
-    return getUserWeekBookings(userId, date).length * 2
+    return getUserWeekBookings(userId, date).reduce((sum, b) => sum + (b.duration || 1), 0)
   }
 
-  // Check if slot is booked by anyone on a given court/date
-  function isSlotBooked(courtId, date, slot) {
+  // Returns array of booked 1h-slot indices for a court on a date
+  function getBookedIndices(courtId, dateStr) {
     const bookings = getBookings()
-    const dateStr = typeof date === 'string' ? date : date.toISOString().slice(0, 10)
-    return bookings.some(b => b.courtId === courtId && b.date === dateStr && b.slot === slot)
+    const booked = new Set()
+    bookings
+      .filter(b => b.courtId === courtId && b.date === dateStr)
+      .forEach(b => coveredIndices(b.startSlot, b.duration).forEach(i => booked.add(i)))
+    return booked
   }
 
-  // Check if a user already has a booking on this date (consecutive rule)
-  // Returns set of slot indices the user has booked on that date
-  function getUserDaySlotIndices(userId, dateStr) {
+  // Is a start slot (with given duration) available on a court?
+  function isSlotAvailable(courtId, dateStr, startSlot, duration) {
+    const booked = getBookedIndices(courtId, dateStr)
+    return coveredIndices(startSlot, duration).every(i => !booked.has(i))
+  }
+
+  // Would booking this slot for this user violate the no-consecutive rule?
+  // A user cannot book a slot that starts immediately when one of their bookings ends,
+  // or ends exactly when one of theirs starts.
+  function isConsecutiveBlocked(userId, dateStr, startSlot, duration) {
     const bookings = getBookings()
-    return bookings
-      .filter(b => b.userId === userId && b.date === dateStr)
-      .map(b => TIME_SLOTS.indexOf(b.slot))
-      .filter(i => i !== -1)
+    const userBookings = bookings.filter(b => b.userId === userId && b.date === dateStr)
+    if (userBookings.length === 0) return false
+
+    const newStart = START_TIMES.indexOf(startSlot)
+    const newEnd = newStart + duration
+
+    return userBookings.some(b => {
+      const bStart = START_TIMES.indexOf(b.startSlot)
+      const bEnd = bStart + (b.duration || 1)
+      // Adjacent = new booking starts right when existing ends, or vice versa
+      return newStart === bEnd || newEnd === bStart
+    })
   }
 
-  // Whether a slot is blocked for user due to consecutive rule
-  function isConsecutiveBlocked(userId, dateStr, slot) {
-    const idx = TIME_SLOTS.indexOf(slot)
-    if (idx === -1) return false
-    const userIndices = getUserDaySlotIndices(userId, dateStr)
-    return userIndices.some(i => Math.abs(i - idx) <= 1)
-  }
-
-  function addBooking({ userId, userName, userEmail, courtId, date, slot, isResident, price }) {
+  function addBooking({ userId, userName, userEmail, courtId, date, startSlot, duration, isResident, price }) {
     const bookings = getBookings()
     bookings.push({
       id: Date.now().toString(),
       userId, userName, userEmail,
-      courtId, date, slot,
+      courtId, date, startSlot, duration,
       isResident, price,
       createdAt: new Date().toISOString(),
     })
@@ -76,8 +97,9 @@ export function BookingProvider({ children }) {
   return (
     <BookingContext.Provider value={{
       getBookings,
-      isSlotBooked,
+      isSlotAvailable,
       isConsecutiveBlocked,
+      getBookedIndices,
       getUserWeekHours,
       getUserWeekBookings,
       addBooking,

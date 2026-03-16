@@ -5,17 +5,16 @@ export const COURTS = [
   { id: 4, name: 'Terrain 4', color: '#b45309' },
 ]
 
-// Each slot is a 2-hour block. Courts open 6h00, close 22h00.
-export const TIME_SLOTS = [
-  '6h00 – 8h00',
-  '8h00 – 10h00',
-  '10h00 – 12h00',
-  '12h00 – 14h00',
-  '14h00 – 16h00',
-  '16h00 – 18h00',
-  '18h00 – 20h00',
-  '20h00 – 22h00',
+// Individual 1-hour start times. Courts open 6h00, close 22h00.
+// For 1h session: valid starts 6h00 – 21h00 (ends at 22h00 max)
+// For 2h session: valid starts 6h00 – 20h00 (ends at 22h00 max)
+export const START_TIMES = [
+  '6h00', '7h00', '8h00', '9h00', '10h00', '11h00',
+  '12h00', '13h00', '14h00', '15h00', '16h00', '17h00',
+  '18h00', '19h00', '20h00', '21h00',
 ]
+
+export const DURATIONS = [1, 2] // hours
 
 export const PRICING = {
   resident: 30,       // one-time seasonal pass
@@ -23,20 +22,28 @@ export const PRICING = {
 }
 
 export const WEEKLY_HOUR_LIMIT = 6    // hours per week
-export const SESSION_DURATION = 2     // hours per booking
 
-// Current season boundaries
-export const SEASON_START = new Date(2026, 5, 1)  // June 1
-export const SEASON_END   = new Date(2026, 8, 1)  // September 1 (exclusive)
+// Returns the display label for a booking
+export function slotLabel(start, duration) {
+  const idx = START_TIMES.indexOf(start)
+  if (idx === -1) return start
+  const endIdx = idx + duration
+  return `${start} – ${START_TIMES[endIdx] ?? '22h00'}`
+}
 
-// Simulate some pre-booked slots
-export function buildBookedSet() {
-  return new Set([
-    '1|2026-03-16|9h00 – 11h00',
-    '1|2026-03-16|10h00 – 12h00',
-    '2|2026-03-16|6h00 – 8h00',
-    '3|2026-03-17|14h00 – 16h00',
-    '4|2026-03-17|16h00 – 18h00',
-    '2|2026-03-18|10h00 – 12h00',
-  ])
+// Returns all 1h slot indices covered by a booking
+export function coveredIndices(startSlot, duration) {
+  const idx = START_TIMES.indexOf(startSlot)
+  if (idx === -1) return []
+  return Array.from({ length: duration }, (_, i) => idx + i)
+}
+
+// Simulate some pre-booked slots (stored as { courtId, date, startSlot, duration })
+export function buildInitialBookings() {
+  return [
+    { id: 'seed1', userId: '__seed__', courtId: 1, date: '2026-03-16', startSlot: '9h00',  duration: 2 },
+    { id: 'seed2', userId: '__seed__', courtId: 2, date: '2026-03-16', startSlot: '6h00',  duration: 1 },
+    { id: 'seed3', userId: '__seed__', courtId: 3, date: '2026-03-17', startSlot: '14h00', duration: 2 },
+    { id: 'seed4', userId: '__seed__', courtId: 4, date: '2026-03-17', startSlot: '16h00', duration: 1 },
+  ]
 }
