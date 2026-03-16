@@ -29,16 +29,17 @@ export function AuthProvider({ children }) {
 
   function register({ name, email, password }) {
     const users = getUsers()
-    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+    const emailNorm = email.trim().toLowerCase()
+    if (users.find(u => u.email.trim().toLowerCase() === emailNorm)) {
       return { error: 'Un compte avec cet email existe déjà.' }
     }
     const newUser = {
       id: Date.now().toString(),
-      name,
-      email: email.toLowerCase(),
-      password,
+      name: name.trim(),
+      email: emailNorm,
+      password: password.trim(),
       seasonPassPaid: false,
-      seasonPassType: null, // 'resident' | 'nonResident'
+      seasonPassType: null,
     }
     saveUsers([...users, newUser])
     const { password: _, ...safeUser } = newUser
@@ -49,8 +50,10 @@ export function AuthProvider({ children }) {
 
   function login({ email, password }) {
     const users = getUsers()
+    const emailNorm = email.trim().toLowerCase()
+    const passwordTrim = password.trim()
     const found = users.find(
-      u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+      u => u.email.trim().toLowerCase() === emailNorm && u.password === passwordTrim
     )
     if (!found) return { error: 'Email ou mot de passe incorrect.' }
     const { password: _, ...safeUser } = found
