@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Menu, X, LogIn, UserPlus, LogOut, User } from 'lucide-react'
+import { Menu, X, LogIn, UserPlus, LogOut, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const navLinks = [
@@ -83,26 +83,32 @@ export default function Navbar() {
                 onClick={e => { e.stopPropagation(); setUserMenuOpen(v => !v) }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  background: 'rgba(22,101,52,0.08)', border: 'none',
+                  background: user.isAdmin ? 'rgba(220,38,38,0.08)' : 'rgba(22,101,52,0.08)', border: 'none',
                   padding: '0.5rem 0.875rem', borderRadius: '0.625rem',
-                  cursor: 'pointer', fontWeight: 600, fontSize: '0.9375rem', color: '#166534',
+                  cursor: 'pointer', fontWeight: 600, fontSize: '0.9375rem',
+                  color: user.isAdmin ? '#dc2626' : '#166534',
                 }}
               >
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.875rem' }}>
-                  {user.name[0].toUpperCase()}
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: user.isAdmin ? '#dc2626' : '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.875rem' }}>
+                  {user.isAdmin ? <ShieldCheck size={15} /> : user.name[0].toUpperCase()}
                 </div>
                 {user.name.split(' ')[0]}
+                {user.isAdmin && <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.65rem', fontWeight: 800, padding: '0.1rem 0.4rem', borderRadius: '2rem', letterSpacing: '0.04em' }}>ADMIN</span>}
               </button>
               {userMenuOpen && (
                 <div style={{
                   position: 'absolute', right: 0, top: 'calc(100% + 0.5rem)',
                   background: '#fff', borderRadius: '0.875rem',
                   border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
-                  padding: '0.5rem', minWidth: 180, zIndex: 200,
+                  padding: '0.5rem', minWidth: 200, zIndex: 200,
                 }}>
                   <div style={{ padding: '0.625rem 0.875rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.25rem' }}>
-                    <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.875rem' }}>{user.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.125rem' }}>
+                      <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.875rem' }}>{user.name}</span>
+                      {user.isAdmin && <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.6rem', fontWeight: 800, padding: '0.1rem 0.375rem', borderRadius: '2rem' }}>ADMIN</span>}
+                    </div>
                     <div style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{user.email}</div>
+                    {user.isAdmin && <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600, marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><ShieldCheck size={12} /> Accès complet sans restrictions</div>}
                   </div>
                   <button onClick={() => { logout(); setUserMenuOpen(false) }}
                     style={{
@@ -156,9 +162,13 @@ export default function Navbar() {
           ))}
           {user ? (
             <>
-              <div style={{ padding: '0.875rem 1rem', background: '#f8fafc', borderRadius: '0.5rem', marginBottom: '0.5rem' }}>
-                <div style={{ fontWeight: 700, color: '#0f172a' }}>{user.name}</div>
+              <div style={{ padding: '0.875rem 1rem', background: user.isAdmin ? '#fef2f2' : '#f8fafc', borderRadius: '0.5rem', marginBottom: '0.5rem', border: user.isAdmin ? '1px solid #fecaca' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontWeight: 700, color: '#0f172a' }}>{user.name}</span>
+                  {user.isAdmin && <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.6rem', fontWeight: 800, padding: '0.1rem 0.375rem', borderRadius: '2rem' }}>ADMIN</span>}
+                </div>
                 <div style={{ fontSize: '0.875rem', color: '#64748b' }}>{user.email}</div>
+                {user.isAdmin && <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600, marginTop: '0.25rem' }}>Accès complet sans restrictions</div>}
               </div>
               <button onClick={() => { logout(); setOpen(false) }} className="btn-secondary" style={{ width: '100%', color: '#dc2626', borderColor: '#fecaca' }}>
                 <LogOut size={16} /> Se déconnecter

@@ -35,11 +35,13 @@ export default function BookCourt() {
     return d === 0 ? 6 : d - 1
   }, [currentMonth])
 
-  const weekHours = user && selectedDate ? getUserWeekHours(user.id, selectedDate) : 0
-  const weekFull = weekHours >= WEEKLY_HOUR_LIMIT
+  const isAdmin = user?.isAdmin === true
 
-  const hasSeasonPass = user?.seasonPassPaid === true
-  const passType = user?.seasonPassType
+  const weekHours = user && selectedDate && !isAdmin ? getUserWeekHours(user.id, selectedDate) : 0
+  const weekFull = !isAdmin && weekHours >= WEEKLY_HOUR_LIMIT
+
+  const hasSeasonPass = isAdmin || user?.seasonPassPaid === true
+  const passType = isAdmin ? 'resident' : user?.seasonPassType
   const effectiveType = passType || isResident
   const price = effectiveType === 'resident' ? PRICING.resident : effectiveType === 'nonResident' ? PRICING.nonResident : null
 
@@ -54,7 +56,7 @@ export default function BookCourt() {
     if (!selectedDate || !selectedCourt || !selectedDuration) return 'free'
     const ds = dateStr(selectedDate)
     if (!isSlotAvailable(selectedCourt, ds, startSlot, selectedDuration)) return 'booked'
-    if (user && isConsecutiveBlocked(user.id, ds, startSlot, selectedDuration)) return 'consecutive'
+    if (!isAdmin && user && isConsecutiveBlocked(user.id, ds, startSlot, selectedDuration)) return 'consecutive'
     return 'free'
   }
 
@@ -172,7 +174,7 @@ export default function BookCourt() {
           <span className="section-tag">Réservation en ligne</span>
           <h1 className="section-title">Réserver un terrain</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Bonjour, <strong>{user.name}</strong> — sessions de <strong>1h ou 2h</strong>, de <strong>6h00 à 22h00</strong>. Max <strong>{WEEKLY_HOUR_LIMIT}h/semaine</strong>.
+            Bonjour, <strong>{user.name}</strong>{isAdmin ? ' — accès administrateur complet' : ` — sessions de 1h ou 2h, de 6h00 à 22h00. Max ${WEEKLY_HOUR_LIMIT}h/semaine.`}
           </p>
         </div>
 

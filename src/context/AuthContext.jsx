@@ -2,6 +2,28 @@ import { createContext, useContext, useState } from 'react'
 
 const AuthContext = createContext(null)
 
+const ADMIN_ACCOUNT = {
+  id: 'admin',
+  name: 'Administrateur',
+  email: 'admin@pickleball-donnacona.ca',
+  password: 'Admin2026!',
+  isAdmin: true,
+  seasonPassPaid: true,
+  seasonPassType: 'resident',
+}
+
+function seedAdmin() {
+  try {
+    const users = JSON.parse(localStorage.getItem('pb_users') || '[]')
+    if (!users.find(u => u.id === 'admin')) {
+      users.unshift(ADMIN_ACCOUNT)
+      localStorage.setItem('pb_users', JSON.stringify(users))
+    }
+  } catch {}
+}
+
+seedAdmin()
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
