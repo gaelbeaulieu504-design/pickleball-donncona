@@ -56,7 +56,7 @@ export default function Pricing() {
               </div>
 
               <div style={{ marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>$30</span>
+                <span style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>$50</span>
               </div>
               <div style={{ color: '#86efac', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 600 }}>
                 Passe saisonnier — paiement unique pour tout l'été

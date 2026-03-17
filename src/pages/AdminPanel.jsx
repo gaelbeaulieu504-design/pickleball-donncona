@@ -147,7 +147,7 @@ export default function AdminPanel() {
                                   <CheckCircle size={11} />Actif
                                 </span>
                                 <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                                  {m.seasonPassType === 'resident' ? '$30 résident' : '$50 non-résident'}
+                                  {m.seasonPassType === 'resident' ? '$50 résident' : '$75 non-résident'}
                                 </span>
                               </div>
                             : <span style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.25rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem', width: 'fit-content' }}>

@@ -100,7 +100,7 @@ export default function Home() {
           }}>
             {[
               { value: '4', label: 'Terrains extérieurs' },
-              { value: '$30', label: 'Tarif résident' },
+              { value: '$50', label: 'Tarif résident' },
               { value: '$50', label: 'Tarif non-résident' },
               { value: '6h–22h', label: 'Heures d\'ouverture' },
             ].map(s => (
@@ -227,7 +227,7 @@ export default function Home() {
                 marginBottom: '1rem',
                 letterSpacing: '0.06em',
               }}>DONNACONA RESIDENT</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>$30</div>
+              <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>$50</div>
               <div style={{ color: '#86efac', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
               {['Réservation de 2 heures', 'Réservation en ligne', 'Preuve de résidence requise'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>

@@ -99,7 +99,7 @@ export default function BookCourt() {
       date: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }),
       time_slot: slotLabel(selectedStart, selectedDuration),
       duration: `${selectedDuration} heure${selectedDuration > 1 ? 's' : ''}`,
-      pass_type: effectiveType === 'resident' ? 'Résident ($30)' : 'Non-résident ($50)',
+      pass_type: effectiveType === 'resident' ? 'Résident ($75)' : 'Non-résident ($75)',
       amount_paid: hasSeasonPass ? '$0 (passe déjà actif)' : `$${price}`,
       week_hours: `${weekHours + selectedDuration}h / ${WEEKLY_HOUR_LIMIT}h`,
     })
@@ -153,7 +153,7 @@ export default function BookCourt() {
               <div>
                 <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Passe saisonnier activé !</div>
                 <div style={{ fontSize: '0.875rem', color: '#bbf7d0', lineHeight: 1.6 }}>
-                  Votre passe {effectiveType === 'resident' ? '$30 (résident)' : '$50 (non-résident)'} est actif pour tout l'été. Vos prochaines réservations sont gratuites.
+                  Votre passe {effectiveType === 'resident' ? '$50 (résident)' : '$75 (non-résident)'} est actif pour tout l'été. Vos prochaines réservations sont gratuites.
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@ export default function BookCourt() {
               { label: 'Date', value: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }) },
               { label: 'Heure', value: slotLabel(selectedStart, selectedDuration) },
               { label: 'Durée', value: `${selectedDuration}h` },
-              { label: 'Passe saisonnier', value: effectiveType === 'resident' ? 'Résident · $30/été' : 'Non-résident · $50/été' },
+              { label: 'Passe saisonnier', value: effectiveType === 'resident' ? 'Résident · $75/été' : 'Non-résident · $75/été' },
               { label: "Payé aujourd'hui", value: hasSeasonPass ? '$0 (déjà payé)' : `$${price}` },
             ].map(r => (
               <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.625rem', marginBottom: '0.625rem', borderBottom: '1px solid #e2e8f0' }}>
@@ -211,7 +211,7 @@ export default function BookCourt() {
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 700 }}>Passe saisonnier actif</span>
               <span style={{ color: '#bbf7d0', marginLeft: '0.5rem', fontSize: '0.9rem' }}>
-                {passType === 'resident' ? 'Résident · $30 payé' : 'Non-résident · $50 payé'} — Réservations gratuites jusqu'à la fin de l'été
+                {passType === 'resident' ? 'Résident · $75 payé' : 'Non-résident · $75 payé'} — Réservations gratuites jusqu'à la fin de l'été
               </span>
             </div>
             <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', padding: '0.25rem 0.75rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700 }}>ÉTÉ 2026</span>
@@ -220,7 +220,7 @@ export default function BookCourt() {
           <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: '0.875rem', padding: '0.875rem 1.25rem', marginBottom: '1.25rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
             <Star size={18} color="#b45309" style={{ flexShrink: 0, marginTop: 2 }} />
             <p style={{ fontSize: '0.9rem', color: '#78350f', lineHeight: 1.6 }}>
-              <strong>Passe saisonnier requis.</strong> Payé une seule fois ($30 résident ou $50 non-résident), valide pour tout l'été.
+              <strong>Passe saisonnier requis.</strong> Payé une seule fois ($50 résident ou $75 non-résident), valide pour tout l'été.
             </p>
           </div>
         )}
@@ -434,7 +434,7 @@ export default function BookCourt() {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Passe saisonnier actif ✓</div>
                     <div style={{ color: '#bbf7d0', fontSize: '0.875rem' }}>
-                      {passType === 'resident' ? 'Résident · $30 payé' : 'Non-résident · $50 payé'} — Valide tout l'été
+                      {passType === 'resident' ? 'Résident · $75 payé' : 'Non-résident · $75 payé'} — Valide tout l'été
                     </div>
                   </div>
                   <div style={{ fontWeight: 900, fontSize: '1.5rem', color: '#4ade80' }}>$0</div>
@@ -467,7 +467,7 @@ export default function BookCourt() {
                     // No address on file — free choice
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       {[
-                        { value: 'resident', label: '🏠 Résident', price: '$30', desc: 'Résidents de Donnacona' },
+                        { value: 'resident', label: '🏠 Résident', price: '$50', desc: 'Résidents de Donnacona' },
                         { value: 'nonResident', label: '🌍 Non-résident', price: '$50', desc: 'Ouvert à tous' },
                       ].map(opt => (
                         <button key={opt.value} onClick={() => setIsResident(opt.value)}
