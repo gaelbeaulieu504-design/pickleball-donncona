@@ -99,7 +99,7 @@ export default function BookCourt() {
       date: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }),
       time_slot: slotLabel(selectedStart, selectedDuration),
       duration: `${selectedDuration} heure${selectedDuration > 1 ? 's' : ''}`,
-      pass_type: effectiveType === 'resident' ? 'Résident ($75)' : 'Non-résident ($75)',
+      pass_type: effectiveType === 'resident' ? 'Résident ($50)' : 'Non-résident ($75)',
       amount_paid: hasSeasonPass ? '$0 (passe déjà actif)' : `$${price}`,
       week_hours: `${weekHours + selectedDuration}h / ${WEEKLY_HOUR_LIMIT}h`,
     })
@@ -468,7 +468,7 @@ export default function BookCourt() {
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       {[
                         { value: 'resident', label: '🏠 Résident', price: '$50', desc: 'Résidents de Donnacona' },
-                        { value: 'nonResident', label: '🌍 Non-résident', price: '$50', desc: 'Ouvert à tous' },
+                        { value: 'nonResident', label: '🌍 Non-résident', price: '$75', desc: 'Ouvert à tous' },
                       ].map(opt => (
                         <button key={opt.value} onClick={() => setIsResident(opt.value)}
                           style={{ flex: '1 1 170px', padding: '1rem 1.125rem', borderRadius: '0.875rem', border: isResident === opt.value ? '2px solid #166534' : '2px solid #e2e8f0', background: isResident === opt.value ? '#f0fdf4' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
