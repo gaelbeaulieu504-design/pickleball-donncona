@@ -442,26 +442,29 @@ export default function BookCourt() {
               ) : (
                 <div style={{ marginBottom: '1.5rem' }}>
                   <label style={{ fontWeight: 700, color: '#0f172a', display: 'block', marginBottom: '0.875rem' }}>
-                    Type de passe saisonnier
-                    {residentLocked && <span style={{ marginLeft: '0.5rem', fontSize: '0.8rem', color: '#166534', fontWeight: 600 }}>— détecté via votre adresse</span>}
+                    Passe saisonnier
+                    {residentLocked && <span style={{ marginLeft: '0.5rem', fontSize: '0.8rem', color: '#166534', fontWeight: 600 }}>— déterminé par votre adresse</span>}
                     {!residentLocked && <span style={{ color: '#dc2626' }}> *</span>}
                   </label>
 
                   {residentLocked ? (
-                    // Locked: residency detected from address
-                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                      <div style={{ flex: '1 1 170px', padding: '1rem 1.125rem', borderRadius: '0.875rem', border: '2px solid #166534', background: '#f0fdf4', textAlign: 'left' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.25rem' }}>
-                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{isResident === 'resident' ? '🏠 Résident' : '🌍 Non-résident'}</span>
-                          <span style={{ fontWeight: 900, fontSize: '1.25rem', color: '#166534' }}>{isResident === 'resident' ? '$30' : '$50'}</span>
+                    // Only one option visible based on address
+                    <div style={{ padding: '1.25rem 1.5rem', borderRadius: '0.875rem', border: '2px solid #166534', background: '#f0fdf4', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', marginBottom: '0.25rem' }}>
+                          {isResident === 'resident' ? '🏠 Résident de Donnacona' : '🌍 Non-résident'}
                         </div>
                         <div style={{ fontSize: '0.825rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                          <CheckCircle size={13} /> {isResident === 'resident' ? 'Adresse à Donnacona confirmée' : 'Adresse hors Donnacona'}
+                          <CheckCircle size={13} />
+                          {isResident === 'resident' ? 'Adresse à Donnacona — tarif réduit' : 'Adresse hors Donnacona'}
                         </div>
+                      </div>
+                      <div style={{ fontWeight: 900, fontSize: '2rem', color: '#166534' }}>
+                        ${isResident === 'resident' ? '30' : '50'}
                       </div>
                     </div>
                   ) : (
-                    // Free choice
+                    // No address on file — free choice
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       {[
                         { value: 'resident', label: '🏠 Résident', price: '$30', desc: 'Résidents de Donnacona' },
