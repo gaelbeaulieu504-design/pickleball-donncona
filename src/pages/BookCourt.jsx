@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { COURTS, START_TIMES, DURATIONS, WEEKLY_HOUR_LIMIT, PRICING, slotLabel } from '../data/courts'
 import PaymentStep from '../components/PaymentStep'
+import { sendBookingConfirmation } from '../utils/sendEmail'
 
 const STEPS = ['Date', 'Terrain & Heure', 'Détails', 'Paiement']
 
@@ -75,7 +76,7 @@ export default function BookCourt() {
     return validStarts.filter(s => isSlotAvailable(courtId, ds, s, selectedDuration)).length
   }
 
-  function handlePaymentSuccess(paymentInfo) {
+  async function handlePaymentSuccess(paymentInfo) {
     if (!user || !selectedDate || !selectedCourt || !selectedStart || !selectedDuration) return
     if (!hasSeasonPass) paySeasonPass(isResident)
     addBooking({
@@ -89,6 +90,18 @@ export default function BookCourt() {
       isResident: effectiveType === 'resident',
       price: hasSeasonPass ? 0 : price,
       paymentInfo,
+    })
+    // Send confirmation email
+    await sendBookingConfirmation({
+      to_name: user.name,
+      to_email: user.email,
+      court: `Terrain ${selectedCourt}`,
+      date: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }),
+      time_slot: slotLabel(selectedStart, selectedDuration),
+      duration: `${selectedDuration} heure${selectedDuration > 1 ? 's' : ''}`,
+      pass_type: effectiveType === 'resident' ? 'Résident ($30)' : 'Non-résident ($50)',
+      amount_paid: hasSeasonPass ? '$0 (passe déjà actif)' : `$${price}`,
+      week_hours: `${weekHours + selectedDuration}h / ${WEEKLY_HOUR_LIMIT}h`,
     })
     setSubmitted(true)
   }
@@ -128,7 +141,11 @@ export default function BookCourt() {
           </div>
           <h2 style={{ fontSize: '1.875rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Réservation confirmée !</h2>
           <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: 1.7 }}>
-            Votre terrain a été réservé. Une confirmation a été envoyée à <strong>{user.email}</strong>.
+            Votre terrain a été réservé avec succès !{' '}
+            {import.meta.env.VITE_EMAILJS_SERVICE_ID && import.meta.env.VITE_EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID'
+              ? <>Une confirmation a été envoyée à <strong>{user.email}</strong>.</>
+              : <>Connectez-vous à votre compte pour voir vos réservations.</>
+            }
           </p>
           {!hasSeasonPass && (
             <div style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', borderRadius: '0.875rem', padding: '1rem 1.25rem', marginBottom: '1.25rem', textAlign: 'left', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
