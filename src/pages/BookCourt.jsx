@@ -142,9 +142,9 @@ export default function BookCourt() {
           <h2 style={{ fontSize: '1.875rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Réservation confirmée !</h2>
           <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: 1.7 }}>
             Votre terrain a été réservé avec succès !{' '}
-            {import.meta.env.VITE_EMAILJS_SERVICE_ID && import.meta.env.VITE_EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID'
+            {import.meta.env.VITE_WEB3FORMS_KEY && import.meta.env.VITE_WEB3FORMS_KEY !== 'YOUR_WEB3FORMS_KEY'
               ? <>Une confirmation a été envoyée à <strong>{user.email}</strong>.</>
-              : <>Connectez-vous à votre compte pour voir vos réservations.</>
+              : <>Connectez-vous à votre compte pour consulter vos réservations.</>
             }
           </p>
           {!hasSeasonPass && (
