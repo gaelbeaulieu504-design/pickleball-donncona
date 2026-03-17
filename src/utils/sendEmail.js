@@ -1,51 +1,24 @@
-const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
-const configured = ACCESS_KEY && ACCESS_KEY !== 'YOUR_WEB3FORMS_KEY'
+import emailjs from '@emailjs/browser'
 
-/**
- * Send a booking confirmation email via Web3Forms (free, no template needed).
- * Setup: go to https://web3forms.com, enter your email, get a key in 30 seconds.
- */
+const SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+const configured =
+  SERVICE_ID  && SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
+  TEMPLATE_ID && TEMPLATE_ID !== 'YOUR_TEMPLATE_ID' &&
+  PUBLIC_KEY  && PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY'
+
 export async function sendBookingConfirmation(params) {
   if (!configured) {
-    console.warn('[Web3Forms] Non configuré — email non envoyé pour:', params.to_email)
+    console.warn('[EmailJS] Non configuré — email non envoyé pour:', params.to_email)
     return { success: false, notConfigured: true }
   }
-
-  const body = `
-Bonjour ${params.to_name},
-
-Votre réservation de terrain de pickleball est confirmée !
-
-📍 Terrain : ${params.court}
-📅 Date    : ${params.date}
-⏰ Heure   : ${params.time_slot}
-⏱ Durée   : ${params.duration}
-🎫 Passe   : ${params.pass_type}
-💳 Payé    : ${params.amount_paid}
-📊 Quota   : ${params.week_hours} cette semaine
-
-Merci et bonne partie !
-— Pickleball Donnacona
-  `.trim()
-
   try {
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        access_key: ACCESS_KEY,
-        subject: `✅ Réservation confirmée — ${params.court} le ${params.date}`,
-        from_name: 'Pickleball Donnacona',
-        email: params.to_email,
-        message: body,
-        replyto: params.to_email,
-      }),
-    })
-    const data = await res.json()
-    if (data.success) return { success: true }
-    return { success: false, error: data.message }
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, params, PUBLIC_KEY)
+    return { success: true }
   } catch (err) {
-    console.error('[Web3Forms] Erreur:', err)
+    console.error('[EmailJS] Erreur:', err)
     return { success: false, error: err }
   }
 }
