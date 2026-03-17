@@ -101,7 +101,7 @@ export default function Home() {
             {[
               { value: '4', label: 'Terrains extérieurs' },
               { value: '$50', label: 'Tarif résident' },
-              { value: '$50', label: 'Tarif non-résident' },
+              { value: '$75', label: 'Tarif non-résident' },
               { value: '6h–22h', label: 'Heures d\'ouverture' },
             ].map(s => (
               <div key={s.label}>
@@ -277,7 +277,7 @@ export default function Home() {
                 marginBottom: '1rem',
                 letterSpacing: '0.06em',
               }}>NON-RESIDENT</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$50</div>
+              <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$75</div>
               <div style={{ color: '#64748b', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
               {['Réservation de 2 heures', 'Réservation en ligne', 'Ouvert à tous les visiteurs'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
