@@ -10,6 +10,8 @@ const ADMIN_ACCOUNT = {
   isAdmin: true,
   seasonPassPaid: true,
   seasonPassType: 'resident',
+  address: '',
+  isResident: true,
 }
 
 function seedAdmin() {
@@ -40,6 +42,10 @@ export function AuthProvider({ children }) {
     localStorage.setItem('pb_users', JSON.stringify(users))
   }
 
+  function getAllUsers() {
+    return getUsers().filter(u => !u.isAdmin)
+  }
+
   function refreshUser(userId) {
     const users = getUsers()
     const found = users.find(u => u.id === userId)
@@ -49,7 +55,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('pb_current_user', JSON.stringify(safeUser))
   }
 
-  function register({ name, email, password }) {
+  function register({ name, email, password, address, isResident }) {
     const users = getUsers()
     const emailNorm = email.trim().toLowerCase()
     if (users.find(u => u.email.trim().toLowerCase() === emailNorm)) {
@@ -60,6 +66,8 @@ export function AuthProvider({ children }) {
       name: name.trim(),
       email: emailNorm,
       password: password.trim(),
+      address: address || '',
+      isResident: isResident ?? null,
       seasonPassPaid: false,
       seasonPassType: null,
     }
@@ -89,7 +97,6 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('pb_current_user')
   }
 
-  // Mark seasonal pass as paid for current user
   function paySeasonPass(passType) {
     if (!user) return
     const users = getUsers()
@@ -102,7 +109,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass }}>
+    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers }}>
       {children}
     </AuthContext.Provider>
   )

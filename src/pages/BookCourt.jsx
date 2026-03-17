@@ -23,7 +23,16 @@ export default function BookCourt() {
   const [selectedCourt, setSelectedCourt] = useState(null)
   const [selectedDuration, setSelectedDuration] = useState(null)
   const [selectedStart, setSelectedStart] = useState(null)
-  const [isResident, setIsResident] = useState(user?.seasonPassPaid ? user.seasonPassType : null)
+  // Pre-select residency: from pass type if already paid, else from profile address detection
+  const profileResidency = user?.seasonPassPaid
+    ? user.seasonPassType
+    : user?.isResident === true
+      ? 'resident'
+      : user?.isResident === false
+        ? 'nonResident'
+        : null
+  const [isResident, setIsResident] = useState(profileResidency)
+  const residentLocked = !user?.seasonPassPaid && user?.isResident !== null && user?.isResident !== undefined
   const [submitted, setSubmitted] = useState(false)
 
   const daysInMonth = useMemo(() =>
@@ -416,23 +425,42 @@ export default function BookCourt() {
               ) : (
                 <div style={{ marginBottom: '1.5rem' }}>
                   <label style={{ fontWeight: 700, color: '#0f172a', display: 'block', marginBottom: '0.875rem' }}>
-                    Choisir votre type de passe saisonnier <span style={{ color: '#dc2626' }}>*</span>
+                    Type de passe saisonnier
+                    {residentLocked && <span style={{ marginLeft: '0.5rem', fontSize: '0.8rem', color: '#166534', fontWeight: 600 }}>— détecté via votre adresse</span>}
+                    {!residentLocked && <span style={{ color: '#dc2626' }}> *</span>}
                   </label>
-                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    {[
-                      { value: 'resident', label: '🏠 Résident', price: '$30', desc: 'Résidents de Donnacona' },
-                      { value: 'nonResident', label: '🌍 Non-résident', price: '$50', desc: 'Ouvert à tous' },
-                    ].map(opt => (
-                      <button key={opt.value} onClick={() => setIsResident(opt.value)}
-                        style={{ flex: '1 1 170px', padding: '1rem 1.125rem', borderRadius: '0.875rem', border: isResident === opt.value ? '2px solid #166534' : '2px solid #e2e8f0', background: isResident === opt.value ? '#f0fdf4' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
+
+                  {residentLocked ? (
+                    // Locked: residency detected from address
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      <div style={{ flex: '1 1 170px', padding: '1rem 1.125rem', borderRadius: '0.875rem', border: '2px solid #166534', background: '#f0fdf4', textAlign: 'left' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.25rem' }}>
-                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{opt.label}</span>
-                          <span style={{ fontWeight: 900, fontSize: '1.25rem', color: '#166534' }}>{opt.price}</span>
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{isResident === 'resident' ? '🏠 Résident' : '🌍 Non-résident'}</span>
+                          <span style={{ fontWeight: 900, fontSize: '1.25rem', color: '#166534' }}>{isResident === 'resident' ? '$30' : '$50'}</span>
                         </div>
-                        <div style={{ fontSize: '0.825rem', color: '#64748b' }}>{opt.desc}</div>
-                      </button>
-                    ))}
-                  </div>
+                        <div style={{ fontSize: '0.825rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                          <CheckCircle size={13} /> {isResident === 'resident' ? 'Adresse à Donnacona confirmée' : 'Adresse hors Donnacona'}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Free choice
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      {[
+                        { value: 'resident', label: '🏠 Résident', price: '$30', desc: 'Résidents de Donnacona' },
+                        { value: 'nonResident', label: '🌍 Non-résident', price: '$50', desc: 'Ouvert à tous' },
+                      ].map(opt => (
+                        <button key={opt.value} onClick={() => setIsResident(opt.value)}
+                          style={{ flex: '1 1 170px', padding: '1rem 1.125rem', borderRadius: '0.875rem', border: isResident === opt.value ? '2px solid #166534' : '2px solid #e2e8f0', background: isResident === opt.value ? '#f0fdf4' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.25rem' }}>
+                            <span style={{ fontWeight: 700, color: '#0f172a' }}>{opt.label}</span>
+                            <span style={{ fontWeight: 900, fontSize: '1.25rem', color: '#166534' }}>{opt.price}</span>
+                          </div>
+                          <div style={{ fontSize: '0.825rem', color: '#64748b' }}>{opt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   {isResident && (
                     <div style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', borderRadius: '0.875rem', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>

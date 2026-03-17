@@ -76,6 +76,19 @@ export default function Navbar() {
               {link.label}
             </NavLink>
           ))}
+          {user?.isAdmin && (
+            <NavLink to="/admin"
+              style={({ isActive }) => ({
+                padding: '0.5rem 0.875rem', borderRadius: '0.5rem',
+                fontWeight: 700, fontSize: '0.9375rem',
+                color: isActive ? '#fff' : '#dc2626',
+                background: isActive ? '#dc2626' : 'rgba(220,38,38,0.08)',
+                display: 'flex', alignItems: 'center', gap: '0.375rem',
+                transition: 'all 0.15s',
+              })}>
+              <ShieldCheck size={15} /> Admin
+            </NavLink>
+          )}
 
           {user ? (
             <div style={{ position: 'relative', marginLeft: '0.5rem' }}>
@@ -160,6 +173,19 @@ export default function Navbar() {
               {link.label}
             </NavLink>
           ))}
+          {user?.isAdmin && (
+            <NavLink to="/admin" onClick={() => setOpen(false)}
+              style={({ isActive }) => ({
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                padding: '0.875rem 1rem', borderRadius: '0.5rem',
+                fontWeight: 700, fontSize: '1rem',
+                color: isActive ? '#fff' : '#dc2626',
+                background: isActive ? '#dc2626' : 'rgba(220,38,38,0.08)',
+                marginBottom: '0.25rem',
+              })}>
+              <ShieldCheck size={16} /> Admin
+            </NavLink>
+          )}
           {user ? (
             <>
               <div style={{ padding: '0.875rem 1rem', background: user.isAdmin ? '#fef2f2' : '#f8fafc', borderRadius: '0.5rem', marginBottom: '0.5rem', border: user.isAdmin ? '1px solid #fecaca' : 'none' }}>
