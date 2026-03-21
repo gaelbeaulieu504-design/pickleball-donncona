@@ -22,3 +22,29 @@ export async function sendBookingConfirmation(params) {
     return { success: false, error: err }
   }
 }
+
+export async function sendBroadcast({ to_name, to_email, subject, message }) {
+  if (!configured) {
+    console.warn('[EmailJS] Non configuré — broadcast non envoyé pour:', to_email)
+    return { success: false, notConfigured: true }
+  }
+  try {
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      to_name,
+      to_email,
+      subject,
+      message,
+      court: '',
+      date: '',
+      time_slot: '',
+      duration: '',
+      pass_type: '',
+      amount_paid: '',
+      week_hours: '',
+    }, PUBLIC_KEY)
+    return { success: true }
+  } catch (err) {
+    console.error('[EmailJS] Erreur broadcast:', err)
+    return { success: false, error: err }
+  }
+}
