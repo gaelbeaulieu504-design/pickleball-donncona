@@ -281,8 +281,6 @@ export default function Home() {
               { icon: '🅿️', title: 'Stationnement gratuit', desc: 'Accès facile au stationnement directement sur place.' },
               { icon: '🤝', title: 'Communauté accueillante', desc: 'Un environnement convivial pour tous les niveaux.' },
               { icon: '📱', title: 'Réservation facile', desc: "Réservez en ligne 24h/7j depuis n'importe quel appareil." },
-              { icon: '⚡', title: 'Confirmation instantanée', desc: 'Recevez votre confirmation par courriel immédiatement.' },
-              { icon: '🌿', title: 'Cadre agréable', desc: 'Situé au cœur de la communauté de Donnacona.' },
             ].map(f => (
               <div key={f.title} style={{ background: '#fff', borderRadius: '1rem', padding: '1.75rem', border: '1px solid #e2e8f0', display: 'flex', gap: '1rem', alignItems: 'flex-start', transition: 'box-shadow 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
