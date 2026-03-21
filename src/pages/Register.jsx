@@ -32,28 +32,26 @@ export default function Register() {
   const isResident = form.city ? detectResidency(form.city) : null
   const fullAddress = [form.streetAddress, form.city, form.province, form.postalCode].filter(Boolean).join(', ')
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     if (form.password.length < 6) { setError('Le mot de passe doit comporter au moins 6 caractères.'); return }
     if (form.password !== form.confirm) { setError('Les mots de passe ne correspondent pas.'); return }
     setLoading(true)
-    setTimeout(() => {
-      const result = register({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        password: form.password,
-        address: fullAddress,
-        streetAddress: form.streetAddress,
-        city: form.city,
-        province: form.province,
-        postalCode: form.postalCode,
-        isResident: form.city ? isResident : null,
-      })
-      if (result.error) { setError(result.error); setLoading(false) }
-      else navigate('/book')
-    }, 500)
+    const result = await register({
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      password: form.password,
+      address: fullAddress,
+      streetAddress: form.streetAddress,
+      city: form.city,
+      province: form.province,
+      postalCode: form.postalCode,
+      isResident: form.city ? isResident : null,
+    })
+    if (result.error) { setError(result.error); setLoading(false) }
+    else navigate('/book')
   }
 
   const inputStyle = {

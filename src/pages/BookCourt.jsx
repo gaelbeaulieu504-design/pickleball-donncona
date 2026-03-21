@@ -496,7 +496,12 @@ export default function BookCourt() {
                 </div>
               )}
 
-              <div style={{ marginTop: '1.75rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+              {!hasSeasonPass && !isResident && (
+                <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '0.75rem', padding: '0.75rem 1rem', color: '#92400e', fontSize: '0.875rem', marginTop: '1rem' }}>
+                  ⬆️ Veuillez choisir votre type de passe (Résident ou Non-résident) ci-dessus pour continuer.
+                </div>
+              )}
+              <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <button className="btn-secondary" onClick={() => setStep(1)}><ChevronLeft size={18} />Retour</button>
                 {hasSeasonPass ? (
                   <button className="btn-primary" onClick={() => { handlePaymentSuccess({ status: 'PASS_ACTIVE' }) }}>

@@ -11,19 +11,17 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setLoading(true)
-    setTimeout(() => {
-      const result = login(form)
-      if (result.error) {
-        setError(result.error)
-        setLoading(false)
-      } else {
-        navigate('/book')
-      }
-    }, 500)
+    const result = await login(form)
+    if (result.error) {
+      setError(result.error)
+      setLoading(false)
+    } else {
+      navigate('/book')
+    }
   }
 
   return (
