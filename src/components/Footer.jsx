@@ -84,10 +84,10 @@ export default function Footer() {
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                 <Mail size={16} style={{ flexShrink: 0, color: '#A8D5E8' }} />
-                <a href="mailto:info@pickleballdonnacona.ca" style={{ transition: 'color 0.2s' }}
+                <a href="mailto:pickleballdonnacona@gmail.com" style={{ transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#A8D5E8'}
                   onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                >info@pickleballdonnacona.ca</a>
+                >pickleballdonnacona@gmail.com</a>
               </li>
             </ul>
           </div>

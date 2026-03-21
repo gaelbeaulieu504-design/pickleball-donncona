@@ -54,8 +54,8 @@ export default function Contact() {
               {
                 icon: <Mail size={20} color="#166534" />,
                 title: 'Email',
-                lines: ['info@pickleballdonnacona.ca'],
-                href: 'mailto:info@pickleballdonnacona.ca',
+                lines: ['pickleballdonnacona@gmail.com'],
+                href: 'mailto:pickleballdonnacona@gmail.com',
               },
               {
                 icon: <Clock size={20} color="#166534" />,
