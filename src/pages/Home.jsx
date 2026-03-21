@@ -277,10 +277,6 @@ export default function Home() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem' }}>
             {[
-              { icon: '🎯', title: '4 terrains extérieurs', desc: 'Terrains extérieurs de qualité professionnelle avec éclairage.' },
-              { icon: '🅿️', title: 'Stationnement gratuit', desc: 'Accès facile au stationnement directement sur place.' },
-              { icon: '🤝', title: 'Communauté accueillante', desc: 'Un environnement convivial pour tous les niveaux.' },
-              { icon: '📱', title: 'Réservation facile', desc: "Réservez en ligne 24h/7j depuis n'importe quel appareil." },
             ].map(f => (
               <div key={f.title} style={{ background: '#fff', borderRadius: '1rem', padding: '1.75rem', border: '1px solid #e2e8f0', display: 'flex', gap: '1rem', alignItems: 'flex-start', transition: 'box-shadow 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
