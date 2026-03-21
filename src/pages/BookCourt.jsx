@@ -460,7 +460,7 @@ export default function BookCourt() {
                         </div>
                       </div>
                       <div style={{ fontWeight: 900, fontSize: '2rem', color: '#166534' }}>
-                        ${isResident === 'resident' ? '30' : '50'}
+                        ${isResident === 'resident' ? '50' : '75'}
                       </div>
                     </div>
                   ) : (
