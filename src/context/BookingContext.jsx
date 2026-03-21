@@ -94,8 +94,11 @@ export function BookingProvider({ children }) {
     return getBookings().filter(b => b.userId === userId)
   }
 
+  const bookings = getBookings()
+
   return (
     <BookingContext.Provider value={{
+      bookings,
       getBookings,
       isSlotAvailable,
       isConsecutiveBlocked,
