@@ -2,7 +2,7 @@
   {
     "id": "admin",
     "name": "Administrateur",
-    "email": "admin@pickleball-donnacona.ca",
+    "email": "pickleballdonnacona@gmail.com",
     "password": "Admin2026!",
     "isAdmin": true,
     "seasonPassPaid": true,
@@ -21,15 +21,4 @@
     "seasonPassType": null,
     "isAdmin": false
   },
-  {
-    "id": "1774113198343",
-    "name": "Simon Beaulieu",
-    "email": "pickleballdonnacona@gmail.com",
-    "password": "Sienna1213",
-    "address": "221 rue belleau, Donnacona , Québec, G3M 0A7",
-    "isResident": true,
-    "seasonPassPaid": false,
-    "seasonPassType": null,
-    "isAdmin": false
-  }
 ]
