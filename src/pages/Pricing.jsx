@@ -168,7 +168,7 @@ export default function Pricing() {
               { q: 'Quelle est la durée de chaque réservation ?', a: 'Chaque réservation est de 2 heures. Un utilisateur ne peut pas réserver deux créneaux consécutifs le même jour.' },
               { q: 'Combien d\'heures puis-je réserver par semaine ?', a: 'Chaque utilisateur a un maximum de 6 heures par semaine (soit 3 sessions de 2 heures).' },
               { q: 'Puis-je annuler ou reporter ma réservation ?', a: 'Oui, les annulations et reports sont acceptés jusqu\'à 24 heures avant votre session. Contactez-nous par téléphone ou courriel.' },
-              { q: 'De l\'équipement est-il fourni ?', a: 'Des palettes et des balles sont disponibles en location sur place. Nous recommandons d\'apporter votre propre palette.' },
+              { q: 'De l\'équipement est-il fourni ?', a: 'Les palettes et les balles ne sont pas fournies. Veuillez apporter votre propre équipement.' },
               { q: 'Combien de joueurs par terrain ?', a: 'Jusqu\'à 4 joueurs par terrain en double, ou 2 en simple. La réservation couvre l\'ensemble du terrain.' },
               { q: 'L\'installation est-elle accessible ?', a: 'Oui, l\'installation est accessible aux personnes en fauteuil roulant avec des espaces de stationnement adaptés.' },
             ].map(item => (
