@@ -9,13 +9,24 @@ const configured =
   TEMPLATE_ID && TEMPLATE_ID !== 'YOUR_TEMPLATE_ID' &&
   PUBLIC_KEY  && PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY'
 
+const ADMIN_EMAIL = 'pickleballdonnacona@gmail.com'
+
 export async function sendBookingConfirmation(params) {
   if (!configured) {
     console.warn('[EmailJS] Non configuré — email non envoyé pour:', params.to_email)
     return { success: false, notConfigured: true }
   }
   try {
+    // 1. Confirmation au membre
     await emailjs.send(SERVICE_ID, TEMPLATE_ID, params, PUBLIC_KEY)
+
+    // 2. Copie à l'administrateur
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      ...params,
+      to_name: 'Administrateur Pickleball Donnacona',
+      to_email: ADMIN_EMAIL,
+    }, PUBLIC_KEY)
+
     return { success: true }
   } catch (err) {
     console.error('[EmailJS] Erreur:', err)
