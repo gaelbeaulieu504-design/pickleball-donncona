@@ -159,26 +159,6 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Residency note */}
-        <div style={{
-          background: '#fefce8',
-          border: '1px solid #fde68a',
-          borderRadius: '1rem',
-          padding: '1.5rem',
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'flex-start',
-          maxWidth: 780,
-          margin: '0 auto 3.5rem',
-        }}>
-          <AlertCircle size={22} color="#b45309" style={{ flexShrink: 0, marginTop: 2 }} />
-          <div>
-            <div style={{ fontWeight: 700, color: '#92400e', marginBottom: '0.375rem' }}>Preuve de résidence</div>
-            <p style={{ color: '#78350f', fontSize: '0.9375rem', lineHeight: 1.7 }}>
-              Pour bénéficier du tarif résident, vous devez présenter une preuve de résidence valide à Donnacona. Les documents acceptés incluent : une pièce d'identité gouvernementale avec adresse à Donnacona, une facture de services publics récente ou un document municipal officiel. Sans preuve, le tarif non-résident s'applique.
-            </p>
-          </div>
-        </div>
 
         {/* FAQ */}
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
