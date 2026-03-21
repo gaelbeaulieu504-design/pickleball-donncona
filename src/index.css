@@ -5,12 +5,17 @@
 }
 
 :root {
-  --primary: #166534;
-  --primary-dark: #14532d;
-  --primary-light: #22c55e;
-  --accent: #1d4ed8;
-  --accent-hover: #1e40af;
-  --yellow: #ca8a04;
+  --primary: #1B4E8B;
+  --primary-dark: #143A6B;
+  --primary-light: #4A90D9;
+  --primary-faint: #EBF3FB;
+  --green: #2E7D32;
+  --green-dark: #1B5E20;
+  --green-light: #5CB85C;
+  --green-faint: #F0F9F0;
+  --accent: #2E7D32;
+  --accent-hover: #1B5E20;
+  --light-blue: #A8D5E8;
   --white: #ffffff;
   --gray-50: #f8fafc;
   --gray-100: #f1f5f9;
@@ -75,14 +80,14 @@ button {
   font-size: 1rem;
   font-weight: 700;
   transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-  box-shadow: 0 4px 14px rgba(22, 101, 52, 0.3);
+  box-shadow: 0 4px 14px rgba(27, 78, 139, 0.3);
   border: none;
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(22, 101, 52, 0.4);
+  box-shadow: 0 6px 20px rgba(27, 78, 139, 0.4);
 }
 
 .btn-primary:active {
@@ -114,7 +119,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--accent);
+  background: var(--green);
   color: var(--white);
   padding: 0.875rem 2rem;
   border-radius: 0.75rem;
@@ -122,17 +127,17 @@ button {
   font-weight: 700;
   border: none;
   transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.3);
+  box-shadow: 0 4px 14px rgba(46, 125, 50, 0.3);
 }
 
 .btn-accent:hover {
-  background: var(--accent-hover);
+  background: var(--green-dark);
   transform: translateY(-1px);
 }
 
 .section-tag {
   display: inline-block;
-  background: rgba(22, 101, 52, 0.1);
+  background: rgba(27, 78, 139, 0.1);
   color: var(--primary);
   font-size: 0.75rem;
   font-weight: 700;

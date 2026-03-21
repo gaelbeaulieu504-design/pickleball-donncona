@@ -54,8 +54,8 @@ export default function Navbar() {
               style={({ isActive }) => ({
                 padding: '0.5rem 0.875rem', borderRadius: '0.5rem',
                 fontWeight: 600, fontSize: '0.9375rem',
-                color: isActive ? '#166534' : '#475569',
-                background: isActive ? 'rgba(22,101,52,0.08)' : 'transparent',
+                color: isActive ? '#1B4E8B' : '#475569',
+                background: isActive ? 'rgba(27,78,139,0.08)' : 'transparent',
                 transition: 'all 0.15s',
               })}>
               {link.label}
@@ -84,10 +84,10 @@ export default function Navbar() {
                   background: user.isAdmin ? 'rgba(220,38,38,0.08)' : 'rgba(22,101,52,0.08)', border: 'none',
                   padding: '0.5rem 0.875rem', borderRadius: '0.625rem',
                   cursor: 'pointer', fontWeight: 600, fontSize: '0.9375rem',
-                  color: user.isAdmin ? '#dc2626' : '#166534',
+                  color: user.isAdmin ? '#dc2626' : '#1B4E8B',
                 }}
               >
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: user.isAdmin ? '#dc2626' : '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.875rem' }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: user.isAdmin ? '#dc2626' : '#1B4E8B', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.875rem' }}>
                   {user.isAdmin ? <ShieldCheck size={15} /> : user.name[0].toUpperCase()}
                 </div>
                 {user.name.split(' ')[0]}
@@ -151,7 +151,7 @@ export default function Navbar() {
               style={({ isActive }) => ({
                 display: 'block', padding: '0.875rem 1rem', borderRadius: '0.5rem',
                 fontWeight: 600, fontSize: '1rem',
-                color: isActive ? '#166534' : '#334155',
+                color: isActive ? '#1B4E8B' : '#334155',
                 background: isActive ? 'rgba(22,101,52,0.08)' : 'transparent',
                 marginBottom: '0.25rem',
               })}>
