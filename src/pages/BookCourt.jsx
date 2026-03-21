@@ -19,6 +19,7 @@ export default function BookCourt() {
   const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking } = useBookings()
 
   const [step, setStep] = useState(0)
+  function goToStep(n) { setStep(n); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 2, 1))
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedCourt, setSelectedCourt] = useState(null)
@@ -289,7 +290,7 @@ export default function BookCourt() {
                 </div>
               )}
               <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="btn-primary" disabled={!selectedDate || weekFull} onClick={() => setStep(1)}
+                <button className="btn-primary" disabled={!selectedDate || weekFull} onClick={() => goToStep(1)}
                   style={{ opacity: (!selectedDate || weekFull) ? 0.5 : 1, cursor: (!selectedDate || weekFull) ? 'not-allowed' : 'pointer' }}>
                   Suivant : Terrain & Heure <ChevronRight size={18} />
                 </button>
@@ -383,8 +384,8 @@ export default function BookCourt() {
               )}
 
               <div style={{ marginTop: '1.75rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <button className="btn-secondary" onClick={() => setStep(0)}><ChevronLeft size={18} />Retour</button>
-                <button className="btn-primary" disabled={!selectedCourt || !selectedStart} onClick={() => setStep(2)}
+                <button className="btn-secondary" onClick={() => goToStep(0)}><ChevronLeft size={18} />Retour</button>
+                <button className="btn-primary" disabled={!selectedCourt || !selectedStart} onClick={() => goToStep(2)}
                   style={{ opacity: (selectedCourt && selectedStart) ? 1 : 0.5, cursor: (selectedCourt && selectedStart) ? 'pointer' : 'not-allowed' }}>
                   Suivant : Détails <ChevronRight size={18} />
                 </button>
@@ -502,13 +503,13 @@ export default function BookCourt() {
                 </div>
               )}
               <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <button className="btn-secondary" onClick={() => setStep(1)}><ChevronLeft size={18} />Retour</button>
+                <button className="btn-secondary" onClick={() => goToStep(1)}><ChevronLeft size={18} />Retour</button>
                 {hasSeasonPass ? (
                   <button className="btn-primary" onClick={() => { handlePaymentSuccess({ status: 'PASS_ACTIVE' }) }}>
                     <CheckCircle size={18} /> Confirmer la réservation
                   </button>
                 ) : (
-                  <button className="btn-primary" disabled={!isResident} onClick={() => setStep(3)}
+                  <button className="btn-primary" disabled={!isResident} onClick={() => goToStep(3)}
                     style={{ opacity: isResident ? 1 : 0.5, cursor: isResident ? 'pointer' : 'not-allowed' }}>
                     <CreditCard size={18} /> Suivant : Paiement <ChevronRight size={18} />
                   </button>
@@ -523,7 +524,7 @@ export default function BookCourt() {
               amount={price}
               description={`Passe saisonnier pickleball ${effectiveType === 'resident' ? 'résident' : 'non-résident'} – Été 2026`}
               onSuccess={handlePaymentSuccess}
-              onBack={() => setStep(2)}
+              onBack={() => goToStep(2)}
             />
           )}
 
