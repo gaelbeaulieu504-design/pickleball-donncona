@@ -2,29 +2,7 @@ import { createContext, useContext, useState } from 'react'
 
 const AuthContext = createContext(null)
 
-const ADMIN_ACCOUNT = {
-  id: 'admin',
-  name: 'Administrateur',
-  email: 'admin@pickleball-donnacona.ca',
-  password: 'Admin2026!',
-  isAdmin: true,
-  seasonPassPaid: true,
-  seasonPassType: 'resident',
-  address: '',
-  isResident: true,
-}
-
-function seedAdmin() {
-  try {
-    const users = JSON.parse(localStorage.getItem('pb_users') || '[]')
-    if (!users.find(u => u.id === 'admin')) {
-      users.unshift(ADMIN_ACCOUNT)
-      localStorage.setItem('pb_users', JSON.stringify(users))
-    }
-  } catch {}
-}
-
-seedAdmin()
+const API = '/api'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -34,62 +12,46 @@ export function AuthProvider({ children }) {
     } catch { return null }
   })
 
-  function getUsers() {
-    try { return JSON.parse(localStorage.getItem('pb_users') || '[]') } catch { return [] }
-  }
-
-  function saveUsers(users) {
-    localStorage.setItem('pb_users', JSON.stringify(users))
+  function saveSession(u) {
+    setUser(u)
+    localStorage.setItem('pb_current_user', JSON.stringify(u))
   }
 
   function getAllUsers() {
-    return getUsers().filter(u => !u.isAdmin)
+    // utilisé par AdminPanel — retourne une promesse
+    return fetch(`${API}/users`).then(r => r.json()).then(users => users.filter(u => !u.isAdmin))
   }
 
-  function refreshUser(userId) {
-    const users = getUsers()
-    const found = users.find(u => u.id === userId)
-    if (!found) return
-    const { password: _, ...safeUser } = found
-    setUser(safeUser)
-    localStorage.setItem('pb_current_user', JSON.stringify(safeUser))
-  }
-
-  function register({ name, email, password, address, isResident }) {
-    const users = getUsers()
-    const emailNorm = email.trim().toLowerCase()
-    if (users.find(u => u.email.trim().toLowerCase() === emailNorm)) {
-      return { error: 'Un compte avec cet email existe déjà.' }
+  async function register({ name, email, password, address, isResident }) {
+    try {
+      const res = await fetch(`${API}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, address, isResident }),
+      })
+      const data = await res.json()
+      if (!res.ok) return { error: data.error }
+      saveSession(data.user)
+      return { success: true }
+    } catch {
+      return { error: 'Erreur de connexion au serveur.' }
     }
-    const newUser = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      email: emailNorm,
-      password: password.trim(),
-      address: address || '',
-      isResident: isResident ?? null,
-      seasonPassPaid: false,
-      seasonPassType: null,
-    }
-    saveUsers([...users, newUser])
-    const { password: _, ...safeUser } = newUser
-    setUser(safeUser)
-    localStorage.setItem('pb_current_user', JSON.stringify(safeUser))
-    return { success: true }
   }
 
-  function login({ email, password }) {
-    const users = getUsers()
-    const emailNorm = email.trim().toLowerCase()
-    const passwordTrim = password.trim()
-    const found = users.find(
-      u => u.email.trim().toLowerCase() === emailNorm && u.password === passwordTrim
-    )
-    if (!found) return { error: 'Email ou mot de passe incorrect.' }
-    const { password: _, ...safeUser } = found
-    setUser(safeUser)
-    localStorage.setItem('pb_current_user', JSON.stringify(safeUser))
-    return { success: true }
+  async function login({ email, password }) {
+    try {
+      const res = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      const data = await res.json()
+      if (!res.ok) return { error: data.error }
+      saveSession(data.user)
+      return { success: true }
+    } catch {
+      return { error: 'Erreur de connexion au serveur.' }
+    }
   }
 
   function logout() {
@@ -97,15 +59,17 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('pb_current_user')
   }
 
-  function paySeasonPass(passType) {
+  async function paySeasonPass(passType) {
     if (!user) return
-    const users = getUsers()
-    const idx = users.findIndex(u => u.id === user.id)
-    if (idx === -1) return
-    users[idx].seasonPassPaid = true
-    users[idx].seasonPassType = passType
-    saveUsers(users)
-    refreshUser(user.id)
+    try {
+      const res = await fetch(`${API}/season-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, passType }),
+      })
+      const data = await res.json()
+      if (res.ok) saveSession(data.user)
+    } catch {}
   }
 
   return (

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
@@ -10,6 +11,13 @@ export default function AdminPanel() {
   const { user, getAllUsers } = useAuth()
   const { bookings, getUserWeekHours } = useBookings()
   const navigate = useNavigate()
+  const [members, setMembers] = useState([])
+
+  useEffect(() => {
+    if (user?.isAdmin) {
+      getAllUsers().then(setMembers).catch(() => setMembers([]))
+    }
+  }, [user])
 
   if (!user?.isAdmin) {
     return (
@@ -23,8 +31,6 @@ export default function AdminPanel() {
       </div>
     )
   }
-
-  const members = getAllUsers()
   const paidMembers = members.filter(m => m.seasonPassPaid)
   const residentCount = paidMembers.filter(m => m.seasonPassType === 'resident').length
   const nonResidentCount = paidMembers.filter(m => m.seasonPassType === 'nonResident').length

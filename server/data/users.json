@@ -1,0 +1,13 @@
+[
+  {
+    "id": "admin",
+    "name": "Administrateur",
+    "email": "admin@pickleball-donnacona.ca",
+    "password": "Admin2026!",
+    "isAdmin": true,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "address": "",
+    "isResident": true
+  }
+]
