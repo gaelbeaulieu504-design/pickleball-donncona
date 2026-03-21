@@ -43,23 +43,8 @@ export default function Navbar() {
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '4.5rem' }}>
 
         {/* Logo */}
-        <NavLink to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-          <div style={{
-            width: 38, height: 38,
-            background: 'linear-gradient(135deg, #166534, #22c55e)',
-            borderRadius: '0.625rem',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
-              <path d="M3 12 Q8 6 12 12 Q16 18 21 12" stroke="white" strokeWidth="2" fill="none"/>
-              <path d="M12 3 Q18 8 12 12 Q6 16 12 21" stroke="white" strokeWidth="1.5" fill="none"/>
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0f172a', lineHeight: 1.1 }}>Pickleball</div>
-            <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600, letterSpacing: '0.05em' }}>DONNACONA</div>
-          </div>
+        <NavLink to="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/logo.png" alt="Pickleball Donnacona" style={{ height: 52, width: 'auto', objectFit: 'contain' }} />
         </NavLink>
 
         {/* Desktop nav */}
