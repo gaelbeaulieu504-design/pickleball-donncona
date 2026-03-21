@@ -77,10 +77,10 @@ export default function Footer() {
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                 <Phone size={16} style={{ flexShrink: 0, color: '#A8D5E8' }} />
-                <a href="tel:+14185551234" style={{ transition: 'color 0.2s' }}
+                <a href="tel:+14189710186" style={{ transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#A8D5E8'}
                   onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                >(418) 555-1234</a>
+                >418 971 0186</a>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                 <Mail size={16} style={{ flexShrink: 0, color: '#A8D5E8' }} />
