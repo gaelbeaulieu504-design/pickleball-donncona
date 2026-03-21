@@ -20,5 +20,16 @@
     "seasonPassPaid": false,
     "seasonPassType": null,
     "isAdmin": false
+  },
+  {
+    "id": "1774130211959",
+    "name": "Gael beaulieu",
+    "email": "gaelbeaulieu50@gmail.com",
+    "password": "Avion1213",
+    "address": "221 rue Belleau , Quebec, Québec, G3M 0A7",
+    "isResident": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
   }
 ]
