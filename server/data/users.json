@@ -9,5 +9,16 @@
     "seasonPassType": "resident",
     "address": "",
     "isResident": true
+  },
+  {
+    "id": "1774110319807",
+    "name": "gael beaulieu",
+    "email": "gaelbeaulieu504@gmail.com",
+    "password": "Avion1213",
+    "address": "221 rue belleau, donnacona, Québec, G3M0A7",
+    "isResident": true,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
   }
 ]
