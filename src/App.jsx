@@ -1,4 +1,6 @@
+import { Component } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import { AuthProvider } from './context/AuthContext'
 import { BookingProvider } from './context/BookingContext'
 import Navbar from './components/Navbar'
@@ -13,7 +15,18 @@ import Register from './pages/Register'
 import AdminPanel from './pages/AdminPanel'
 import ScrollToTop from './components/ScrollToTop'
 
-function App() {
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test'
+
+class AppErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { hasError: false } }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() {
+    if (this.state.hasError) return this.props.fallback
+    return this.props.children
+  }
+}
+
+function AppInner() {
   return (
     <AuthProvider>
       <BookingProvider>
@@ -36,6 +49,22 @@ function App() {
         </BrowserRouter>
       </BookingProvider>
     </AuthProvider>
+  )
+}
+
+function App() {
+  return (
+    <AppErrorBoundary fallback={<AppInner />}>
+      <PayPalScriptProvider options={{
+        'client-id': PAYPAL_CLIENT_ID,
+        currency: 'CAD',
+        components: 'buttons',
+        'enable-funding': 'card',
+        'disable-funding': 'paylater',
+      }}>
+        <AppInner />
+      </PayPalScriptProvider>
+    </AppErrorBoundary>
   )
 }
 
