@@ -1,8 +1,19 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
 import { CreditCard, Wallet, AlertCircle, ShieldCheck } from 'lucide-react'
 
 const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID
+
+class PayPalErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { hasError: false } }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() {
+    if (this.state.hasError) {
+      return <DemoPayment {...this.props.fallbackProps} />
+    }
+    return this.props.children
+  }
+}
 
 export default function PaymentStep({ amount, description, onSuccess, onBack }) {
   const isConfigured = CLIENT_ID && CLIENT_ID !== 'YOUR_PAYPAL_CLIENT_ID_HERE'
@@ -10,15 +21,17 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
     return <DemoPayment amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
   }
   return (
-    <PayPalScriptProvider options={{
-      'client-id': CLIENT_ID,
-      currency: 'CAD',
-      components: 'buttons',
-      'enable-funding': 'card',
-      'disable-funding': 'paylater',
-    }}>
-      <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
-    </PayPalScriptProvider>
+    <PayPalErrorBoundary fallbackProps={{ amount, description, onSuccess, onBack }}>
+      <PayPalScriptProvider options={{
+        'client-id': CLIENT_ID,
+        currency: 'CAD',
+        components: 'buttons',
+        'enable-funding': 'card',
+        'disable-funding': 'paylater',
+      }}>
+        <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
+      </PayPalScriptProvider>
+    </PayPalErrorBoundary>
   )
 }
 
@@ -26,8 +39,6 @@ function PaymentInner({ amount, description, onSuccess, onBack }) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer()
   const [payError, setPayError] = useState('')
   const [processing, setProcessing] = useState(false)
-
-  const isConfigured = CLIENT_ID && CLIENT_ID !== 'YOUR_PAYPAL_CLIENT_ID_HERE'
 
   function createOrder(data, actions) {
     return actions.order.create({
