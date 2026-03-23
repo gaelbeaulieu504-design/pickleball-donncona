@@ -12,6 +12,7 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import AdminPanel from './pages/AdminPanel'
+import ScrollToTop from './components/ScrollToTop'
 
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test'
 
@@ -27,6 +28,7 @@ function App() {
           'disable-funding': 'paylater',
         }}>
         <BrowserRouter>
+          <ScrollToTop />
           <Navbar />
           <main style={{ flex: 1 }}>
             <Routes>

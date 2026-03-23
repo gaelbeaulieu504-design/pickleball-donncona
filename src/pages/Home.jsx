@@ -63,7 +63,7 @@ export default function Home() {
           </h1>
 
           <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: '#A8D5E8', maxWidth: 560, lineHeight: 1.7, marginBottom: '2.5rem' }}>
-            Jouez sur les terrains de pickleball de Donnacona. 4 terrains extérieurs disponibles en ligne — résidents et visiteurs bienvenus.
+            Donnacona dispose de 6 terrains de pickleball, dont 4 sont réservables en ligne. Réservez votre terrain dès maintenant — résidents et visiteurs bienvenus.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '3rem' }}>
