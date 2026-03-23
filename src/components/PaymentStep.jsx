@@ -1,21 +1,53 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
-import { CreditCard, Wallet, AlertCircle, ShieldCheck } from 'lucide-react'
+import { CreditCard, Wallet, AlertCircle, ShieldCheck, RefreshCw } from 'lucide-react'
 
 const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID
 
+// Empêche PayPal de faire planter toute la page si ça crash
+class PayPalBoundary extends Component {
+  constructor(props) { super(props); this.state = { crashed: false } }
+  static getDerivedStateFromError() { return { crashed: true } }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <AlertCircle size={36} color="#dc2626" style={{ margin: '0 auto 1rem', display: 'block' }} />
+          <p style={{ color: '#dc2626', fontWeight: 700, marginBottom: '0.5rem' }}>Erreur de chargement PayPal</p>
+          <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+            Vérifiez votre connexion Internet et réessayez.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => window.location.reload()}
+              style={{ background: '#166534', color: '#fff', border: 'none', borderRadius: '0.625rem', padding: '0.625rem 1.5rem', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <RefreshCw size={16} /> Réessayer
+            </button>
+            <button type="button" onClick={this.props.onBack}
+              style={{ background: '#f1f5f9', color: '#334155', border: 'none', borderRadius: '0.625rem', padding: '0.625rem 1.5rem', cursor: 'pointer', fontWeight: 700 }}>
+              ← Retour
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 export default function PaymentStep({ amount, description, onSuccess, onBack }) {
   return (
-    <PayPalScriptProvider options={{
-      'client-id': CLIENT_ID,
-      currency: 'CAD',
-      intent: 'capture',
-      components: 'buttons',
-      'enable-funding': 'card',
-      'disable-funding': 'paylater,venmo',
-    }}>
-      <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
-    </PayPalScriptProvider>
+    <PayPalBoundary onBack={onBack}>
+      <PayPalScriptProvider options={{
+        'client-id': CLIENT_ID,
+        currency: 'CAD',
+        intent: 'capture',
+        components: 'buttons',
+        'enable-funding': 'card',
+        'disable-funding': 'paylater,venmo',
+      }}>
+        <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
+      </PayPalScriptProvider>
+    </PayPalBoundary>
   )
 }
 
@@ -71,7 +103,7 @@ function PaymentInner({ amount, description, onSuccess, onBack }) {
           <div style={{ fontSize: '0.8125rem', color: '#86efac', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total à payer</div>
           <div style={{ fontWeight: 900, fontSize: '2rem', lineHeight: 1.1 }}>${amount} CAD</div>
         </div>
-        <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>Réservation<br />Pickleball</div>
+        <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>Passe saisonnier<br />Été 2026</div>
       </div>
 
       {payError && (
@@ -88,11 +120,14 @@ function PaymentInner({ amount, description, onSuccess, onBack }) {
       )}
 
       {isRejected && (
-        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '1rem', marginBottom: '1.25rem', textAlign: 'center', color: '#dc2626' }}>
-          <AlertCircle size={20} style={{ margin: '0 auto 0.5rem', display: 'block' }} />
-          <strong>Impossible de charger PayPal.</strong><br />
-          <span style={{ fontSize: '0.875rem' }}>Vérifiez votre connexion Internet et réessayez.</span><br />
-          <button type="button" onClick={() => window.location.reload()} style={{ marginTop: '0.75rem', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1.25rem', cursor: 'pointer', fontWeight: 600 }}>Réessayer</button>
+        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.25rem', textAlign: 'center' }}>
+          <AlertCircle size={24} color="#dc2626" style={{ margin: '0 auto 0.5rem', display: 'block' }} />
+          <p style={{ color: '#dc2626', fontWeight: 700, marginBottom: '0.375rem' }}>Impossible de charger PayPal</p>
+          <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem' }}>Vérifiez votre connexion et réessayez.</p>
+          <button type="button" onClick={() => window.location.reload()}
+            style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1.25rem', cursor: 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <RefreshCw size={15} /> Réessayer
+          </button>
         </div>
       )}
 
