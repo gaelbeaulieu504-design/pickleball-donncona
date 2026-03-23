@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import { AuthProvider } from './context/AuthContext'
 import { BookingProvider } from './context/BookingContext'
 import Navbar from './components/Navbar'
@@ -14,19 +13,10 @@ import Register from './pages/Register'
 import AdminPanel from './pages/AdminPanel'
 import ScrollToTop from './components/ScrollToTop'
 
-const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test'
-
 function App() {
   return (
     <AuthProvider>
       <BookingProvider>
-        <PayPalScriptProvider options={{
-          'client-id': PAYPAL_CLIENT_ID,
-          currency: 'CAD',
-          components: 'buttons',
-          'enable-funding': 'card',
-          'disable-funding': 'paylater',
-        }}>
         <BrowserRouter>
           <ScrollToTop />
           <Navbar />
@@ -44,7 +34,6 @@ function App() {
           </main>
           <Footer />
         </BrowserRouter>
-        </PayPalScriptProvider>
       </BookingProvider>
     </AuthProvider>
   )

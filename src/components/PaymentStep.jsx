@@ -1,10 +1,28 @@
 import { useState } from 'react'
-import { PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
+import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
 import { CreditCard, Wallet, AlertCircle, ShieldCheck } from 'lucide-react'
 
 const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID
 
 export default function PaymentStep({ amount, description, onSuccess, onBack }) {
+  const isConfigured = CLIENT_ID && CLIENT_ID !== 'YOUR_PAYPAL_CLIENT_ID_HERE'
+  if (!isConfigured) {
+    return <DemoPayment amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
+  }
+  return (
+    <PayPalScriptProvider options={{
+      'client-id': CLIENT_ID,
+      currency: 'CAD',
+      components: 'buttons',
+      'enable-funding': 'card',
+      'disable-funding': 'paylater',
+    }}>
+      <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
+    </PayPalScriptProvider>
+  )
+}
+
+function PaymentInner({ amount, description, onSuccess, onBack }) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer()
   const [payError, setPayError] = useState('')
   const [processing, setProcessing] = useState(false)
@@ -47,10 +65,6 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
     setProcessing(false)
     setPayError('Une erreur est survenue lors du paiement. Veuillez réessayer.')
     console.error('PayPal error:', err)
-  }
-
-  if (!isConfigured) {
-    return <DemoPayment amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
   }
 
   return (
