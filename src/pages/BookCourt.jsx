@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth,
          eachDayOfInterval, isSameDay, isToday, isPast, startOfDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -17,6 +17,7 @@ export default function BookCourt() {
   const { user, paySeasonPass } = useAuth()
   const navigate = useNavigate()
   const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking } = useBookings()
+  const bookingInProgress = useRef(false)
 
   const [step, setStep] = useState(0)
   function goToStep(n) {
@@ -84,6 +85,8 @@ export default function BookCourt() {
 
   async function handlePaymentSuccess(paymentInfo) {
     if (!user || !selectedDate || !selectedCourt || !selectedStart || !selectedDuration) return
+    if (bookingInProgress.current) return
+    bookingInProgress.current = true
     if (!hasSeasonPass) paySeasonPass(isResident)
     addBooking({
       userId: user.id,
@@ -110,6 +113,7 @@ export default function BookCourt() {
       week_hours: `${weekHours + selectedDuration}h / ${WEEKLY_HOUR_LIMIT}h`,
     })
     setSubmitted(true)
+    bookingInProgress.current = false
   }
 
   // ── Not logged in ──
