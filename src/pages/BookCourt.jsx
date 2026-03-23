@@ -19,7 +19,12 @@ export default function BookCourt() {
   const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking } = useBookings()
 
   const [step, setStep] = useState(0)
-  function goToStep(n) { setStep(n); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  function goToStep(n) {
+    setStep(n)
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 2, 1))
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedCourt, setSelectedCourt] = useState(null)
@@ -181,7 +186,7 @@ export default function BookCourt() {
             </div>
           </div>
           <button className="btn-primary" style={{ width: '100%' }} onClick={() => {
-            setStep(0); setSelectedDate(null); setSelectedCourt(null);
+            goToStep(0); setSelectedDate(null); setSelectedCourt(null);
             setSelectedDuration(null); setSelectedStart(null); setSubmitted(false);
             setIsResident(user?.seasonPassPaid ? user.seasonPassType : null)
           }}>
