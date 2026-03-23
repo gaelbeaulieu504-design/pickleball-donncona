@@ -1,15 +1,39 @@
-import { useState } from 'react'
-import { PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
+import { useState, Component } from 'react'
+import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
 import { CreditCard, Wallet, AlertCircle, ShieldCheck } from 'lucide-react'
 
 const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID
+const isConfigured = CLIENT_ID && CLIENT_ID !== 'YOUR_PAYPAL_CLIENT_ID_HERE'
+
+// Error boundary to catch any PayPal crash — shows DemoPayment instead of white page
+class PayPalBoundary extends Component {
+  constructor(props) { super(props); this.state = { crashed: false } }
+  static getDerivedStateFromError() { return { crashed: true } }
+  render() {
+    if (this.state.crashed) {
+      return <DemoPayment {...this.props.fallback} />
+    }
+    return this.props.children
+  }
+}
 
 export default function PaymentStep({ amount, description, onSuccess, onBack }) {
-  const isConfigured = CLIENT_ID && CLIENT_ID !== 'YOUR_PAYPAL_CLIENT_ID_HERE'
   if (!isConfigured) {
     return <DemoPayment amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
   }
-  return <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
+  return (
+    <PayPalBoundary fallback={{ amount, description, onSuccess, onBack }}>
+      <PayPalScriptProvider options={{
+        'client-id': CLIENT_ID,
+        currency: 'CAD',
+        components: 'buttons',
+        'enable-funding': 'card',
+        'disable-funding': 'paylater',
+      }}>
+        <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
+      </PayPalScriptProvider>
+    </PayPalBoundary>
+  )
 }
 
 function PaymentInner({ amount, description, onSuccess, onBack }) {
@@ -19,10 +43,7 @@ function PaymentInner({ amount, description, onSuccess, onBack }) {
 
   function createOrder(data, actions) {
     return actions.order.create({
-      purchase_units: [{
-        description,
-        amount: { currency_code: 'CAD', value: amount.toFixed(2) },
-      }],
+      purchase_units: [{ description, amount: { currency_code: 'CAD', value: amount.toFixed(2) } }],
       application_context: { shipping_preference: 'NO_SHIPPING' },
     })
   }
@@ -58,7 +79,7 @@ function PaymentInner({ amount, description, onSuccess, onBack }) {
           <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9375rem' }}>Paiement sécurisé</span>
         </div>
         <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.6 }}>
-          Choisissez votre méthode de paiement. Vous pouvez payer avec PayPal (avec ou sans compte) ou directement par carte de crédit/débit.
+          Choisissez votre méthode de paiement — PayPal ou carte de crédit/débit.
         </p>
       </div>
 
@@ -91,37 +112,38 @@ function PaymentInner({ amount, description, onSuccess, onBack }) {
               <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>PayPal</span>
               <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>— avec ou sans compte</span>
             </div>
-            {(isPending || isRejected) ? (
-              <div style={{ height: 48, background: '#f1f5f9', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.875rem' }}>
-                {isRejected ? 'Erreur de chargement PayPal' : 'Chargement…'}
-              </div>
-            ) : (
+            {isPending && <div style={{ height: 48, background: '#f1f5f9', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.875rem' }}>Chargement…</div>}
+            {isRejected && <div style={{ height: 48, background: '#fef2f2', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626', fontSize: '0.875rem' }}>Erreur de chargement PayPal</div>}
+            {!isPending && !isRejected && (
               <PayPalButtons fundingSource={FUNDING.PAYPAL} createOrder={createOrder} onApprove={onApprove} onError={onError}
                 style={{ layout: 'horizontal', height: 48, tagline: false, shape: 'rect' }} />
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-            <span style={{ fontSize: '0.8125rem', color: '#94a3b8', fontWeight: 600 }}>OU</span>
-            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-          </div>
-
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem' }}>
-              <CreditCard size={15} color="#64748b" />
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Carte de crédit / débit</span>
-            </div>
-            {!isPending && !isRejected && (
-              <PayPalButtons fundingSource={FUNDING.CARD} createOrder={createOrder} onApprove={onApprove} onError={onError}
-                style={{ layout: 'horizontal', height: 48, tagline: false, shape: 'rect', label: 'pay' }} />
-            )}
-          </div>
+          {!isRejected && (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                <span style={{ fontSize: '0.8125rem', color: '#94a3b8', fontWeight: 600 }}>OU</span>
+                <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem' }}>
+                  <CreditCard size={15} color="#64748b" />
+                  <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Carte de crédit / débit</span>
+                </div>
+                {!isPending && (
+                  <PayPalButtons fundingSource={FUNDING.CARD} createOrder={createOrder} onApprove={onApprove} onError={onError}
+                    style={{ layout: 'horizontal', height: 48, tagline: false, shape: 'rect', label: 'pay' }} />
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 
       <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <button className="btn-secondary" onClick={onBack} disabled={processing} style={{ opacity: processing ? 0.5 : 1 }}>← Retour</button>
+        <button type="button" className="btn-secondary" onClick={onBack} disabled={processing} style={{ opacity: processing ? 0.5 : 1 }}>← Retour</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', color: '#94a3b8' }}>
           <ShieldCheck size={14} color="#22c55e" /> Paiement sécurisé par PayPal
         </div>
@@ -152,15 +174,13 @@ function DemoPayment({ amount, onSuccess, onBack }) {
         </div>
         <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>Passe saisonnier<br />Été 2026</div>
       </div>
-
       <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1rem' }}>Sélectionnez une méthode de paiement :</p>
-
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
         {[
           { id: 'paypal', icon: '🅿️', label: 'PayPal', desc: 'Avec ou sans compte PayPal' },
           { id: 'card', icon: '💳', label: 'Carte de crédit / débit', desc: 'Visa, Mastercard, Interac' },
         ].map(opt => (
-          <button key={opt.id} onClick={() => setMethod(opt.id)}
+          <button type="button" key={opt.id} onClick={() => setMethod(opt.id)}
             style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.25rem', borderRadius: '0.875rem', border: method === opt.id ? '2px solid #166534' : '2px solid #e2e8f0', background: method === opt.id ? '#f0fdf4' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
             <span style={{ fontSize: '1.5rem' }}>{opt.icon}</span>
             <div>
@@ -171,16 +191,14 @@ function DemoPayment({ amount, onSuccess, onBack }) {
           </button>
         ))}
       </div>
-
-      <button className="btn-primary" disabled={!method || processing} onClick={simulatePay}
+      <button type="button" className="btn-primary" disabled={!method || processing} onClick={simulatePay}
         style={{ width: '100%', opacity: (!method || processing) ? 0.5 : 1, cursor: (!method || processing) ? 'not-allowed' : 'pointer', fontSize: '1.0625rem', padding: '1rem' }}>
         {processing
           ? <><span style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /> Traitement…</>
           : <><CreditCard size={18} /> Payer ${amount} CAD</>}
       </button>
-
       <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button className="btn-secondary" onClick={onBack}>← Retour</button>
+        <button type="button" className="btn-secondary" onClick={onBack}>← Retour</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', color: '#94a3b8' }}>
           <ShieldCheck size={14} color="#22c55e" /> Paiement sécurisé par PayPal
         </div>
