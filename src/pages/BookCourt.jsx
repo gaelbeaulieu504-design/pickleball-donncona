@@ -528,13 +528,30 @@ export default function BookCourt() {
           )}
 
           {/* ── Step 3: Payment ── */}
-          {step === 3 && !hasSeasonPass && (
-            <PaymentStep
-              amount={price}
-              description={`Passe saisonnier pickleball ${effectiveType === 'resident' ? 'résident' : 'non-résident'} – Été 2026`}
-              onSuccess={handlePaymentSuccess}
-              onBack={() => goToStep(2)}
-            />
+          {step === 3 && (
+            hasSeasonPass ? (
+              // Pass already active — confirm directly
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <CheckCircle size={40} color="#166534" style={{ marginBottom: '1rem' }} />
+                <p style={{ marginBottom: '1.5rem', color: '#64748b' }}>Votre passe est déjà actif.</p>
+                <button className="btn-primary" onClick={() => handlePaymentSuccess({ status: 'PASS_ACTIVE' })}>
+                  Confirmer la réservation
+                </button>
+              </div>
+            ) : !price ? (
+              // No price — go back to step 2
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <p style={{ color: '#64748b', marginBottom: '1rem' }}>Veuillez sélectionner votre type de passe.</p>
+                <button className="btn-secondary" onClick={() => goToStep(2)}>← Retour</button>
+              </div>
+            ) : (
+              <PaymentStep
+                amount={price}
+                description={`Passe saisonnier pickleball ${effectiveType === 'resident' ? 'résident' : 'non-résident'} – Été 2026`}
+                onSuccess={handlePaymentSuccess}
+                onBack={() => goToStep(2)}
+              />
+            )
           )}
 
         </div>
