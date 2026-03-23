@@ -35,7 +35,6 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
               description,
               amount: { currency_code: 'CAD', value: Number(amount).toFixed(2) },
             }],
-            application_context: { shipping_preference: 'NO_SHIPPING' },
           })
         },
         onApprove: async (data, actions) => {
@@ -133,6 +132,14 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
         <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b' }}>
           <div style={{ width: 36, height: 36, border: '3px solid #e2e8f0', borderTopColor: '#166534', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 0.75rem' }} />
           Traitement du paiement…
+        </div>
+      )}
+
+      {/* Popup blocker warning */}
+      {!loading && !error && (
+        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.75rem', padding: '0.625rem 1rem', marginBottom: '1rem', fontSize: '0.8125rem', color: '#92400e', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <span>⚠️</span>
+          <span>Si la fenêtre PayPal ne s'ouvre pas, <strong>autorisez les popups</strong> pour pickleballdonnacona.ca dans votre navigateur.</span>
         </div>
       )}
 
