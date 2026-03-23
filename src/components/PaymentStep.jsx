@@ -40,10 +40,6 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
       <PayPalScriptProvider options={{
         'client-id': CLIENT_ID,
         currency: 'CAD',
-        intent: 'capture',
-        components: 'buttons',
-        'enable-funding': 'card',
-        'disable-funding': 'paylater,venmo',
       }}>
         <PaymentInner amount={amount} description={description} onSuccess={onSuccess} onBack={onBack} />
       </PayPalScriptProvider>
