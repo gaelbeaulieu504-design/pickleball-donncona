@@ -6,6 +6,19 @@ import cors from 'cors'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const USERS_FILE = path.join(__dirname, 'data', 'users.json')
+const BOOKINGS_FILE = path.join(__dirname, 'data', 'bookings.json')
+
+function readBookings() {
+  try {
+    return JSON.parse(fs.readFileSync(BOOKINGS_FILE, 'utf8'))
+  } catch {
+    return []
+  }
+}
+
+function writeBookings(bookings) {
+  fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2))
+}
 
 const app = express()
 app.use(cors())
@@ -89,6 +102,27 @@ app.get('/api/users/:id', (req, res) => {
   if (!found) return res.status(404).json({ error: 'Introuvable.' })
   const { password: _, ...safeUser } = found
   res.json(safeUser)
+})
+
+// GET all bookings
+app.get('/api/bookings', (req, res) => {
+  res.json(readBookings())
+})
+
+// POST new booking
+app.post('/api/bookings', (req, res) => {
+  const bookings = readBookings()
+  const booking = { ...req.body, id: Date.now().toString(), createdAt: new Date().toISOString() }
+  bookings.push(booking)
+  writeBookings(bookings)
+  res.json({ success: true, booking })
+})
+
+// DELETE booking
+app.delete('/api/bookings/:id', (req, res) => {
+  const bookings = readBookings().filter(b => b.id !== req.params.id)
+  writeBookings(bookings)
+  res.json({ success: true })
 })
 
 const PORT = 3001
