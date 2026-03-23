@@ -1,4 +1,4 @@
-gimport { useState, Component } from 'react'
+import { useState, Component } from 'react'
 import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer, FUNDING } from '@paypal/react-paypal-js'
 import { CreditCard, Wallet, AlertCircle, ShieldCheck } from 'lucide-react'
 
