@@ -19,7 +19,7 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
 
     const script = document.createElement('script')
     script.id = 'paypal-sdk'
-    script.src = `https://www.paypal.com/sdk/js?client-id=${CLIENT_ID}&currency=CAD&components=buttons&enable-funding=card&disable-funding=paylater,venmo`
+    script.src = `https://www.paypal.com/sdk/js?client-id=${CLIENT_ID}&currency=CAD`
     script.async = true
 
     script.onload = () => {
