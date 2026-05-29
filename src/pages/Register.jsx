@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { User, Mail, Lock, UserPlus, Eye, EyeOff, MapPin, Phone } from 'lucide-react'
+import { User, Mail, Lock, UserPlus, Eye, EyeOff, MapPin, Phone, Home, Globe, CheckCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const PROVINCES = [
@@ -21,6 +21,7 @@ export default function Register() {
     name: '', email: '', phone: '', password: '', confirm: '',
     streetAddress: '', city: '', province: 'Québec', postalCode: '',
   })
+  const [residencyChoice, setResidencyChoice] = useState(null) // 'resident' | 'nonResident'
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -37,6 +38,7 @@ export default function Register() {
     setError('')
     if (form.password.length < 6) { setError('Le mot de passe doit comporter au moins 6 caractères.'); return }
     if (form.password !== form.confirm) { setError('Les mots de passe ne correspondent pas.'); return }
+    if (!residencyChoice) { setError('Veuillez choisir si vous êtes résident ou non-résident de Donnacona.'); return }
     setLoading(true)
     const result = await register({
       name: form.name,
@@ -48,7 +50,7 @@ export default function Register() {
       city: form.city,
       province: form.province,
       postalCode: form.postalCode,
-      isResident: form.city ? isResident : null,
+      isResident: residencyChoice === 'resident',
     })
     if (result.error) { setError(result.error); setLoading(false) }
     else navigate('/book')
@@ -122,6 +124,37 @@ export default function Register() {
                     style={inputStyle} onFocus={e => e.target.style.borderColor = '#166534'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* ── Résidence ── */}
+          <div style={{ background: '#f8fafc', borderRadius: '0.875rem', padding: '1.125rem', border: `2px solid ${residencyChoice ? '#166534' : '#e2e8f0'}` }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>
+              Êtes-vous résident de Donnacona ? <span style={{ color: '#dc2626' }}>*</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <button type="button" onClick={() => setResidencyChoice('resident')}
+                style={{ padding: '1rem', borderRadius: '0.875rem', border: residencyChoice === 'resident' ? '2px solid #166534' : '2px solid #e2e8f0', background: residencyChoice === 'resident' ? '#f0fdf4' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', position: 'relative' }}>
+                {residencyChoice === 'resident' && <CheckCircle size={16} color="#166534" style={{ position: 'absolute', top: '0.625rem', right: '0.625rem' }} />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
+                  <Home size={18} color={residencyChoice === 'resident' ? '#166534' : '#94a3b8'} />
+                  <span style={{ fontWeight: 800, color: residencyChoice === 'resident' ? '#166534' : '#0f172a', fontSize: '0.9375rem' }}>Résident</span>
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.375rem' }}>J'habite à Donnacona</div>
+                <div style={{ fontWeight: 900, fontSize: '1.375rem', color: '#166534' }}>$40</div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>passe saisonnier</div>
+              </button>
+              <button type="button" onClick={() => setResidencyChoice('nonResident')}
+                style={{ padding: '1rem', borderRadius: '0.875rem', border: residencyChoice === 'nonResident' ? '2px solid #b45309' : '2px solid #e2e8f0', background: residencyChoice === 'nonResident' ? '#fffbeb' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', position: 'relative' }}>
+                {residencyChoice === 'nonResident' && <CheckCircle size={16} color="#b45309" style={{ position: 'absolute', top: '0.625rem', right: '0.625rem' }} />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
+                  <Globe size={18} color={residencyChoice === 'nonResident' ? '#b45309' : '#94a3b8'} />
+                  <span style={{ fontWeight: 800, color: residencyChoice === 'nonResident' ? '#b45309' : '#0f172a', fontSize: '0.9375rem' }}>Non-résident</span>
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.375rem' }}>J'habite ailleurs</div>
+                <div style={{ fontWeight: 900, fontSize: '1.375rem', color: '#b45309' }}>$85</div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>passe saisonnier</div>
+              </button>
             </div>
           </div>
 
