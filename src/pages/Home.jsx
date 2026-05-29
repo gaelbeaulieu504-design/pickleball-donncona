@@ -81,8 +81,8 @@ export default function Home() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
             {[
               { value: '4', label: 'Terrains extérieurs' },
-              { value: '$50', label: 'Tarif résident' },
-              { value: '$75', label: 'Tarif non-résident' },
+              { value: '$40', label: 'Tarif résident' },
+              { value: '$85', label: 'Tarif non-résident' },
               { value: '6h–22h', label: "Heures d'ouverture" },
             ].map(s => (
               <div key={s.label}>
@@ -236,7 +236,7 @@ export default function Home() {
             <div style={{ background: 'linear-gradient(135deg, #1B4E8B, #2563A8)', color: '#fff', borderRadius: '1.25rem', padding: '2.5rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: 120, height: 120, background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
               <div style={{ background: 'rgba(255,255,255,0.15)', display: 'inline-block', padding: '0.375rem 1rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '1rem', letterSpacing: '0.06em' }}>DONNACONA RÉSIDENT</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>$50</div>
+              <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>$40</div>
               <div style={{ color: '#A8D5E8', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
               {['Réservation de 2 heures', 'Réservation en ligne', 'Preuve de résidence requise'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
@@ -252,7 +252,7 @@ export default function Home() {
 
             <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '2.5rem 2rem', textAlign: 'center', border: '2px solid #e2e8f0' }}>
               <div style={{ background: '#EBF3FB', color: '#1B4E8B', display: 'inline-block', padding: '0.375rem 1rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '1rem', letterSpacing: '0.06em' }}>NON-RÉSIDENT</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$75</div>
+              <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$85</div>
               <div style={{ color: '#64748b', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
               {['Réservation de 2 heures', 'Réservation en ligne', 'Ouvert à tous les visiteurs'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
