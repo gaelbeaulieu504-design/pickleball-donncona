@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Menu, X, LogIn, UserPlus, LogOut, ShieldCheck } from 'lucide-react'
+import { Menu, X, LogIn, UserPlus, LogOut, ShieldCheck, ChevronDown, Trophy, Users, GraduationCap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const navLinks = [
@@ -11,11 +11,19 @@ const navLinks = [
   { to: '/contact', label: 'Contact' },
 ]
 
+const inscriptionItems = [
+  { icon: Trophy, label: 'Tournois', color: '#b45309' },
+  { icon: Users, label: 'Ligues', color: '#1B4E8B' },
+  { icon: GraduationCap, label: 'Cours', color: '#166534' },
+]
+
 export default function Navbar() {
   const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [inscriptionOpen, setInscriptionOpen] = useState(false)
+  const [mobileInscriptionOpen, setMobileInscriptionOpen] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -24,13 +32,13 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close user menu on outside click
+  // Close menus on outside click
   useEffect(() => {
-    if (!userMenuOpen) return
-    const close = () => setUserMenuOpen(false)
+    if (!userMenuOpen && !inscriptionOpen) return
+    const close = () => { setUserMenuOpen(false); setInscriptionOpen(false) }
     window.addEventListener('click', close)
     return () => window.removeEventListener('click', close)
-  }, [userMenuOpen])
+  }, [userMenuOpen, inscriptionOpen])
 
   return (
     <header style={{
@@ -61,6 +69,53 @@ export default function Navbar() {
               {link.label}
             </NavLink>
           ))}
+
+          {/* Inscriptions dropdown */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={e => { e.stopPropagation(); setInscriptionOpen(v => !v) }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.3rem',
+                padding: '0.5rem 0.875rem', borderRadius: '0.5rem',
+                fontWeight: 600, fontSize: '0.9375rem',
+                color: inscriptionOpen ? '#1B4E8B' : '#475569',
+                background: inscriptionOpen ? 'rgba(27,78,139,0.08)' : 'transparent',
+                border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+              }}
+            >
+              Inscriptions
+              <ChevronDown size={15} style={{ transition: 'transform 0.2s', transform: inscriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+            </button>
+            {inscriptionOpen && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 0.5rem)', left: '50%',
+                transform: 'translateX(-50%)',
+                background: '#fff', borderRadius: '1rem',
+                border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                padding: '0.5rem', minWidth: 200, zIndex: 200,
+              }}>
+                {inscriptionItems.map(({ icon: Icon, label, color }) => (
+                  <button key={label}
+                    onClick={() => setInscriptionOpen(false)}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem',
+                      padding: '0.75rem 1rem', borderRadius: '0.625rem',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#334155', fontWeight: 600, fontSize: '0.9375rem',
+                      transition: 'background 0.15s', textAlign: 'left',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                  >
+                    <div style={{ width: 32, height: 32, borderRadius: '0.5rem', background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Icon size={16} color={color} />
+                    </div>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {user?.isAdmin && (
             <NavLink to="/admin"
               style={({ isActive }) => ({
@@ -158,6 +213,43 @@ export default function Navbar() {
               {link.label}
             </NavLink>
           ))}
+
+          {/* Inscriptions mobile */}
+          <div style={{ marginBottom: '0.25rem' }}>
+            <button
+              onClick={() => setMobileInscriptionOpen(v => !v)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '0.875rem 1rem', borderRadius: '0.5rem',
+                fontWeight: 600, fontSize: '1rem',
+                color: '#334155', background: mobileInscriptionOpen ? 'rgba(27,78,139,0.08)' : 'transparent',
+                border: 'none', cursor: 'pointer',
+              }}
+            >
+              Inscriptions
+              <ChevronDown size={16} style={{ transition: 'transform 0.2s', transform: mobileInscriptionOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+            </button>
+            {mobileInscriptionOpen && (
+              <div style={{ paddingLeft: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
+                {inscriptionItems.map(({ icon: Icon, label, color }) => (
+                  <button key={label}
+                    onClick={() => { setMobileInscriptionOpen(false); setOpen(false) }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.75rem',
+                      padding: '0.75rem 1rem', borderRadius: '0.5rem',
+                      background: '#f8fafc', border: 'none', cursor: 'pointer',
+                      color: '#334155', fontWeight: 600, fontSize: '0.9375rem', textAlign: 'left',
+                    }}
+                  >
+                    <div style={{ width: 28, height: 28, borderRadius: '0.5rem', background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Icon size={15} color={color} />
+                    </div>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {user?.isAdmin && (
             <NavLink to="/admin" onClick={() => setOpen(false)}
               style={({ isActive }) => ({
