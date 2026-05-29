@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { WEEKLY_HOUR_LIMIT } from '../data/courts'
@@ -9,7 +9,7 @@ import { fr } from 'date-fns/locale'
 import { sendBroadcast } from '../utils/sendEmail'
 
 export default function AdminPanel() {
-  const { user, getAllUsers } = useAuth()
+  const { user, getAllUsers, grantFreePass } = useAuth()
   const { bookings, getUserWeekHours } = useBookings()
   const navigate = useNavigate()
   const [members, setMembers] = useState([])
@@ -44,9 +44,15 @@ export default function AdminPanel() {
   }
 
   const paidMembers = members.filter(m => m.seasonPassPaid)
-  const residentCount = paidMembers.filter(m => m.seasonPassType === 'resident').length
-  const nonResidentCount = paidMembers.filter(m => m.seasonPassType === 'nonResident').length
-  const totalRevenue = residentCount * 50 + nonResidentCount * 75
+  const freePassMembers = members.filter(m => m.freePass)
+  const residentCount = paidMembers.filter(m => m.seasonPassType === 'resident' && !m.freePass).length
+  const nonResidentCount = paidMembers.filter(m => m.seasonPassType === 'nonResident' && !m.freePass).length
+  const totalRevenue = residentCount * 40 + nonResidentCount * 85
+
+  async function handleGrantFreePass(memberId, grant) {
+    await grantFreePass(memberId, grant)
+    getAllUsers().then(setMembers).catch(() => {})
+  }
 
   const today = new Date()
   const weekStart = format(startOfWeek(today, { weekStartsOn: 1 }), 'MMM d', { locale: fr })
@@ -108,6 +114,7 @@ export default function AdminPanel() {
             { label: 'Passes actifs', value: paidMembers.length, color: '#2E7D32', bg: '#f0fdf4', icon: <CheckCircle size={20} color="#2E7D32" /> },
             { label: 'Résidents', value: residentCount, color: '#2E7D32', bg: '#f0fdf4', icon: <MapPin size={20} color="#2E7D32" /> },
             { label: 'Non-résidents', value: nonResidentCount, color: '#b45309', bg: '#fffbeb', icon: <MapPin size={20} color="#b45309" /> },
+            { label: 'Passes gratuits', value: freePassMembers.length, color: '#0891b2', bg: '#ecfeff', icon: <Gift size={20} color="#0891b2" /> },
             { label: 'Revenus total', value: `$${totalRevenue}`, color: '#7c3aed', bg: '#f5f3ff', icon: <CheckCircle size={20} color="#7c3aed" /> },
           ].map(s => (
             <div key={s.label} style={{ background: s.bg, borderRadius: '1rem', padding: '1.25rem', border: `1px solid ${s.color}22` }}>
@@ -191,13 +198,19 @@ export default function AdminPanel() {
                           }
                         </div>
                         <div style={{ minWidth: 120 }}>
-                          {m.seasonPassPaid
+                          {m.freePass
+                            ? <div>
+                                <span style={{ background: '#ecfeff', color: '#0891b2', border: '1px solid #a5f3fc', padding: '0.25rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                                  <Gift size={11} /> Gratuit
+                                </span>
+                              </div>
+                            : m.seasonPassPaid
                             ? <div>
                                 <span style={{ background: '#f0fdf4', color: '#2E7D32', border: '1px solid #bbf7d0', padding: '0.25rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                                   <CheckCircle size={11} /> Actif
                                 </span>
                                 <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>
-                                  {m.seasonPassType === 'resident' ? '$50 résident' : '$75 non-résident'}
+                                  {m.seasonPassType === 'resident' ? '$40 résident' : '$85 non-résident'}
                                 </div>
                               </div>
                             : <span style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.25rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -233,6 +246,19 @@ export default function AdminPanel() {
                             <div>
                               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Total réservations</div>
                               <div style={{ fontSize: '0.875rem', color: '#334155', fontWeight: 700 }}>{memberBookings.length}</div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Passe gratuit</div>
+                              {m.freePass
+                                ? <button onClick={e => { e.stopPropagation(); handleGrantFreePass(m.id, false) }}
+                                    style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                                    <XCircle size={13} /> Révoquer le passe gratuit
+                                  </button>
+                                : <button onClick={e => { e.stopPropagation(); handleGrantFreePass(m.id, true) }}
+                                    style={{ background: '#ecfeff', color: '#0891b2', border: '1px solid #a5f3fc', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                                    <Gift size={13} /> Accorder passe gratuit
+                                  </button>
+                              }
                             </div>
                           </div>
                           {memberBookings.length > 0 && (

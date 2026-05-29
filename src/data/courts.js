@@ -17,8 +17,8 @@ export const START_TIMES = [
 export const DURATIONS = [1, 2] // hours
 
 export const PRICING = {
-  resident: 50,       // one-time seasonal pass
-  nonResident: 75,    // one-time seasonal pass
+  resident: 40,       // one-time seasonal pass
+  nonResident: 85,    // one-time seasonal pass
 }
 
 export const WEEKLY_HOUR_LIMIT = 6    // hours per week

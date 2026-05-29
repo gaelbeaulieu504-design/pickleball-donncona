@@ -59,6 +59,17 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('pb_current_user')
   }
 
+  async function grantFreePass(userId, grant) {
+    try {
+      const res = await fetch(`${API}/grant-free-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, grant }),
+      })
+      return res.ok
+    } catch { return false }
+  }
+
   async function paySeasonPass(passType) {
     if (!user) return
     try {
@@ -73,7 +84,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers }}>
+    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers, grantFreePass }}>
       {children}
     </AuthContext.Provider>
   )

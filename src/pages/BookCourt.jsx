@@ -57,7 +57,7 @@ export default function BookCourt() {
   const weekHours = user && selectedDate && !isAdmin ? getUserWeekHours(user.id, selectedDate) : 0
   const weekFull = !isAdmin && weekHours >= WEEKLY_HOUR_LIMIT
 
-  const hasSeasonPass = isAdmin || user?.seasonPassPaid === true
+  const hasSeasonPass = isAdmin || user?.freePass === true || user?.seasonPassPaid === true
   const passType = isAdmin ? 'resident' : user?.seasonPassType
   const effectiveType = passType || isResident
   const price = effectiveType === 'resident' ? PRICING.resident : effectiveType === 'nonResident' ? PRICING.nonResident : null
@@ -221,7 +221,7 @@ export default function BookCourt() {
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 700 }}>Passe saisonnier actif</span>
               <span style={{ color: '#bbf7d0', marginLeft: '0.5rem', fontSize: '0.9rem' }}>
-                {passType === 'resident' ? 'Résident · $75 payé' : 'Non-résident · $75 payé'} — Réservations gratuites jusqu'à la fin de l'été
+                {passType === 'resident' ? 'Résident · $40 payé' : 'Non-résident · $85 payé'} — Réservations gratuites jusqu'à la fin de l'été
               </span>
             </div>
             <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', padding: '0.25rem 0.75rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700 }}>ÉTÉ 2026</span>
@@ -444,7 +444,7 @@ export default function BookCourt() {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Passe saisonnier actif ✓</div>
                     <div style={{ color: '#bbf7d0', fontSize: '0.875rem' }}>
-                      {passType === 'resident' ? 'Résident · $75 payé' : 'Non-résident · $75 payé'} — Valide tout l'été
+                      {passType === 'resident' ? 'Résident · $40 payé' : 'Non-résident · $85 payé'} — Valide tout l'été
                     </div>
                   </div>
                   <div style={{ fontWeight: 900, fontSize: '1.5rem', color: '#4ade80' }}>$0</div>
