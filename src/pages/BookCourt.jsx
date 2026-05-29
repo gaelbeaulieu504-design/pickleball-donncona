@@ -108,7 +108,7 @@ export default function BookCourt() {
       date: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }),
       time_slot: slotLabel(selectedStart, selectedDuration),
       duration: `${selectedDuration} heure${selectedDuration > 1 ? 's' : ''}`,
-      pass_type: effectiveType === 'resident' ? 'Résident ($50)' : 'Non-résident ($75)',
+      pass_type: effectiveType === 'resident' ? 'Résident ($40)' : 'Non-résident ($85)',
       amount_paid: hasSeasonPass ? '$0 (passe déjà actif)' : `$${price}`,
       week_hours: `${weekHours + selectedDuration}h / ${WEEKLY_HOUR_LIMIT}h`,
     })
@@ -163,7 +163,7 @@ export default function BookCourt() {
               <div>
                 <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Passe saisonnier activé !</div>
                 <div style={{ fontSize: '0.875rem', color: '#bbf7d0', lineHeight: 1.6 }}>
-                  Votre passe {effectiveType === 'resident' ? '$50 (résident)' : '$75 (non-résident)'} est actif pour tout l'été. Vos prochaines réservations sont gratuites.
+                  Votre passe {effectiveType === 'resident' ? '$40 (résident)' : '$85 (non-résident)'} est actif pour tout l'été. Vos prochaines réservations sont gratuites.
                 </div>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function BookCourt() {
               { label: 'Date', value: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }) },
               { label: 'Heure', value: slotLabel(selectedStart, selectedDuration) },
               { label: 'Durée', value: `${selectedDuration}h` },
-              { label: 'Passe saisonnier', value: effectiveType === 'resident' ? 'Résident · $75/été' : 'Non-résident · $75/été' },
+              { label: 'Passe saisonnier', value: effectiveType === 'resident' ? 'Résident · $40/été' : 'Non-résident · $85/été' },
               { label: "Payé aujourd'hui", value: hasSeasonPass ? '$0 (déjà payé)' : `$${price}` },
             ].map(r => (
               <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.625rem', marginBottom: '0.625rem', borderBottom: '1px solid #e2e8f0' }}>
@@ -230,7 +230,7 @@ export default function BookCourt() {
           <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: '0.875rem', padding: '0.875rem 1.25rem', marginBottom: '1.25rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
             <Star size={18} color="#b45309" style={{ flexShrink: 0, marginTop: 2 }} />
             <p style={{ fontSize: '0.9rem', color: '#78350f', lineHeight: 1.6 }}>
-              <strong>Passe saisonnier requis.</strong> Payé une seule fois ($50 résident ou $75 non-résident), valide pour tout l'été.
+              <strong>Passe saisonnier requis.</strong> Payé une seule fois ($40 résident ou $85 non-résident), valide pour tout l'été.
             </p>
           </div>
         )}
@@ -470,15 +470,15 @@ export default function BookCourt() {
                         </div>
                       </div>
                       <div style={{ fontWeight: 900, fontSize: '2rem', color: '#166534' }}>
-                        ${isResident === 'resident' ? '50' : '75'}
+                        ${isResident === 'resident' ? '40' : '85'}
                       </div>
                     </div>
                   ) : (
                     // No address on file — free choice
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       {[
-                        { value: 'resident', label: '🏠 Résident', price: '$50', desc: 'Résidents de Donnacona' },
-                        { value: 'nonResident', label: '🌍 Non-résident', price: '$75', desc: 'Ouvert à tous' },
+                        { value: 'resident', label: '🏠 Résident', price: '$40', desc: 'Résidents de Donnacona' },
+                        { value: 'nonResident', label: '🌍 Non-résident', price: '$85', desc: 'Ouvert à tous' },
                       ].map(opt => (
                         <button key={opt.value} onClick={() => setIsResident(opt.value)}
                           style={{ flex: '1 1 170px', padding: '1rem 1.125rem', borderRadius: '0.875rem', border: isResident === opt.value ? '2px solid #166534' : '2px solid #e2e8f0', background: isResident === opt.value ? '#f0fdf4' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
