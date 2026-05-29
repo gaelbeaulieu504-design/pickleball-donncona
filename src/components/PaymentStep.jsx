@@ -1,84 +1,103 @@
 import { useState, useEffect, useRef } from 'react'
-import { CreditCard, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react'
+import { ShieldCheck, AlertCircle, CreditCard } from 'lucide-react'
 
-const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID
+const PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 
 export default function PaymentStep({ amount, description, onSuccess, onBack }) {
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
   const [processing, setProcessing] = useState(false)
-  const [payError, setPayError] = useState('')
-  const containerRef = useRef(null)
-  const buttonsRendered = useRef(false)
+  const stripeRef = useRef(null)
+  const elementsRef = useRef(null)
+  const mountRef = useRef(null)
 
   useEffect(() => {
-    // Remove any existing PayPal script
-    const existing = document.getElementById('paypal-sdk')
-    if (existing) existing.remove()
-    if (window.paypal) delete window.paypal
+    let mounted = true
 
-    const script = document.createElement('script')
-    script.id = 'paypal-sdk'
-    script.src = `https://www.paypal.com/sdk/js?client-id=${CLIENT_ID}&currency=CAD`
-    script.async = true
+    async function init() {
+      // Load Stripe.js
+      if (!window.Stripe) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = 'https://js.stripe.com/v3/'
+          script.async = true
+          script.onload = resolve
+          script.onerror = reject
+          document.body.appendChild(script)
+        })
+      }
 
-    script.onload = () => {
-      setLoading(false)
-      if (!window.paypal || !containerRef.current || buttonsRendered.current) return
-      buttonsRendered.current = true
+      if (!mounted) return
+      stripeRef.current = window.Stripe(PUBLISHABLE_KEY)
 
-      window.paypal.Buttons({
-        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 48 },
-        createOrder: (data, actions) => {
-          return actions.order.create({
-            purchase_units: [{
-              description,
-              amount: { currency_code: 'CAD', value: Number(amount).toFixed(2) },
-            }],
-          })
+      // Create payment intent
+      const res = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description }),
+      })
+      const data = await res.json()
+      if (!mounted) return
+      if (data.error) throw new Error(data.error)
+
+      // Mount Stripe Elements
+      elementsRef.current = stripeRef.current.elements({
+        clientSecret: data.clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#166534',
+            colorBackground: '#ffffff',
+            colorText: '#0f172a',
+            colorDanger: '#dc2626',
+            fontFamily: 'system-ui, sans-serif',
+            borderRadius: '8px',
+          },
         },
-        onApprove: async (data, actions) => {
-          setProcessing(true)
-          setPayError('')
-          try {
-            const details = await actions.order.capture()
-            setProcessing(false)
-            onSuccess({
-              transactionId: details.id,
-              payerName: details.payer?.name?.given_name,
-              payerEmail: details.payer?.email_address,
-              status: details.status,
-            })
-          } catch {
-            setProcessing(false)
-            setPayError('Le paiement a échoué. Veuillez réessayer.')
-          }
-        },
-        onError: (err) => {
-          setProcessing(false)
-          setPayError('Une erreur est survenue. Veuillez réessayer.')
-          console.error('PayPal error:', err)
-        },
-        onCancel: () => {
-          setProcessing(false)
-        },
-      }).render(containerRef.current)
+        locale: 'fr-CA',
+      })
+
+      const paymentElement = elementsRef.current.create('payment')
+      paymentElement.mount(mountRef.current)
+      paymentElement.on('ready', () => { if (mounted) setLoading(false) })
     }
 
-    script.onerror = () => {
-      setLoading(false)
-      setError(true)
-    }
+    init().catch(err => {
+      if (mounted) {
+        setError('Impossible de charger le paiement. Vérifiez votre connexion.')
+        setLoading(false)
+        console.error(err)
+      }
+    })
 
-    document.body.appendChild(script)
-
-    return () => {
-      buttonsRendered.current = false
-    }
+    return () => { mounted = false }
   }, [amount, description])
 
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!stripeRef.current || !elementsRef.current || processing) return
+    setProcessing(true)
+    setError('')
+
+    const { error, paymentIntent } = await stripeRef.current.confirmPayment({
+      elements: elementsRef.current,
+      redirect: 'if_required',
+    })
+
+    if (error) {
+      setError(error.message)
+      setProcessing(false)
+    } else if (paymentIntent?.status === 'succeeded') {
+      onSuccess({
+        transactionId: paymentIntent.id,
+        status: 'COMPLETED',
+        provider: 'stripe',
+      })
+    }
+  }
+
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
       {/* Header */}
       <div style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
@@ -86,7 +105,7 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
           <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9375rem' }}>Paiement sécurisé</span>
         </div>
         <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.6 }}>
-          Choisissez votre méthode de paiement — PayPal ou carte de crédit/débit.
+          Entrez vos informations de paiement — carte de crédit, débit ou autres méthodes.
         </p>
       </div>
 
@@ -99,10 +118,10 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
         <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>Passe saisonnier<br />Été 2026</div>
       </div>
 
-      {/* Error from payment */}
-      {payError && (
+      {/* Error */}
+      {error && (
         <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '0.875rem 1rem', marginBottom: '1.25rem', display: 'flex', gap: '0.5rem', alignItems: 'center', color: '#dc2626', fontSize: '0.9rem' }}>
-          <AlertCircle size={16} style={{ flexShrink: 0 }} /> {payError}
+          <AlertCircle size={16} style={{ flexShrink: 0 }} /> {error}
         </div>
       )}
 
@@ -110,55 +129,41 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
       {loading && (
         <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
           <div style={{ width: 36, height: 36, border: '3px solid #e2e8f0', borderTopColor: '#166534', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 0.75rem' }} />
-          Chargement de PayPal…
+          Chargement du paiement…
         </div>
       )}
 
-      {/* SDK load error */}
-      {error && (
-        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.25rem', textAlign: 'center' }}>
-          <AlertCircle size={24} color="#dc2626" style={{ margin: '0 auto 0.5rem', display: 'block' }} />
-          <p style={{ color: '#dc2626', fontWeight: 700, marginBottom: '0.375rem' }}>Impossible de charger PayPal</p>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem' }}>Vérifiez votre connexion et réessayez.</p>
-          <button type="button" onClick={() => window.location.reload()}
-            style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1.25rem', cursor: 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-            <RefreshCw size={15} /> Réessayer
-          </button>
-        </div>
-      )}
+      {/* Stripe Elements container */}
+      <div ref={mountRef} style={{ marginBottom: '1.5rem', minHeight: loading ? 0 : 'auto' }} />
 
       {/* Processing */}
       {processing && (
-        <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b' }}>
-          <div style={{ width: 36, height: 36, border: '3px solid #e2e8f0', borderTopColor: '#166534', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 0.75rem' }} />
+        <div style={{ textAlign: 'center', padding: '1rem', color: '#64748b', marginBottom: '1rem' }}>
+          <div style={{ width: 28, height: 28, border: '3px solid #e2e8f0', borderTopColor: '#166534', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 0.5rem' }} />
           Traitement du paiement…
         </div>
       )}
 
-      {/* Popup blocker warning */}
-      {!loading && !error && (
-        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.75rem', padding: '0.625rem 1rem', marginBottom: '1rem', fontSize: '0.8125rem', color: '#92400e', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span>⚠️</span>
-          <span>Si la fenêtre PayPal ne s'ouvre pas, <strong>autorisez les popups</strong> pour pickleballdonnacona.ca dans votre navigateur.</span>
-        </div>
+      {/* Submit button */}
+      {!loading && (
+        <button type="submit" disabled={processing}
+          style={{ width: '100%', background: processing ? '#94a3b8' : 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', border: 'none', borderRadius: '0.875rem', padding: '1rem', fontSize: '1.0625rem', fontWeight: 700, cursor: processing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+          <CreditCard size={20} />
+          {processing ? 'Traitement…' : `Payer $${amount} CAD`}
+        </button>
       )}
 
-      {/* PayPal buttons container */}
-      <div ref={containerRef} style={{ display: processing ? 'none' : 'block' }} />
-
       {/* Footer */}
-      <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <button type="button" className="btn-secondary" onClick={onBack} disabled={processing} style={{ opacity: processing ? 0.5 : 1 }}>
           ← Retour
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', color: '#94a3b8' }}>
-          <ShieldCheck size={14} color="#22c55e" />
-          <CreditCard size={14} color="#94a3b8" />
-          Paiement sécurisé par PayPal
+          <ShieldCheck size={14} color="#22c55e" /> Paiement sécurisé par Stripe
         </div>
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
+    </form>
   )
 }
