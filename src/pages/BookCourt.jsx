@@ -3,7 +3,7 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth,
          eachDayOfInterval, isSameDay, isToday, isPast, startOfDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, CalendarCheck, Clock, User, CreditCard,
-         CheckCircle, LogIn, AlertTriangle, Ban, Star, Shield } from 'lucide-react'
+         CheckCircle, LogIn, AlertTriangle, Ban, Star, Shield, Info } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
@@ -54,6 +54,18 @@ export default function BookCourt() {
   }, [currentMonth])
 
   const isAdmin = user?.isAdmin === true
+
+  // Booking window: residents 7 days ahead, non-residents 4 days ahead
+  const RESIDENT_WINDOW = 7
+  const NON_RESIDENT_WINDOW = 4
+  const bookingWindow = isAdmin ? 999 : effectiveType === 'resident' ? RESIDENT_WINDOW : effectiveType === 'nonResident' ? NON_RESIDENT_WINDOW : RESIDENT_WINDOW
+
+  function isTooFarAhead(day) {
+    if (isAdmin) return false
+    const today = startOfDay(new Date())
+    const diffDays = Math.round((startOfDay(day) - today) / (1000 * 60 * 60 * 24))
+    return diffDays > bookingWindow
+  }
 
   const activeCourts = selectedSport ? COURTS.filter(c => c.sport === selectedSport) : COURTS
 
@@ -321,6 +333,15 @@ export default function BookCourt() {
               <h3 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '1.5rem', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <CalendarCheck size={22} color="#166534" /> Choisir une date
               </h3>
+              {!isAdmin && (
+                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.75rem', padding: '0.75rem 1rem', color: '#1e40af', display: 'flex', gap: '0.625rem', marginBottom: '1.25rem', fontSize: '0.875rem', alignItems: 'flex-start' }}>
+                  <Info size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+                  {effectiveType === 'nonResident'
+                    ? `Non-résidents : réservation jusqu'à ${NON_RESIDENT_WINDOW} jours à l'avance.`
+                    : `Résidents : réservation jusqu'à ${RESIDENT_WINDOW} jours à l'avance.`
+                  }
+                </div>
+              )}
               {weekFull && selectedDate && (
                 <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#dc2626', display: 'flex', gap: '0.625rem', marginBottom: '1.25rem', fontSize: '0.9rem' }}>
                   <Ban size={17} style={{ flexShrink: 0, marginTop: 2 }} />
@@ -341,13 +362,16 @@ export default function BookCourt() {
                 {Array.from({ length: firstDayOfWeek }).map((_, i) => <div key={`b${i}`} />)}
                 {daysInMonth.map(day => {
                   const past = isPast(startOfDay(day)) && !isToday(day)
+                  const tooFar = isTooFarAhead(day)
+                  const disabled = past || tooFar
                   const sel = selectedDate && isSameDay(day, selectedDate)
                   const today = isToday(day)
                   return (
-                    <button key={day.toISOString()} disabled={past}
+                    <button key={day.toISOString()} disabled={disabled}
+                      title={tooFar ? `Réservation max ${bookingWindow} jours à l'avance` : ''}
                       onClick={() => { setSelectedDate(day); setSelectedCourt(null); setSelectedDuration(null); setSelectedStart(null) }}
-                      style={{ aspectRatio: '1', borderRadius: '0.625rem', border: today && !sel ? '2px solid #22c55e' : '2px solid transparent', background: sel ? '#166534' : 'transparent', color: past ? '#cbd5e1' : sel ? '#fff' : today ? '#166534' : '#0f172a', fontWeight: sel || today ? 700 : 500, fontSize: '0.9rem', cursor: past ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
-                      onMouseEnter={e => { if (!past && !sel) e.currentTarget.style.background = '#f1f5f9' }}
+                      style={{ aspectRatio: '1', borderRadius: '0.625rem', border: today && !sel ? '2px solid #22c55e' : '2px solid transparent', background: sel ? '#166534' : 'transparent', color: disabled ? '#cbd5e1' : sel ? '#fff' : today ? '#166534' : '#0f172a', fontWeight: sel || today ? 700 : 500, fontSize: '0.9rem', cursor: disabled ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
+                      onMouseEnter={e => { if (!disabled && !sel) e.currentTarget.style.background = '#f1f5f9' }}
                       onMouseLeave={e => { if (!sel) e.currentTarget.style.background = 'transparent' }}
                     >{format(day, 'd')}</button>
                   )
