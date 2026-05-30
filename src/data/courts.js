@@ -1,8 +1,15 @@
+export const SPORTS = [
+  { id: 'pickleball', label: 'Pickleball', emoji: '🏓', color: '#166534' },
+  { id: 'tennis',     label: 'Tennis',     emoji: '🎾', color: '#1B4E8B' },
+]
+
 export const COURTS = [
-  { id: 1, name: 'Terrain 1', color: '#166534' },
-  { id: 2, name: 'Terrain 2', color: '#1d4ed8' },
-  { id: 3, name: 'Terrain 3', color: '#7c3aed' },
-  { id: 4, name: 'Terrain 4', color: '#b45309' },
+  { id: 1, name: 'Terrain 1', color: '#166534', sport: 'pickleball' },
+  { id: 2, name: 'Terrain 2', color: '#1d4ed8', sport: 'pickleball' },
+  { id: 3, name: 'Terrain 3', color: '#7c3aed', sport: 'pickleball' },
+  { id: 4, name: 'Terrain 4', color: '#b45309', sport: 'pickleball' },
+  { id: 5, name: 'Tennis 1',  color: '#1B4E8B', sport: 'tennis' },
+  { id: 6, name: 'Tennis 2',  color: '#0e7490', sport: 'tennis' },
 ]
 
 // Individual 1-hour start times. Courts open 6h00, close 22h00.

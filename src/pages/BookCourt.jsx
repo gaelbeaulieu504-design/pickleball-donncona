@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, CalendarCheck, Clock, User, CreditCard,
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
-import { COURTS, START_TIMES, DURATIONS, WEEKLY_HOUR_LIMIT, PRICING, slotLabel } from '../data/courts'
+import { COURTS, SPORTS, START_TIMES, DURATIONS, WEEKLY_HOUR_LIMIT, PRICING, slotLabel } from '../data/courts'
 import PaymentStep from '../components/PaymentStep'
 import { sendBookingConfirmation } from '../utils/sendEmail'
 
@@ -19,6 +19,7 @@ export default function BookCourt() {
   const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking } = useBookings()
   const bookingInProgress = useRef(false)
 
+  const [selectedSport, setSelectedSport] = useState(null)
   const [step, setStep] = useState(0)
   function goToStep(n) {
     setStep(n)
@@ -53,6 +54,8 @@ export default function BookCourt() {
   }, [currentMonth])
 
   const isAdmin = user?.isAdmin === true
+
+  const activeCourts = selectedSport ? COURTS.filter(c => c.sport === selectedSport) : COURTS
 
   const weekHours = user && selectedDate && !isAdmin ? getUserWeekHours(user.id, selectedDate) : 0
   const weekFull = !isAdmin && weekHours >= WEEKLY_HOUR_LIMIT
@@ -104,7 +107,7 @@ export default function BookCourt() {
     await sendBookingConfirmation({
       to_name: user.name,
       to_email: user.email,
-      court: `Terrain ${selectedCourt}`,
+      court: COURTS.find(c => c.id === selectedCourt)?.name ?? `Terrain ${selectedCourt}`,
       date: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }),
       time_slot: slotLabel(selectedStart, selectedDuration),
       duration: `${selectedDuration} heure${selectedDuration > 1 ? 's' : ''}`,
@@ -170,7 +173,7 @@ export default function BookCourt() {
           )}
           <div style={{ background: '#f8fafc', borderRadius: '1rem', padding: '1.5rem', marginBottom: '2rem', textAlign: 'left' }}>
             {[
-              { label: 'Terrain', value: `Terrain ${selectedCourt}` },
+              { label: 'Terrain', value: COURTS.find(c => c.id === selectedCourt)?.name ?? `Terrain ${selectedCourt}` },
               { label: 'Date', value: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }) },
               { label: 'Heure', value: slotLabel(selectedStart, selectedDuration) },
               { label: 'Durée', value: `${selectedDuration}h` },
@@ -235,11 +238,68 @@ export default function BookCourt() {
           </div>
         )}
 
+        {/* Sport selector */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.875rem', fontSize: '1rem' }}>
+            Choisir un sport
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            {SPORTS.map(sport => {
+              const sel = selectedSport === sport.id
+              return (
+                <button key={sport.id} onClick={() => {
+                  setSelectedSport(sport.id)
+                  setSelectedCourt(null)
+                  setSelectedStart(null)
+                  setSelectedDuration(null)
+                  setSelectedDate(null)
+                  goToStep(0)
+                }}
+                  style={{
+                    flex: '1 1 160px',
+                    padding: '1.125rem 1.5rem',
+                    borderRadius: '1rem',
+                    border: sel ? `2.5px solid ${sport.color}` : '2px solid #e2e8f0',
+                    background: sel ? `${sport.color}10` : '#fff',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.875rem',
+                    transition: 'all 0.15s',
+                    boxShadow: sel ? `0 4px 16px ${sport.color}20` : 'none',
+                  }}
+                  onMouseEnter={e => { if (!sel) e.currentTarget.style.background = '#f8fafc' }}
+                  onMouseLeave={e => { if (!sel) e.currentTarget.style.background = '#fff' }}
+                >
+                  <span style={{ fontSize: '2rem', lineHeight: 1 }}>{sport.emoji}</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.0625rem', color: sel ? sport.color : '#0f172a' }}>{sport.label}</div>
+                    <div style={{ fontSize: '0.8125rem', color: '#64748b', marginTop: '0.125rem' }}>
+                      {sport.id === 'pickleball' ? '4 terrains disponibles' : '2 terrains disponibles'}
+                    </div>
+                  </div>
+                  {sel && (
+                    <div style={{ marginLeft: 'auto', width: 22, height: 22, borderRadius: '50%', background: sport.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <CheckCircle size={14} color="#fff" />
+                    </div>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
         {/* Weekly quota */}
         {selectedDate && <WeekBanner weekHours={weekHours} />}
 
+        {!selectedSport && (
+          <div style={{ background: '#f8fafc', border: '2px dashed #e2e8f0', borderRadius: '1.25rem', padding: '2.5rem', textAlign: 'center', color: '#94a3b8', fontSize: '1rem', fontWeight: 600 }}>
+            Veuillez choisir un sport ci-dessus pour continuer
+          </div>
+        )}
+
         {/* Step indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', gap: 0 }}>
+        {selectedSport && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', gap: 0 }}>
           {STEPS.map((s, i) => (
             <div key={s} style={{ display: 'flex', alignItems: 'center' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.375rem' }}>
@@ -251,9 +311,9 @@ export default function BookCourt() {
               {i < STEPS.length - 1 && <div style={{ width: 'clamp(1.5rem, 5vw, 4rem)', height: 2, background: i < step ? '#166534' : '#e2e8f0', margin: '0 0.25rem', marginBottom: '1.25rem', transition: 'background 0.3s' }} />}
             </div>
           ))}
-        </div>
+        </div>}
 
-        <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', padding: 'clamp(1.5rem, 4vw, 2.5rem)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+        {selectedSport && <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', padding: 'clamp(1.5rem, 4vw, 2.5rem)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
 
           {/* ── Step 0: Date ── */}
           {step === 0 && (
@@ -343,7 +403,7 @@ export default function BookCourt() {
                 <div style={{ marginBottom: '1.75rem' }}>
                   <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.875rem' }}>Choisir un terrain</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.875rem' }}>
-                    {COURTS.map(c => {
+                    {activeCourts.map(c => {
                       const free = getCourtFreeCount(c.id)
                       const sel = selectedCourt === c.id
                       return (
@@ -413,7 +473,7 @@ export default function BookCourt() {
               <div style={{ background: '#f0fdf4', borderRadius: '0.875rem', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', flexWrap: 'wrap', gap: '1.25rem' }}>
                 {[
                   { label: 'Date', value: format(selectedDate, 'd MMM yyyy', { locale: fr }) },
-                  { label: 'Terrain', value: `Terrain ${selectedCourt}` },
+                  { label: 'Terrain', value: COURTS.find(c => c.id === selectedCourt)?.name ?? `Terrain ${selectedCourt}` },
                   { label: 'Heure', value: slotLabel(selectedStart, selectedDuration) },
                   { label: 'Durée', value: `${selectedDuration} heure${selectedDuration > 1 ? 's' : ''}` },
                 ].map(r => (
@@ -554,7 +614,8 @@ export default function BookCourt() {
             )
           )}
 
-        </div>
+        </div>}
+
       </div>
     </div>
   )
