@@ -37,7 +37,7 @@ export default function Home() {
     <div style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
 
       {/* ── HERO ── */}
-      <section style={{ position: 'relative', height: 'clamp(600px, 90vh, 860px)', overflow: 'hidden', color: '#fff' }}>
+      <section style={{ position: 'relative', minHeight: 'clamp(680px, 92vh, 920px)', overflow: 'hidden', color: '#fff' }}>
         {HERO_PHOTOS.map((src, i) => (
           <div key={src} style={{
             position: 'absolute', inset: 0,
@@ -53,7 +53,7 @@ export default function Home() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(5,20,50,0.72) 0%, rgba(5,20,50,0.45) 60%, rgba(5,20,50,0.65) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,20,50,0.85) 0%, transparent 55%)' }} />
 
-        <div className="container" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '4rem' }}>
+        <div className="container" style={{ position: 'relative', minHeight: 'inherit', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingTop: '6rem', paddingBottom: 'clamp(3rem, 6vw, 5rem)' }}>
           {/* Badge */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(92,184,92,0.2)', backdropFilter: 'blur(12px)', border: '1px solid rgba(92,184,92,0.4)', color: '#86efac', padding: '0.4rem 1.1rem', borderRadius: '2rem', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1.5rem', width: 'fit-content' }}>
             <MapPin size={12} /> Donnacona, Québec · Été 2026
@@ -102,8 +102,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Bottom wave */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, transparent, #f8fafc)' }} />
       </section>
 
       {/* ── DISPONIBILITÉS ── */}
