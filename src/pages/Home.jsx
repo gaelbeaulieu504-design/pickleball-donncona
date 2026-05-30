@@ -222,39 +222,48 @@ export default function Home() {
       </section>
 
       {/* ── TARIFS ── */}
-      <section style={{ padding: 'clamp(3.5rem, 9vw, 6rem) 0', background: 'linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)' }}>
-        <div className="container">
+      <section style={{ padding: 'clamp(3.5rem, 9vw, 6rem) 0', background: 'linear-gradient(135deg, #0f2a50 0%, #1B4E8B 60%, #1e5fa8 100%)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+        {/* Décoration */}
+        <div style={{ position: 'absolute', top: '-6rem', right: '-4rem', width: 320, height: 320, background: 'rgba(255,255,255,0.04)', borderRadius: '50%', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-5rem', left: '-3rem', width: 260, height: 260, background: 'rgba(92,184,92,0.07)', borderRadius: '50%', pointerEvents: 'none' }} />
+
+        <div className="container" style={{ position: 'relative' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-tag">Tarifs</span>
-            <h2 className="section-title">Passe saisonnier — payez une fois, jouez tout l'été</h2>
-            <p className="section-subtitle" style={{ margin: '0 auto' }}>Un seul paiement pour toute la saison estivale. Sessions de 2 heures par terrain. Une preuve de résidence peut être exigée.</p>
+            <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.375rem 1rem', borderRadius: '2rem', marginBottom: '0.875rem' }}>Tarifs</span>
+            <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: '1rem' }}>Passe saisonnier — payez une fois,<br />jouez tout l'été</h2>
+            <p style={{ fontSize: '1.1rem', color: 'rgba(168,213,232,0.9)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto' }}>Un seul paiement pour toute la saison estivale. Sessions de 2 heures par terrain. Une preuve de résidence peut être exigée.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1.5rem', maxWidth: 700, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', maxWidth: 680, margin: '0 auto' }}>
             {/* Résident */}
-            <div style={{ background: 'linear-gradient(145deg, #0f3460, #1B4E8B)', color: '#fff', borderRadius: '1.5rem', padding: '2.5rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 20px 60px rgba(27,78,139,0.3)' }}>
-              <div style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: 160, height: 160, background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
-              <div style={{ position: 'absolute', bottom: '-2rem', left: '-2rem', width: 120, height: 120, background: 'rgba(92,184,92,0.08)', borderRadius: '50%' }} />
-              <div style={{ background: 'rgba(92,184,92,0.2)', border: '1px solid rgba(92,184,92,0.35)', display: 'inline-block', padding: '0.375rem 1.1rem', borderRadius: '2rem', fontSize: '0.775rem', fontWeight: 700, marginBottom: '1.25rem', letterSpacing: '0.08em', color: '#86efac' }}>🏠 DONNACONA RÉSIDENT</div>
-              <div style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.02em' }}>$40</div>
-              <div style={{ color: 'rgba(168,213,232,0.85)', marginBottom: '1.75rem', marginTop: '0.375rem', fontSize: '0.9rem' }}>passe pour tout l'été — paiement unique</div>
+            <div style={{ background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', border: '1.5px solid rgba(92,184,92,0.4)', borderRadius: '1.5rem', padding: '2.5rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none' }}
+            >
+              <div style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: 130, height: 130, background: 'rgba(92,184,92,0.08)', borderRadius: '50%' }} />
+              <div style={{ background: 'rgba(92,184,92,0.2)', border: '1px solid rgba(92,184,92,0.4)', display: 'inline-block', padding: '0.375rem 1.1rem', borderRadius: '2rem', fontSize: '0.775rem', fontWeight: 700, marginBottom: '1.25rem', letterSpacing: '0.08em', color: '#86efac' }}>🏠 DONNACONA RÉSIDENT</div>
+              <div style={{ fontSize: '4.5rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.02em', color: '#fff' }}>$40</div>
+              <div style={{ color: 'rgba(168,213,232,0.8)', marginBottom: '1.75rem', marginTop: '0.375rem', fontSize: '0.9rem' }}>passe pour tout l'été — paiement unique</div>
               {["Réservations illimitées tout l'été", 'Sessions de 2h par terrain', 'Preuve de résidence requise'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.7rem', justifyContent: 'center' }}>
                   <CheckCircle size={15} color="#5CB85C" />
-                  <span style={{ fontSize: '0.9rem' }}>{f}</span>
+                  <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.9)' }}>{f}</span>
                 </div>
               ))}
-              <button onClick={() => navigate('/book')} style={{ marginTop: '1.75rem', background: 'linear-gradient(135deg, #5CB85C, #4CAF50)', color: '#fff', border: 'none', padding: '0.9rem 2rem', borderRadius: '0.875rem', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', width: '100%', transition: 'all 0.2s', boxShadow: '0 4px 20px rgba(92,184,92,0.4)' }}
+              <button onClick={() => navigate('/book')} style={{ marginTop: '1.75rem', background: 'linear-gradient(135deg, #5CB85C, #4CAF50)', color: '#fff', border: 'none', padding: '0.9rem 2rem', borderRadius: '0.875rem', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', width: '100%', boxShadow: '0 4px 20px rgba(92,184,92,0.5)', transition: 'transform 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'none'}
               >Réserver (résident)</button>
             </div>
 
             {/* Non-résident */}
-            <div style={{ background: '#fff', borderRadius: '1.5rem', padding: '2.5rem 2rem', textAlign: 'center', border: '2px solid #e2e8f0', boxShadow: '0 8px 32px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: 160, height: 160, background: '#f8fafc', borderRadius: '50%' }} />
+            <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '1.5rem', padding: '2.5rem 2rem', textAlign: 'center', border: '1.5px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 40px rgba(0,0,0,0.2)' }}
+            >
+              <div style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: 130, height: 130, background: '#f0f9ff', borderRadius: '50%' }} />
               <div style={{ background: '#EBF3FB', color: '#1B4E8B', display: 'inline-block', padding: '0.375rem 1.1rem', borderRadius: '2rem', fontSize: '0.775rem', fontWeight: 700, marginBottom: '1.25rem', letterSpacing: '0.08em' }}>🌍 NON-RÉSIDENT</div>
-              <div style={{ fontSize: '4rem', fontWeight: 900, color: '#0f172a', lineHeight: 1, letterSpacing: '-0.02em' }}>$85</div>
+              <div style={{ fontSize: '4.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1, letterSpacing: '-0.02em' }}>$85</div>
               <div style={{ color: '#94a3b8', marginBottom: '1.75rem', marginTop: '0.375rem', fontSize: '0.9rem' }}>passe pour tout l'été — paiement unique</div>
               {["Réservations illimitées tout l'été", 'Sessions de 2h par terrain', 'Ouvert à tous les visiteurs'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.7rem', justifyContent: 'center' }}>
@@ -262,7 +271,7 @@ export default function Home() {
                   <span style={{ fontSize: '0.9rem', color: '#334155' }}>{f}</span>
                 </div>
               ))}
-              <button onClick={() => navigate('/book')} className="btn-primary" style={{ marginTop: '1.75rem', width: '100%', padding: '0.9rem 2rem', transition: 'all 0.2s' }}
+              <button onClick={() => navigate('/book')} className="btn-primary" style={{ marginTop: '1.75rem', width: '100%', padding: '0.9rem 2rem', transition: 'transform 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'none'}
               >Réserver (non-résident)</button>
