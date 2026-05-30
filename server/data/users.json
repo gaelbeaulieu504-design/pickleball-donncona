@@ -15,10 +15,11 @@
     "name": "gael beaulieu",
     "email": "gaelbeaulieu504@gmail.com",
     "password": "Avion1213",
-    "address": "221 rue belleau, donnacona, Québec, G3M0A7",
-    "isResident": true,
+    "address": "",
+    "isResident": null,
     "seasonPassPaid": false,
     "seasonPassType": null,
+    "freePass": false,
     "isAdmin": false
   },
   {
@@ -26,10 +27,11 @@
     "name": "Gael beaulieu",
     "email": "gaelbeaulieu50@gmail.com",
     "password": "Avion1213",
-    "address": "221 rue Belleau , Quebec, Québec, G3M 0A7",
-    "isResident": false,
+    "address": "",
+    "isResident": null,
     "seasonPassPaid": false,
     "seasonPassType": null,
+    "freePass": false,
     "isAdmin": false
   },
   {
@@ -37,10 +39,11 @@
     "name": "Simon Beaulieu",
     "email": "simon.sb.beaulieu@alcoa.com",
     "password": "Vivibo18",
-    "address": "219 Rue Belleau, Donnacona, Québec, G3M0A7",
-    "isResident": true,
+    "address": "",
+    "isResident": null,
     "seasonPassPaid": false,
     "seasonPassType": null,
+    "freePass": false,
     "isAdmin": false
   }
 ]
