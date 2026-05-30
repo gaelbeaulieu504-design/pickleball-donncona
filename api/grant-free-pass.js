@@ -10,6 +10,9 @@ export default async function handler(req, res) {
   if (grant) {
     users[idx].seasonPassPaid = true
     users[idx].seasonPassType = users[idx].seasonPassType || 'resident'
+  } else {
+    users[idx].seasonPassPaid = false
+    users[idx].seasonPassType = null
   }
   await setUsers(users)
   const { password: _, ...safeUser } = users[idx]
