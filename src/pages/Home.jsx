@@ -72,12 +72,12 @@ export default function Home() {
           </div>
 
           <h1 style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: '1rem', maxWidth: 700, textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
-            Réservez votre<br />
-            <span style={{ color: '#5CB85C' }}>terrain de pickleball</span>
+            Réservez votre terrain de<br />
+            <span style={{ color: '#5CB85C' }}>pickleball et tennis</span>
           </h1>
 
           <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: 'rgba(255,255,255,0.88)', maxWidth: 520, lineHeight: 1.7, marginBottom: '2rem', textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
-            6 terrains extérieurs à Donnacona. Réservez en ligne — résidents et visiteurs bienvenus.
+            4 terrains de pickleball et 2 terrains de tennis à Donnacona. Réservez en ligne — résidents et visiteurs bienvenus.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.875rem', marginBottom: '2.5rem' }}>
