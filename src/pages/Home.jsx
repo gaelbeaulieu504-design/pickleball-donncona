@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft } from 'lucide-react'
+import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star } from 'lucide-react'
 import { useBookings } from '../context/BookingContext'
 import { COURTS, START_TIMES } from '../data/courts'
 import { format, addDays, subDays } from 'date-fns'
@@ -290,6 +290,55 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* Accès libre vs passe */}
+      <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0' }}>
+        <div className="container" style={{ maxWidth: 860 }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <span className="section-tag">Bon à savoir</span>
+            <h2 className="section-title">Pas besoin de passe pour jouer !</h2>
+            <p className="section-subtitle" style={{ margin: '0 auto' }}>
+              Les terrains de pickleball 1 à 4 sont accessibles librement — venez jouer sans réservation.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            {/* Accès libre */}
+            <div style={{ background: '#f0fdf4', border: '2px solid #86efac', borderRadius: '1.25rem', padding: '2rem 1.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Users size={22} color="#166534" />
+                </div>
+                <h3 style={{ fontWeight: 800, color: '#14532d', fontSize: '1.125rem', margin: 0 }}>Accès libre — Terrains 1 à 4</h3>
+              </div>
+              <p style={{ color: '#166534', lineHeight: 1.7, fontSize: '0.9375rem', margin: 0 }}>
+                Vous pouvez vous présenter directement sur les terrains de pickleball <strong>sans réservation et sans passe</strong>. C'est gratuit et ouvert à tous.
+              </p>
+            </div>
+
+            {/* Passe = priorité */}
+            <div style={{ background: '#fefce8', border: '2px solid #fde68a', borderRadius: '1.25rem', padding: '2rem 1.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Star size={22} color="#b45309" />
+                </div>
+                <h3 style={{ fontWeight: 800, color: '#78350f', fontSize: '1.125rem', margin: 0 }}>Passe saisonnier = priorité</h3>
+              </div>
+              <p style={{ color: '#92400e', lineHeight: 1.7, fontSize: '0.9375rem', margin: 0 }}>
+                Les détenteurs d'un passe ($40 résident / $85 non-résident) ont la <strong>priorité sur les terrains 1 à 4</strong>. Si un passeur arrive, les joueurs sans passe doivent leur céder le terrain.
+              </p>
+            </div>
+          </div>
+
+          {/* Note tennis */}
+          <div style={{ marginTop: '1.25rem', background: '#eff6ff', border: '2px solid #bfdbfe', borderRadius: '1.25rem', padding: '1.25rem 1.75rem', display: 'flex', gap: '0.875rem', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '1.5rem', lineHeight: 1, flexShrink: 0 }}>🎾</span>
+            <p style={{ color: '#1e40af', fontSize: '0.9375rem', lineHeight: 1.7, margin: 0 }}>
+              <strong>Terrains de tennis (5 & 6) :</strong> la réservation en ligne avec passe saisonnier est requise pour accéder aux terrains de tennis.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* CTA banner */}
       <section style={{ background: 'linear-gradient(135deg, #1B4E8B, #143A6B)', padding: 'clamp(3rem, 8vw, 4.5rem) 0', textAlign: 'center', color: '#fff' }}>
