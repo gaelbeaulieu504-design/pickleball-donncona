@@ -10,46 +10,80 @@ function readJson(file) {
   catch { return [] }
 }
 function writeJson(file, data) {
-  fs.writeFileSync(path.join(DATA, file), JSON.stringify(data, null, 2))
+  try { fs.writeFileSync(path.join(DATA, file), JSON.stringify(data, null, 2)) }
+  catch { /* read-only filesystem on Vercel */ }
 }
 
-async function getKv() {
-  if (process.env.KV_REST_API_URL) {
-    const { kv } = await import('@vercel/kv')
-    return kv
-  }
-  return null
+// ── Edge Config helpers ──────────────────────────────────────────────────────
+async function edgeGet(key) {
+  const id = process.env.EDGE_CONFIG_ID
+  const token = process.env.VERCEL_API_TOKEN
+  const teamId = process.env.VERCEL_TEAM_ID
+  if (!id || !token) return null
+  try {
+    const url = `https://api.vercel.com/v1/edge-config/${id}/items?teamId=${teamId}`
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    const data = await res.json()
+    const items = data.items || data || []
+    const item = items.find(i => i.key === key)
+    return item ? item.value : null
+  } catch { return null }
 }
 
+async function edgeSet(key, value) {
+  const id = process.env.EDGE_CONFIG_ID
+  const token = process.env.VERCEL_API_TOKEN
+  const teamId = process.env.VERCEL_TEAM_ID
+  if (!id || !token) return false
+  try {
+    const url = `https://api.vercel.com/v1/edge-config/${id}/items?teamId=${teamId}`
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: [{ operation: 'upsert', key, value }] }),
+    })
+    return res.ok
+  } catch { return false }
+}
+
+const useEdge = () => !!(process.env.EDGE_CONFIG_ID && process.env.VERCEL_API_TOKEN)
+
+// ── Users ────────────────────────────────────────────────────────────────────
 export async function getUsers() {
-  const kv = await getKv()
-  if (kv) return (await kv.get('users')) || []
+  if (useEdge()) {
+    const val = await edgeGet('users')
+    // Fallback: if Edge Config has no users yet, return the bundled file data
+    if (val !== null) return val
+  }
   return readJson('users.json')
 }
 export async function setUsers(users) {
-  const kv = await getKv()
-  if (kv) { await kv.set('users', users); return }
+  if (useEdge()) { await edgeSet('users', users); return }
   writeJson('users.json', users)
 }
 
+// ── Bookings ─────────────────────────────────────────────────────────────────
 export async function getBookings() {
-  const kv = await getKv()
-  if (kv) return (await kv.get('bookings')) || []
+  if (useEdge()) {
+    const val = await edgeGet('bookings')
+    if (val !== null) return val
+  }
   return readJson('bookings.json')
 }
 export async function setBookings(bookings) {
-  const kv = await getKv()
-  if (kv) { await kv.set('bookings', bookings); return }
+  if (useEdge()) { await edgeSet('bookings', bookings); return }
   writeJson('bookings.json', bookings)
 }
 
+// ── Tournaments ──────────────────────────────────────────────────────────────
 export async function getTournaments() {
-  const kv = await getKv()
-  if (kv) return (await kv.get('tournaments')) || []
+  if (useEdge()) {
+    const val = await edgeGet('tournaments')
+    if (val !== null) return val
+  }
   return readJson('tournaments.json')
 }
 export async function setTournaments(tournaments) {
-  const kv = await getKv()
-  if (kv) { await kv.set('tournaments', tournaments); return }
+  if (useEdge()) { await edgeSet('tournaments', tournaments); return }
   writeJson('tournaments.json', tournaments)
 }
