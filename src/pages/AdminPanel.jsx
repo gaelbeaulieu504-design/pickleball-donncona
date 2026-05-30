@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift } from 'lucide-react'
+import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { WEEKLY_HOUR_LIMIT } from '../data/courts'
@@ -14,6 +14,11 @@ export default function AdminPanel() {
   const navigate = useNavigate()
   const [members, setMembers] = useState([])
   const [activeTab, setActiveTab] = useState('members')
+  const [tournaments, setTournaments] = useState([])
+  const [tournamentForm, setTournamentForm] = useState({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '' })
+  const [creatingTournament, setCreatingTournament] = useState(false)
+  const [tournamentResult, setTournamentResult] = useState(null)
+  const [showTournamentForm, setShowTournamentForm] = useState(false)
 
   const [emailSubject, setEmailSubject] = useState('')
   const [emailMessage, setEmailMessage] = useState('')
@@ -27,6 +32,7 @@ export default function AdminPanel() {
   useEffect(() => {
     if (user?.isAdmin) {
       getAllUsers().then(setMembers).catch(() => setMembers([]))
+      fetch('/api/tournaments').then(r => r.json()).then(d => setTournaments(Array.isArray(d) ? d : [])).catch(() => {})
     }
   }, [user])
 
@@ -69,6 +75,37 @@ export default function AdminPanel() {
     if (emailTarget === 'unpaid') return !m.seasonPassPaid
     return true
   })
+
+  async function handleCreateTournament() {
+    if (!tournamentForm.name.trim() || !tournamentForm.date) return
+    setCreatingTournament(true)
+    setTournamentResult(null)
+    try {
+      const res = await fetch('/api/tournaments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tournamentForm),
+      })
+      const data = await res.json()
+      if (data.id) {
+        setTournaments(ts => [...ts, data])
+        setTournamentForm({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '' })
+        setTournamentResult({ ok: true })
+        setShowTournamentForm(false)
+      } else {
+        setTournamentResult({ error: data.error || 'Erreur' })
+      }
+    } catch {
+      setTournamentResult({ error: 'Erreur réseau' })
+    }
+    setCreatingTournament(false)
+  }
+
+  async function handleDeleteTournament(id) {
+    if (!window.confirm('Supprimer ce tournoi ?')) return
+    await fetch('/api/tournaments', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tournamentId: id }) })
+    setTournaments(ts => ts.filter(t => t.id !== id))
+  }
 
   async function handleSendBroadcast() {
     if (!emailSubject.trim() || !emailMessage.trim()) return
@@ -142,6 +179,10 @@ export default function AdminPanel() {
           <button style={tabStyle('email')} onClick={() => setActiveTab('email')}>
             <Mail size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
             Envoyer un courriel
+          </button>
+          <button style={tabStyle('tournaments')} onClick={() => setActiveTab('tournaments')}>
+            <Trophy size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
+            Tournois ({tournaments.length})
           </button>
         </div>
 
@@ -420,6 +461,115 @@ export default function AdminPanel() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── Tab: Tournaments ── */}
+        {activeTab === 'tournaments' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div>
+                <h2 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.1rem', marginBottom: '0.125rem' }}>Gestion des tournois</h2>
+                <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Les tournois créés ici sont visibles par tous les membres</p>
+              </div>
+              <button
+                onClick={() => { setShowTournamentForm(v => !v); setTournamentResult(null) }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#b45309', color: '#fff', border: 'none', padding: '0.625rem 1.25rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}
+              >
+                <Plus size={16} /> {showTournamentForm ? 'Annuler' : 'Créer un tournoi'}
+              </button>
+            </div>
+
+            {/* Create form */}
+            {showTournamentForm && (
+              <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+                <h3 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '1.25rem', fontSize: '1rem' }}>Nouveau tournoi</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                  {[
+                    { label: 'Nom du tournoi *', key: 'name', type: 'text', placeholder: 'Ex: Tournoi Été 2026' },
+                    { label: 'Date *', key: 'date', type: 'date', placeholder: '' },
+                    { label: 'Lieu', key: 'location', type: 'text', placeholder: 'Terrains de pickleball Donnacona' },
+                    { label: 'Frais d\'inscription ($)', key: 'price', type: 'number', placeholder: '0 = Gratuit' },
+                    { label: 'Max participants', key: 'maxPlayers', type: 'number', placeholder: 'Laisser vide = illimité' },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <label style={{ display: 'block', fontWeight: 600, color: '#334155', fontSize: '0.875rem', marginBottom: '0.375rem' }}>{f.label}</label>
+                      <input
+                        type={f.type} value={tournamentForm[f.key]} placeholder={f.placeholder}
+                        onChange={e => setTournamentForm(v => ({ ...v, [f.key]: e.target.value }))}
+                        style={{ width: '100%', padding: '0.625rem 0.875rem', borderRadius: '0.5rem', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontWeight: 600, color: '#334155', fontSize: '0.875rem', marginBottom: '0.375rem' }}>Description</label>
+                  <textarea
+                    rows={3} value={tournamentForm.description} placeholder="Informations supplémentaires sur le tournoi…"
+                    onChange={e => setTournamentForm(v => ({ ...v, description: e.target.value }))}
+                    style={{ width: '100%', padding: '0.625rem 0.875rem', borderRadius: '0.5rem', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }}
+                  />
+                </div>
+                {tournamentResult?.error && (
+                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.625rem', padding: '0.75rem 1rem', color: '#dc2626', fontSize: '0.875rem', marginBottom: '1rem' }}>{tournamentResult.error}</div>
+                )}
+                <button
+                  onClick={handleCreateTournament}
+                  disabled={creatingTournament || !tournamentForm.name.trim() || !tournamentForm.date}
+                  style={{ background: '#b45309', color: '#fff', border: 'none', padding: '0.75rem 1.75rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', opacity: creatingTournament || !tournamentForm.name.trim() || !tournamentForm.date ? 0.6 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  <Trophy size={16} /> {creatingTournament ? 'Création…' : 'Créer le tournoi'}
+                </button>
+              </div>
+            )}
+
+            {tournamentResult?.ok && (
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.875rem', padding: '0.875rem 1rem', color: '#166534', fontWeight: 600, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <CheckCircle size={16} /> Tournoi créé avec succès ! Il est maintenant visible par tous les membres.
+              </div>
+            )}
+
+            {/* Tournament list */}
+            {tournaments.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem', background: '#f8fafc', borderRadius: '1.25rem', border: '2px dashed #e2e8f0' }}>
+                <Trophy size={40} color="#cbd5e1" style={{ margin: '0 auto 1rem', display: 'block' }} />
+                <p style={{ color: '#94a3b8', fontWeight: 600 }}>Aucun tournoi créé</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+                {[...tournaments].reverse().map(t => (
+                  <div key={t.id} style={{ background: '#fff', borderRadius: '1rem', border: '1px solid #e2e8f0', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: '0.75rem', background: 'linear-gradient(135deg, #fef3c7, #fde68a)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Trophy size={20} color="#b45309" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem' }}>{t.name}</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.625rem', fontSize: '0.8375rem', color: '#64748b', marginBottom: t.description ? '0.5rem' : 0 }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Calendar size={12} /> {t.date}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><MapPin size={12} /> {t.location}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Users size={12} /> {t.registrations.length} inscrit{t.registrations.length > 1 ? 's' : ''}{t.maxPlayers ? ` / ${t.maxPlayers}` : ''}</span>
+                        <span style={{ background: t.price ? '#fffbeb' : '#f0fdf4', color: t.price ? '#b45309' : '#166534', padding: '0.1rem 0.5rem', borderRadius: '2rem', fontWeight: 700 }}>{t.price ? `$${t.price}` : 'Gratuit'}</span>
+                      </div>
+                      {t.description && <p style={{ fontSize: '0.8375rem', color: '#475569', lineHeight: 1.5 }}>{t.description}</p>}
+                      {t.registrations.length > 0 && (
+                        <div style={{ marginTop: '0.625rem', display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                          {t.registrations.map((r, i) => (
+                            <span key={i} style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.15rem 0.5rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 600 }}>{r.name}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleDeleteTournament(t.id)}
+                      style={{ background: '#fef2f2', border: 'none', borderRadius: '0.5rem', padding: '0.5rem', cursor: 'pointer', color: '#dc2626', flexShrink: 0 }}
+                      title="Supprimer"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

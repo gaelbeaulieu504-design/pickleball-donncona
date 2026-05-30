@@ -42,3 +42,14 @@ export async function setBookings(bookings) {
   if (kv) { await kv.set('bookings', bookings); return }
   writeJson('bookings.json', bookings)
 }
+
+export async function getTournaments() {
+  const kv = await getKv()
+  if (kv) return (await kv.get('tournaments')) || []
+  return readJson('tournaments.json')
+}
+export async function setTournaments(tournaments) {
+  const kv = await getKv()
+  if (kv) { await kv.set('tournaments', tournaments); return }
+  writeJson('tournaments.json', tournaments)
+}

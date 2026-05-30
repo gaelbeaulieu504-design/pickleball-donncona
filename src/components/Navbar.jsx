@@ -12,9 +12,9 @@ const navLinks = [
 ]
 
 const inscriptionItems = [
-  { icon: Trophy, label: 'Tournois', color: '#b45309' },
-  { icon: Users, label: 'Ligues', color: '#1B4E8B' },
-  { icon: GraduationCap, label: 'Cours', color: '#166534' },
+  { icon: Trophy, label: 'Tournois', color: '#b45309', to: '/tournaments' },
+  { icon: Users, label: 'Ligues', color: '#1B4E8B', to: null },
+  { icon: GraduationCap, label: 'Cours', color: '#166534', to: null },
 ]
 
 export default function Navbar() {
@@ -94,23 +94,26 @@ export default function Navbar() {
                 border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                 padding: '0.5rem', minWidth: 200, zIndex: 200,
               }}>
-                {inscriptionItems.map(({ icon: Icon, label, color }) => (
+                {inscriptionItems.map(({ icon: Icon, label, color, to }) => (
                   <button key={label}
-                    onClick={() => setInscriptionOpen(false)}
+                    onClick={() => { setInscriptionOpen(false); if (to) navigate(to) }}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem',
                       padding: '0.75rem 1rem', borderRadius: '0.625rem',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#334155', fontWeight: 600, fontSize: '0.9375rem',
+                      background: 'none', border: 'none', cursor: to ? 'pointer' : 'default',
+                      color: to ? '#334155' : '#94a3b8', fontWeight: 600, fontSize: '0.9375rem',
                       transition: 'background 0.15s', textAlign: 'left',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc' }}
+                    onMouseEnter={e => { if (to) e.currentTarget.style.background = '#f8fafc' }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
                   >
                     <div style={{ width: 32, height: 32, borderRadius: '0.5rem', background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Icon size={16} color={color} />
+                      <Icon size={16} color={to ? color : '#cbd5e1'} />
                     </div>
-                    {label}
+                    <div>
+                      {label}
+                      {!to && <div style={{ fontSize: '0.7rem', color: '#cbd5e1', fontWeight: 500 }}>Bientôt disponible</div>}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -231,20 +234,23 @@ export default function Navbar() {
             </button>
             {mobileInscriptionOpen && (
               <div style={{ paddingLeft: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
-                {inscriptionItems.map(({ icon: Icon, label, color }) => (
+                {inscriptionItems.map(({ icon: Icon, label, color, to }) => (
                   <button key={label}
-                    onClick={() => { setMobileInscriptionOpen(false); setOpen(false) }}
+                    onClick={() => { setMobileInscriptionOpen(false); setOpen(false); if (to) navigate(to) }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: '0.75rem',
                       padding: '0.75rem 1rem', borderRadius: '0.5rem',
-                      background: '#f8fafc', border: 'none', cursor: 'pointer',
-                      color: '#334155', fontWeight: 600, fontSize: '0.9375rem', textAlign: 'left',
+                      background: '#f8fafc', border: 'none', cursor: to ? 'pointer' : 'default',
+                      color: to ? '#334155' : '#94a3b8', fontWeight: 600, fontSize: '0.9375rem', textAlign: 'left',
                     }}
                   >
                     <div style={{ width: 28, height: 28, borderRadius: '0.5rem', background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Icon size={15} color={color} />
+                      <Icon size={15} color={to ? color : '#cbd5e1'} />
                     </div>
-                    {label}
+                    <div>
+                      {label}
+                      {!to && <div style={{ fontSize: '0.7rem', color: '#cbd5e1', fontWeight: 500 }}>Bientôt disponible</div>}
+                    </div>
                   </button>
                 ))}
               </div>
