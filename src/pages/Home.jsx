@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft } from 'lucide-react'
 import { useBookings } from '../context/BookingContext'
@@ -6,10 +6,18 @@ import { COURTS, START_TIMES } from '../data/courts'
 import { format, addDays, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
+const HERO_PHOTOS = ['/terrain1.jpg', '/terrain2.jpg', '/terrain3.jpg']
+
 export default function Home() {
   const navigate = useNavigate()
   const { getBookedIndices } = useBookings()
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [heroPhoto, setHeroPhoto] = useState(0)
+
+  useEffect(() => {
+    const t = setInterval(() => setHeroPhoto(p => (p + 1) % HERO_PHOTOS.length), 5000)
+    return () => clearInterval(t)
+  }, [])
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd')
   const dateLabel = format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })
@@ -28,76 +36,92 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero */}
-      <section style={{
-        background: 'linear-gradient(135deg, #0D2E5C 0%, #1B4E8B 55%, #2563A8 100%)',
-        color: '#fff',
-        padding: 'clamp(4rem, 10vw, 7rem) 0 clamp(3rem, 8vw, 5rem)',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0, opacity: 0.05,
-          backgroundImage: `
-            repeating-linear-gradient(0deg, #fff 0, #fff 1px, transparent 1px, transparent 60px),
-            repeating-linear-gradient(90deg, #fff 0, #fff 1px, transparent 1px, transparent 60px)
-          `,
-        }} />
-        <div style={{ position: 'absolute', right: '-5rem', top: '-5rem', width: 400, height: 400, background: 'rgba(168,213,232,0.08)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', left: '-8rem', bottom: '-8rem', width: 500, height: 500, background: 'rgba(46,125,50,0.07)', borderRadius: '50%' }} />
+      {/* Hero — photo slideshow */}
+      <section style={{ position: 'relative', height: 'clamp(520px, 85vh, 800px)', overflow: 'hidden', color: '#fff' }}>
 
-        <div className="container" style={{ position: 'relative' }}>
+        {/* Background photos with crossfade */}
+        {HERO_PHOTOS.map((src, i) => (
+          <div key={src} style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url(${src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: i === heroPhoto ? 1 : 0,
+            transition: 'opacity 1.2s ease-in-out',
+          }} />
+        ))}
+
+        {/* Dark gradient overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(5,15,35,0.55) 0%, rgba(5,15,35,0.35) 50%, rgba(5,15,35,0.75) 100%)',
+        }} />
+
+        {/* Content */}
+        <div className="container" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
+
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(168,213,232,0.18)', border: '1px solid rgba(168,213,232,0.35)',
-            color: '#A8D5E8', padding: '0.375rem 1rem', borderRadius: '2rem',
+            background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            color: '#fff', padding: '0.375rem 1rem', borderRadius: '2rem',
             fontSize: '0.8125rem', fontWeight: 700, letterSpacing: '0.06em',
-            textTransform: 'uppercase', marginBottom: '1.5rem',
+            textTransform: 'uppercase', marginBottom: '1.25rem', width: 'fit-content',
           }}>
             <MapPin size={13} /> Donnacona, Québec
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2.25rem, 6vw, 4rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: '1.25rem', maxWidth: 700 }}>
+          <h1 style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: '1rem', maxWidth: 700, textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
             Réservez votre<br />
             <span style={{ color: '#5CB85C' }}>terrain de pickleball</span>
           </h1>
 
-          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: '#A8D5E8', maxWidth: 560, lineHeight: 1.7, marginBottom: '2.5rem' }}>
-            Donnacona dispose de 6 terrains de pickleball, dont 4 sont réservables en ligne. Réservez votre terrain dès maintenant — résidents et visiteurs bienvenus.
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: 'rgba(255,255,255,0.88)', maxWidth: 520, lineHeight: 1.7, marginBottom: '2rem', textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
+            6 terrains extérieurs à Donnacona. Réservez en ligne — résidents et visiteurs bienvenus.
           </p>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '3rem' }}>
-            <button className="btn-accent" style={{ fontSize: '1.0625rem', padding: '1rem 2.25rem' }} onClick={() => navigate('/book')}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.875rem', marginBottom: '2.5rem' }}>
+            <button className="btn-accent" style={{ fontSize: '1.0625rem', padding: '0.9rem 2.25rem', boxShadow: '0 4px 20px rgba(92,184,92,0.4)' }} onClick={() => navigate('/book')}>
               <CalendarCheck size={20} /> Réserver un terrain
             </button>
             <button
-              style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.3)', fontSize: '1.0625rem', padding: '1rem 2.25rem', background: 'transparent', border: '2px solid rgba(255,255,255,0.3)', borderRadius: '0.75rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ color: '#fff', fontSize: '1rem', padding: '0.9rem 2rem', background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: '0.75rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
               onClick={() => navigate('/pricing')}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
             >
               Voir les tarifs
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
+          {/* Stats row */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
             {[
-              { value: '4', label: 'Terrains extérieurs' },
+              { value: '6', label: 'Terrains extérieurs' },
               { value: '$40', label: 'Passe résident / été' },
               { value: '$85', label: 'Passe non-résident / été' },
               { value: '6h–22h', label: "Heures d'ouverture" },
             ].map(s => (
-              <div key={s.label}>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#5CB85C' }}>{s.value}</div>
-                <div style={{ fontSize: '0.875rem', color: '#A8D5E8' }}>{s.label}</div>
+              <div key={s.label} style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '0.75rem', padding: '0.625rem 1.125rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#5CB85C', lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '0.25rem', fontWeight: 600 }}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Court illustration */}
-      <div style={{ background: '#1B4E8B', padding: '2.5rem 0', overflow: 'hidden' }}>
-        <CourtIllustration />
-      </div>
+        {/* Photo dots indicator */}
+        <div style={{ position: 'absolute', bottom: '1.5rem', right: '2rem', display: 'flex', gap: '0.5rem' }}>
+          {HERO_PHOTOS.map((_, i) => (
+            <button key={i} onClick={() => setHeroPhoto(i)} style={{
+              width: i === heroPhoto ? 24 : 8, height: 8,
+              borderRadius: 4, border: 'none', cursor: 'pointer',
+              background: i === heroPhoto ? '#5CB85C' : 'rgba(255,255,255,0.4)',
+              transition: 'all 0.3s', padding: 0,
+            }} />
+          ))}
+        </div>
+      </section>
 
       {/* ── DISPONIBILITÉS ── */}
       <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0', background: '#f8fafc' }}>
@@ -266,31 +290,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Photo gallery */}
-      <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <span className="section-tag">Nos installations</span>
-            <h2 className="section-title">Des terrains de qualité à Donnacona</h2>
-            <p className="section-subtitle" style={{ margin: '0 auto' }}>Photos aériennes prises par drone — venez jouer !</p>
-          </div>
-
-          {/* Main large photo */}
-          <div style={{ borderRadius: '1.5rem', overflow: 'hidden', marginBottom: '1rem', boxShadow: '0 8px 40px rgba(0,0,0,0.15)' }}>
-            <img src="/terrain1.jpg" alt="Terrains de pickleball Donnacona vus du ciel avec joueurs" style={{ width: '100%', height: 'clamp(280px, 45vw, 520px)', objectFit: 'cover', display: 'block' }} />
-          </div>
-
-          {/* Two smaller photos side by side */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-              <img src="/terrain2.jpg" alt="Vue aérienne des 6 terrains de pickleball" style={{ width: '100%', height: 'clamp(180px, 25vw, 320px)', objectFit: 'cover', display: 'block' }} />
-            </div>
-            <div style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-              <img src="/terrain3.jpg" alt="Terrains de pickleball de Donnacona vides" style={{ width: '100%', height: 'clamp(180px, 25vw, 320px)', objectFit: 'cover', display: 'block' }} />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA banner */}
       <section style={{ background: 'linear-gradient(135deg, #1B4E8B, #143A6B)', padding: 'clamp(3rem, 8vw, 4.5rem) 0', textAlign: 'center', color: '#fff' }}>
