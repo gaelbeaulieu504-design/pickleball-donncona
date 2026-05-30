@@ -58,9 +58,9 @@ export default function About() {
             </div>
           </div>
 
-          {/* 6-court diagram */}
-          <div style={{ flex: '1 1 280px', display: 'flex', justifyContent: 'center' }}>
-            <CourtDiagram />
+          {/* Photo terrain */}
+          <div style={{ flex: '1 1 280px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
+            <img src="/terrain1.jpg" alt="Terrains de pickleball Donnacona vus du ciel" style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }} />
           </div>
         </div>
 
@@ -172,6 +172,24 @@ export default function About() {
                 </div>
               )
             })}
+          </div>
+        </div>
+
+        {/* Photo gallery */}
+        <div style={{ marginBottom: '3.5rem' }}>
+          <h2 style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1.25rem', fontSize: '1.375rem' }}>
+            Photos des terrains
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', gridColumn: '1 / -1' }}>
+              <img src="/terrain2.jpg" alt="Vue aérienne complète des terrains" style={{ width: '100%', height: 'clamp(200px, 35vw, 420px)', objectFit: 'cover', display: 'block' }} />
+            </div>
+            <div style={{ borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+              <img src="/terrain1.jpg" alt="Joueurs sur les terrains de pickleball" style={{ width: '100%', height: 'clamp(150px, 20vw, 260px)', objectFit: 'cover', display: 'block' }} />
+            </div>
+            <div style={{ borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+              <img src="/terrain3.jpg" alt="Terrains de pickleball Donnacona" style={{ width: '100%', height: 'clamp(150px, 20vw, 260px)', objectFit: 'cover', display: 'block' }} />
+            </div>
           </div>
         </div>
 

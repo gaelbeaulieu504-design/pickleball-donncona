@@ -266,29 +266,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Facility highlights */}
+      {/* Photo gallery */}
       <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span className="section-tag">Nos installations</span>
             <h2 className="section-title">Des terrains de qualité à Donnacona</h2>
-            <p className="section-subtitle" style={{ margin: '0 auto' }}>Tout ce qu'il vous faut pour une expérience de pickleball mémorable.</p>
+            <p className="section-subtitle" style={{ margin: '0 auto' }}>Photos aériennes prises par drone — venez jouer !</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem' }}>
-            {[
-            ].map(f => (
-              <div key={f.title} style={{ background: '#fff', borderRadius: '1rem', padding: '1.75rem', border: '1px solid #e2e8f0', display: 'flex', gap: '1rem', alignItems: 'flex-start', transition: 'box-shadow 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
-                onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-              >
-                <div style={{ fontSize: '1.75rem', flexShrink: 0 }}>{f.icon}</div>
-                <div>
-                  <h3 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.375rem', fontSize: '1rem' }}>{f.title}</h3>
-                  <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6 }}>{f.desc}</p>
-                </div>
-              </div>
-            ))}
+          {/* Main large photo */}
+          <div style={{ borderRadius: '1.5rem', overflow: 'hidden', marginBottom: '1rem', boxShadow: '0 8px 40px rgba(0,0,0,0.15)' }}>
+            <img src="/terrain1.jpg" alt="Terrains de pickleball Donnacona vus du ciel avec joueurs" style={{ width: '100%', height: 'clamp(280px, 45vw, 520px)', objectFit: 'cover', display: 'block' }} />
+          </div>
+
+          {/* Two smaller photos side by side */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              <img src="/terrain2.jpg" alt="Vue aérienne des 6 terrains de pickleball" style={{ width: '100%', height: 'clamp(180px, 25vw, 320px)', objectFit: 'cover', display: 'block' }} />
+            </div>
+            <div style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              <img src="/terrain3.jpg" alt="Terrains de pickleball de Donnacona vides" style={{ width: '100%', height: 'clamp(180px, 25vw, 320px)', objectFit: 'cover', display: 'block' }} />
+            </div>
           </div>
         </div>
       </section>
