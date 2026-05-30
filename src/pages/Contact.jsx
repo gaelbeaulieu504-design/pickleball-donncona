@@ -23,9 +23,9 @@ export default function Contact() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="section-tag">Contact</span>
-          <h1 className="section-title">Get in Touch</h1>
+          <h1 className="section-title">Contactez-nous</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Have a question about booking, pricing, or our facility? We'd love to hear from you.
+            Une question sur les réservations, les tarifs ou nos installations ? Nous serions ravis de vous répondre.
           </p>
         </div>
 
@@ -42,25 +42,25 @@ export default function Contact() {
             {[
               {
                 icon: <MapPin size={20} color="#166534" />,
-                title: 'Location',
+                title: 'Adresse',
                 lines: ['Donnacona, Québec', 'Canada'],
               },
               {
                 icon: <Phone size={20} color="#166534" />,
-                title: 'Phone',
+                title: 'Téléphone',
                 lines: ['(418) 555-1234'],
                 href: 'tel:+14185551234',
               },
               {
                 icon: <Mail size={20} color="#166534" />,
-                title: 'Email',
+                title: 'Courriel',
                 lines: ['pickleballdonnacona@gmail.com'],
                 href: 'mailto:pickleballdonnacona@gmail.com',
               },
               {
                 icon: <Clock size={20} color="#166534" />,
-                title: 'Hours',
-                lines: ['Mon–Sat: 7:00 AM – 10:00 PM', 'Sunday: 8:00 AM – 9:00 PM'],
+                title: 'Heures',
+                lines: ['Lun–Sam : 6h00 – 22h00', 'Dimanche : 6h00 – 22h00'],
               },
             ].map(item => (
               <div key={item.title} style={{
@@ -132,7 +132,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   style={{ color: '#166534', fontWeight: 600, fontSize: '0.825rem' }}
                 >
-                  Open in Maps ↗
+                  Ouvrir dans Maps ↗
                 </a>
               </div>
             </div>
@@ -158,34 +158,34 @@ export default function Contact() {
                   <CheckCircle size={36} color="#fff" />
                 </div>
                 <h3 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.375rem', marginBottom: '0.75rem' }}>
-                  Message Sent!
+                  Message envoyé !
                 </h3>
                 <p style={{ color: '#64748b', lineHeight: 1.7, marginBottom: '1.75rem' }}>
-                  Thanks for reaching out, <strong>{form.name}</strong>. We'll get back to you at <strong>{form.email}</strong> within 1–2 business days.
+                  Merci de nous avoir contactés, <strong>{form.name}</strong>. Nous vous répondrons à <strong>{form.email}</strong> dans les 1 à 2 jours ouvrables.
                 </p>
                 <button
                   className="btn-secondary"
                   onClick={() => { setSent(false); setForm({ name: '', email: '', subject: '', message: '' }) }}
                 >
-                  Send Another Message
+                  Envoyer un autre message
                 </button>
               </div>
             ) : (
               <>
                 <h2 style={{ fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem', fontSize: '1.375rem' }}>
-                  Send Us a Message
+                  Envoyez-nous un message
                 </h2>
                 <p style={{ color: '#64748b', marginBottom: '1.75rem', fontSize: '0.9375rem' }}>
-                  We typically respond within 1–2 business days.
+                  Nous répondons habituellement dans les 1 à 2 jours ouvrables.
                 </p>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <Field
-                      label="Full Name *"
+                      label="Nom complet *"
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Jean Tremblay"
                       value={form.name}
                       onChange={v => setForm(p => ({ ...p, name: v }))}
                     />
@@ -193,27 +193,28 @@ export default function Contact() {
                       label="Email *"
                       id="email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="vous@exemple.com"
                       value={form.email}
                       onChange={v => setForm(p => ({ ...p, email: v }))}
                     />
                   </div>
                   <Field
-                    label="Subject"
+                    label="Sujet"
                     id="subject"
                     type="text"
-                    placeholder="Booking question, facility info…"
+                    placeholder="Question sur une réservation, les installations…"
                     value={form.subject}
                     onChange={v => setForm(p => ({ ...p, subject: v }))}
                   />
                   <div>
                     <label htmlFor="message" style={{ display: 'block', fontWeight: 600, color: '#334155', marginBottom: '0.375rem', fontSize: '0.9375rem' }}>
                       Message *
+
                     </label>
                     <textarea
                       id="message"
                       rows={5}
-                      placeholder="How can we help you?"
+                      placeholder="Comment pouvons-nous vous aider ?"
                       value={form.message}
                       onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                       style={{
@@ -246,12 +247,12 @@ export default function Contact() {
                     {loading ? (
                       <>
                         <span style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                        Sending…
+                        Envoi en cours…
                       </>
                     ) : (
                       <>
                         <Send size={18} />
-                        Send Message
+                        Envoyer le message
                       </>
                     )}
                   </button>

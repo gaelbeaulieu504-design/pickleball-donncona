@@ -81,8 +81,8 @@ export default function Home() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
             {[
               { value: '4', label: 'Terrains extérieurs' },
-              { value: '$40', label: 'Tarif résident' },
-              { value: '$85', label: 'Tarif non-résident' },
+              { value: '$40', label: 'Passe résident / été' },
+              { value: '$85', label: 'Passe non-résident / été' },
               { value: '6h–22h', label: "Heures d'ouverture" },
             ].map(s => (
               <div key={s.label}>
@@ -227,9 +227,9 @@ export default function Home() {
       <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 0', background: '#f8fafc' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="section-tag">Pricing</span>
-            <h2 className="section-title">Tarifs simples et transparents</h2>
-            <p className="section-subtitle" style={{ margin: '0 auto' }}>Sessions de 2 heures par terrain. Une preuve de résidence peut être exigée.</p>
+            <span className="section-tag">Tarifs</span>
+            <h2 className="section-title">Passe saisonnier — payez une fois, jouez tout l'été</h2>
+            <p className="section-subtitle" style={{ margin: '0 auto' }}>Un seul paiement pour toute la saison estivale. Sessions de 2 heures par terrain. Une preuve de résidence peut être exigée.</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', maxWidth: 680, margin: '0 auto' }}>
@@ -237,8 +237,8 @@ export default function Home() {
               <div style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: 120, height: 120, background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
               <div style={{ background: 'rgba(255,255,255,0.15)', display: 'inline-block', padding: '0.375rem 1rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '1rem', letterSpacing: '0.06em' }}>DONNACONA RÉSIDENT</div>
               <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>$40</div>
-              <div style={{ color: '#A8D5E8', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
-              {['Réservation de 2 heures', 'Réservation en ligne', 'Preuve de résidence requise'].map(f => (
+              <div style={{ color: '#A8D5E8', marginBottom: '1.5rem', marginTop: '0.25rem' }}>passe pour tout l'été — paiement unique</div>
+              {["Réservations illimitées tout l'été", 'Sessions de 2h par terrain', 'Preuve de résidence requise'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
                   <CheckCircle size={15} color="#5CB85C" />
                   <span style={{ fontSize: '0.9375rem' }}>{f}</span>
@@ -253,8 +253,8 @@ export default function Home() {
             <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '2.5rem 2rem', textAlign: 'center', border: '2px solid #e2e8f0' }}>
               <div style={{ background: '#EBF3FB', color: '#1B4E8B', display: 'inline-block', padding: '0.375rem 1rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '1rem', letterSpacing: '0.06em' }}>NON-RÉSIDENT</div>
               <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>$85</div>
-              <div style={{ color: '#64748b', marginBottom: '1.5rem', marginTop: '0.25rem' }}>par 2 heures / par terrain</div>
-              {['Réservation de 2 heures', 'Réservation en ligne', 'Ouvert à tous les visiteurs'].map(f => (
+              <div style={{ color: '#64748b', marginBottom: '1.5rem', marginTop: '0.25rem' }}>passe pour tout l'été — paiement unique</div>
+              {["Réservations illimitées tout l'été", 'Sessions de 2h par terrain', 'Ouvert à tous les visiteurs'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem', justifyContent: 'center' }}>
                   <CheckCircle size={15} color="#1B4E8B" />
                   <span style={{ fontSize: '0.9375rem', color: '#334155' }}>{f}</span>

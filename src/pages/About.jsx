@@ -10,8 +10,8 @@ export default function About() {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <span className="section-tag">About the Facility</span>
-          <h1 className="section-title">Donnacona's Pickleball Courts</h1>
+          <span className="section-tag">Nos installations</span>
+          <h1 className="section-title">Les terrains de pickleball de Donnacona</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
             Quatre terrains extérieurs de qualité dans un cadre communautaire accueillant — conçus pour tous les niveaux.
           </p>
@@ -33,7 +33,7 @@ export default function About() {
           <div style={{ position: 'absolute', right: '-4rem', bottom: '-4rem', width: 200, height: 200, background: 'rgba(34,197,94,0.07)', borderRadius: '50%' }} />
           <div style={{ flex: '1 1 300px', position: 'relative' }}>
             <div style={{ fontSize: '0.8125rem', color: '#4ade80', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.875rem' }}>
-              Our Facility
+              Nos installations
             </div>
             <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#fff', marginBottom: '1rem', lineHeight: 1.3 }}>
               4 Terrains extérieurs,<br />Ouverts à tous
@@ -42,7 +42,7 @@ export default function About() {
               Nos installations comprennent 4 terrains extérieurs de pickleball aux dimensions réglementaires, avec des surfaces de qualité, des filets permanents et un éclairage adéquat. Que vous débutiez ou que vous soyez un joueur compétitif, ces terrains sont pour vous.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-              {['Permanent Nets', 'Court Lighting', 'Accessible', 'Free Parking'].map(tag => (
+              {['Filets permanents', 'Éclairage des terrains', 'Accessible', 'Stationnement gratuit'].map(tag => (
                 <span key={tag} style={{
                   background: 'rgba(74,222,128,0.15)',
                   border: '1px solid rgba(74,222,128,0.25)',
@@ -138,7 +138,7 @@ export default function About() {
         }}>
           <h2 style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', fontSize: '1.375rem', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <Clock size={22} color="#166534" />
-            Hours of Operation
+            Heures d'ouverture
           </h2>
           <div style={{
             display: 'grid',
@@ -146,16 +146,17 @@ export default function About() {
             gap: '0.875rem',
           }}>
             {[
-              { day: 'Monday', hours: '6h00 – 22h00' },
-              { day: 'Tuesday', hours: '6h00 – 22h00' },
-              { day: 'Wednesday', hours: '6h00 – 22h00' },
-              { day: 'Thursday', hours: '6h00 – 22h00' },
-              { day: 'Friday', hours: '6h00 – 22h00' },
-              { day: 'Saturday', hours: '6h00 – 22h00' },
-              { day: 'Sunday', hours: '6h00 – 22h00' },
+              { day: 'Lundi', hours: '6h00 – 22h00' },
+              { day: 'Mardi', hours: '6h00 – 22h00' },
+              { day: 'Mercredi', hours: '6h00 – 22h00' },
+              { day: 'Jeudi', hours: '6h00 – 22h00' },
+              { day: 'Vendredi', hours: '6h00 – 22h00' },
+              { day: 'Samedi', hours: '6h00 – 22h00' },
+              { day: 'Dimanche', hours: '6h00 – 22h00' },
             ].map(h => {
-              const today = new Date().toLocaleDateString('en-US', { weekday: 'long' })
-              const isToday = h.day === today
+              const today = new Date().toLocaleDateString('fr-CA', { weekday: 'long' })
+              const todayCapitalized = today.charAt(0).toUpperCase() + today.slice(1)
+              const isToday = h.day === todayCapitalized
               return (
                 <div key={h.day} style={{
                   background: isToday ? 'linear-gradient(135deg, #14532d, #166534)' : '#fff',
@@ -165,7 +166,7 @@ export default function About() {
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <span style={{ fontWeight: isToday ? 700 : 600, color: isToday ? '#fff' : '#334155', fontSize: '0.9rem' }}>
-                    {h.day} {isToday && <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.2)', padding: '0.125rem 0.5rem', borderRadius: '2rem', marginLeft: '0.375rem' }}>Today</span>}
+                    {h.day} {isToday && <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.2)', padding: '0.125rem 0.5rem', borderRadius: '2rem', marginLeft: '0.375rem' }}>Aujourd'hui</span>}
                   </span>
                   <span style={{ fontWeight: 700, color: isToday ? '#4ade80' : '#166534', fontSize: '0.875rem' }}>{h.hours}</span>
                 </div>
@@ -183,10 +184,10 @@ export default function About() {
           color: '#fff',
         }}>
           <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 800, marginBottom: '0.75rem' }}>
-            Ready to Book Your Court?
+            Prêt à réserver votre terrain ?
           </h2>
           <p style={{ color: '#bbf7d0', marginBottom: '1.75rem', fontSize: '1.0625rem' }}>
-            Reserve online in minutes — it's fast, easy, and secure.
+            Réservez en ligne en quelques minutes — rapide, facile et sécurisé.
           </p>
           <button
             className="btn-primary"
@@ -194,7 +195,7 @@ export default function About() {
             onClick={() => navigate('/book')}
           >
             <CalendarCheck size={20} />
-            Book a Court
+            Réserver un terrain
           </button>
         </div>
       </div>
@@ -217,7 +218,7 @@ function CourtDiagram() {
           <line x1="42.5" y1="63" x2="42.5" y2="95" stroke="#4ade80" strokeWidth="0.75" />
           <line x1="0" y1="47.5" x2="85" y2="47.5" stroke="#e2e8f0" strokeWidth="2" />
           <text x="42.5" y="88" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="Inter,sans-serif" fontWeight="600">
-            Court {i + 1}
+            Terrain {i + 1}
           </text>
         </g>
       ))}
