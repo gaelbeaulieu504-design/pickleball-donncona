@@ -1,10 +1,40 @@
-import { getTournaments, setTournaments } from './_storage.js'
-import emailjs from '@emailjs/browser'
-
-const SERVICE_ID  = process.env.VITE_EMAILJS_SERVICE_ID
-const TEMPLATE_ID = process.env.VITE_EMAILJS_TEMPLATE_ID
-const PUBLIC_KEY  = process.env.VITE_EMAILJS_PUBLIC_KEY
 const ADMIN_EMAIL = 'pickleballdonnacona@gmail.com'
+
+async function getTournaments() {
+  const id = process.env.EDGE_CONFIG_ID
+  const token = process.env.VERCEL_API_TOKEN
+  const teamId = process.env.VERCEL_TEAM_ID
+  if (id && token) {
+    const res = await fetch(
+      `https://api.vercel.com/v1/edge-config/${id}/items?teamId=${teamId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    const data = await res.json()
+    const item = (data.items || data || []).find(i => i.key === 'tournaments')
+    return item ? item.value : []
+  }
+  const { getTournaments: getLocal } = await import('./_storage.js')
+  return getLocal()
+}
+
+async function saveTournaments(tournaments) {
+  const id = process.env.EDGE_CONFIG_ID
+  const token = process.env.VERCEL_API_TOKEN
+  const teamId = process.env.VERCEL_TEAM_ID
+  if (id && token) {
+    await fetch(
+      `https://api.vercel.com/v1/edge-config/${id}/items?teamId=${teamId}`,
+      {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ operation: 'upsert', key: 'tournaments', value: tournaments }] }),
+      }
+    )
+    return
+  }
+  const { setTournaments: setLocal } = await import('./_storage.js')
+  await setLocal(tournaments)
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -20,26 +50,21 @@ export default async function handler(req, res) {
 
   const tournament = tournaments[idx]
 
-  // Check if already registered
   if (tournament.registrations.find(r => r.email === userEmail)) {
     return res.status(400).json({ error: 'Vous êtes déjà inscrit à ce tournoi' })
   }
-
-  // Check max players
   if (tournament.maxPlayers && tournament.registrations.length >= tournament.maxPlayers) {
     return res.status(400).json({ error: 'Ce tournoi est complet' })
   }
 
-  // Add registration
-  tournament.registrations.push({
-    name: userName,
-    email: userEmail,
-    registeredAt: new Date().toISOString(),
-  })
+  tournament.registrations.push({ name: userName, email: userEmail, registeredAt: new Date().toISOString() })
   tournaments[idx] = tournament
-  await setTournaments(tournaments)
+  await saveTournaments(tournaments)
 
-  // Send email to admin via EmailJS REST API
+  // Send email to admin via EmailJS REST
+  const SERVICE_ID = process.env.VITE_EMAILJS_SERVICE_ID
+  const TEMPLATE_ID = process.env.VITE_EMAILJS_TEMPLATE_ID
+  const PUBLIC_KEY = process.env.VITE_EMAILJS_PUBLIC_KEY
   if (SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY) {
     try {
       await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -65,7 +90,7 @@ export default async function handler(req, res) {
         })
       })
     } catch (e) {
-      console.error('[EmailJS] Erreur envoi email tournoi:', e)
+      console.error('[EmailJS] Erreur:', e)
     }
   }
 
