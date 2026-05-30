@@ -7,6 +7,7 @@ import cors from 'cors'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const USERS_FILE = path.join(__dirname, 'data', 'users.json')
 const BOOKINGS_FILE = path.join(__dirname, 'data', 'bookings.json')
+const TOURNAMENTS_FILE = path.join(__dirname, 'data', 'tournaments.json')
 
 function readBookings() {
   try {
@@ -18,6 +19,14 @@ function readBookings() {
 
 function writeBookings(bookings) {
   fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2))
+}
+
+function readTournaments() {
+  try { return JSON.parse(fs.readFileSync(TOURNAMENTS_FILE, 'utf8')) }
+  catch { return [] }
+}
+function writeTournaments(tournaments) {
+  fs.writeFileSync(TOURNAMENTS_FILE, JSON.stringify(tournaments, null, 2))
 }
 
 const app = express()
@@ -123,6 +132,76 @@ app.delete('/api/bookings/:id', (req, res) => {
   const bookings = readBookings().filter(b => b.id !== req.params.id)
   writeBookings(bookings)
   res.json({ success: true })
+})
+
+// GET tournaments
+app.get('/api/tournaments', (req, res) => {
+  res.json(readTournaments())
+})
+
+// POST create tournament
+app.post('/api/tournaments', (req, res) => {
+  const { name, date, location, description, maxPlayers, price } = req.body
+  if (!name || !date) return res.status(400).json({ error: 'Nom et date requis' })
+  const tournaments = readTournaments()
+  const newTournament = {
+    id: Date.now().toString(),
+    name,
+    date,
+    location: location || 'Terrains de pickleball Donnacona',
+    description: description || '',
+    maxPlayers: maxPlayers ? Number(maxPlayers) : null,
+    price: price ? Number(price) : 0,
+    registrations: [],
+    createdAt: new Date().toISOString(),
+  }
+  tournaments.push(newTournament)
+  writeTournaments(tournaments)
+  res.json(newTournament)
+})
+
+// DELETE tournament
+app.delete('/api/tournaments', (req, res) => {
+  const { tournamentId } = req.body
+  const updated = readTournaments().filter(t => t.id !== tournamentId)
+  writeTournaments(updated)
+  res.json({ success: true })
+})
+
+// POST register to tournament
+app.post('/api/tournament-register', (req, res) => {
+  const { tournamentId, userName, userEmail } = req.body
+  if (!tournamentId || !userName || !userEmail) return res.status(400).json({ error: 'Paramètres manquants' })
+  const tournaments = readTournaments()
+  const idx = tournaments.findIndex(t => t.id === tournamentId)
+  if (idx === -1) return res.status(404).json({ error: 'Tournoi introuvable' })
+  const tournament = tournaments[idx]
+  if (tournament.registrations.find(r => r.email === userEmail)) {
+    return res.status(400).json({ error: 'Vous êtes déjà inscrit à ce tournoi' })
+  }
+  if (tournament.maxPlayers && tournament.registrations.length >= tournament.maxPlayers) {
+    return res.status(400).json({ error: 'Ce tournoi est complet' })
+  }
+  tournament.registrations.push({ name: userName, email: userEmail, registeredAt: new Date().toISOString() })
+  tournaments[idx] = tournament
+  writeTournaments(tournaments)
+  res.json({ success: true, tournament })
+})
+
+// POST grant free pass
+app.post('/api/grant-free-pass', (req, res) => {
+  const { userId, grant } = req.body
+  const users = readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+  users[idx].freePass = grant === true
+  if (grant) {
+    users[idx].seasonPassPaid = true
+    users[idx].seasonPassType = users[idx].seasonPassType || 'resident'
+  }
+  writeUsers(users)
+  const { password: _, ...safeUser } = users[idx]
+  res.json({ success: true, user: safeUser })
 })
 
 const PORT = 3001
