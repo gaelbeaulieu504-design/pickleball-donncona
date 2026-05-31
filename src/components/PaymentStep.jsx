@@ -3,7 +3,7 @@ import { ShieldCheck, AlertCircle, CreditCard } from 'lucide-react'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 
-export default function PaymentStep({ amount, description, onSuccess, onBack }) {
+export default function PaymentStep({ amount, description, label, onSuccess, onBack }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [processing, setProcessing] = useState(false)
@@ -115,7 +115,7 @@ export default function PaymentStep({ amount, description, onSuccess, onBack }) 
           <div style={{ fontSize: '0.8125rem', color: '#86efac', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total à payer</div>
           <div style={{ fontWeight: 900, fontSize: '2rem', lineHeight: 1.1 }}>${amount} CAD</div>
         </div>
-        <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>Passe saisonnier<br />Été 2026</div>
+        <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>{label || 'Passe saisonnier'}<br />Été 2026</div>
       </div>
 
       {/* Error */}
