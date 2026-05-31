@@ -58,14 +58,18 @@ export default function About() {
             </div>
           </div>
 
-          {/* Vidéo terrain */}
-          <div style={{ flex: '1 1 280px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.3)', aspectRatio: '16/9' }}>
-            <iframe
-              src="https://drive.google.com/file/d/1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7/preview"
-              style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: 220 }}
-              allow="autoplay"
-              allowFullScreen
-            />
+          {/* Vidéos terrains */}
+          <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {['1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7', '1ic1sQd-pUUSSZPUJTYoc0MLjvyEfQF-e'].map(id => (
+              <div key={id} style={{ borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.3)', aspectRatio: '16/9' }}>
+                <iframe
+                  src={`https://drive.google.com/file/d/${id}/preview`}
+                  style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: 160 }}
+                  allow="autoplay"
+                  allowFullScreen
+                />
+              </div>
+            ))}
           </div>
         </div>
 

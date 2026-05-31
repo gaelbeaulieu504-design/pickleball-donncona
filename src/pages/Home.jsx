@@ -324,21 +324,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── VIDÉO ── */}
+      {/* ── VIDÉOS ── */}
       <section style={{ padding: 'clamp(3rem, 7vw, 5rem) 0', background: '#f8fafc' }}>
-        <div className="container" style={{ maxWidth: 860 }}>
+        <div className="container" style={{ maxWidth: 1100 }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <span className="section-tag">Nos terrains</span>
             <h2 className="section-title">Voyez nos installations</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>Découvrez les terrains de pickleball et tennis de Donnacona en vidéo.</p>
           </div>
-          <div style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)', aspectRatio: '16/9', background: '#000' }}>
-            <iframe
-              src="https://drive.google.com/file/d/1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7/preview"
-              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-              allow="autoplay"
-              allowFullScreen
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+            {[
+              '1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7',
+              '1ic1sQd-pUUSSZPUJTYoc0MLjvyEfQF-e',
+            ].map(id => (
+              <div key={id} style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', aspectRatio: '16/9', background: '#000' }}>
+                <iframe
+                  src={`https://drive.google.com/file/d/${id}/preview`}
+                  style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+                  allow="autoplay"
+                  allowFullScreen
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
