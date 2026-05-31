@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar } from 'lucide-react'
+import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar, FileText, Download } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { WEEKLY_HOUR_LIMIT } from '../data/courts'
@@ -186,6 +186,10 @@ export default function AdminPanel() {
           <button style={tabStyle('tournaments')} onClick={() => setActiveTab('tournaments')}>
             <Trophy size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
             Tournois ({tournaments.length})
+          </button>
+          <button style={tabStyle('report')} onClick={() => setActiveTab('report')}>
+            <FileText size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
+            Rapport
           </button>
         </div>
 
@@ -582,6 +586,111 @@ export default function AdminPanel() {
             )}
           </div>
         )}
+
+        {/* ── Tab: Rapport ── */}
+        {activeTab === 'report' && (() => {
+          const reportMembers = [...members].sort((a, b) => Number(a.id) - Number(b.id))
+          const totalPaid = reportMembers.reduce((sum, m) => {
+            if (m.freePass || !m.seasonPassPaid) return sum
+            return sum + (m.seasonPassType === 'resident' ? 40 : 85)
+          }, 0)
+
+          function exportCSV() {
+            const rows = [
+              ['Nom', 'Courriel', "Date d'inscription", 'Statut', 'Montant payé'],
+              ...reportMembers.map(m => {
+                const date = new Date(Number(m.id)).toLocaleDateString('fr-CA')
+                const statut = m.freePass ? 'Passe gratuit' : m.seasonPassPaid ? (m.seasonPassType === 'resident' ? 'Résident' : 'Non-résident') : 'Non payé'
+                const montant = m.freePass ? '$0 (gratuit)' : m.seasonPassPaid ? (m.seasonPassType === 'resident' ? '$40' : '$85') : '—'
+                return [m.name, m.email, date, statut, montant]
+              })
+            ]
+            const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a'); a.href = url; a.download = 'rapport-membres.csv'; a.click()
+            URL.revokeObjectURL(url)
+          }
+
+          return (
+            <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <h2 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.1rem', marginBottom: '0.125rem' }}>Rapport des membres</h2>
+                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{reportMembers.length} membres · Revenus confirmés : <strong style={{ color: '#7c3aed' }}>${totalPaid} CAD</strong></p>
+                </div>
+                <button onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#1B4E8B', color: '#fff', border: 'none', padding: '0.625rem 1.25rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', fontSize: '0.875rem' }}>
+                  <Download size={15} /> Exporter CSV
+                </button>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc' }}>
+                      {['#', 'Nom', 'Courriel', "Date d'inscription", 'Statut', 'Montant payé'].map(h => (
+                        <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportMembers.map((m, i) => {
+                      const regDate = new Date(Number(m.id))
+                      const dateStr = isNaN(regDate) ? '—' : format(regDate, 'd MMM yyyy', { locale: fr })
+                      const amount = m.freePass ? null : m.seasonPassPaid ? (m.seasonPassType === 'resident' ? 40 : 85) : null
+                      return (
+                        <tr key={m.id} style={{ borderBottom: i < reportMembers.length - 1 ? '1px solid #f1f5f9' : 'none' }}
+                          onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>{i + 1}</td>
+                          <td style={{ padding: '0.875rem 1rem', fontWeight: 700, color: '#0f172a', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EBF3FB', color: '#1B4E8B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.875rem', flexShrink: 0 }}>
+                                {m.name[0].toUpperCase()}
+                              </div>
+                              {m.name}
+                            </div>
+                          </td>
+                          <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem' }}>
+                            <a href={`mailto:${m.email}`} style={{ color: '#1B4E8B', textDecoration: 'none' }}>{m.email}</a>
+                          </td>
+                          <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: '#475569', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                              <Calendar size={13} color="#94a3b8" />
+                              {dateStr}
+                            </div>
+                          </td>
+                          <td style={{ padding: '0.875rem 1rem' }}>
+                            {m.freePass
+                              ? <span style={{ background: '#ecfeff', color: '#0891b2', border: '1px solid #a5f3fc', padding: '0.2rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}><Gift size={11} /> Gratuit</span>
+                              : m.seasonPassPaid
+                              ? <span style={{ background: '#f0fdf4', color: '#2E7D32', border: '1px solid #bbf7d0', padding: '0.2rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}><CheckCircle size={11} /> {m.seasonPassType === 'resident' ? 'Résident' : 'Non-résident'}</span>
+                              : <span style={{ background: '#f8fafc', color: '#94a3b8', border: '1px solid #e2e8f0', padding: '0.2rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700 }}>Non payé</span>
+                            }
+                          </td>
+                          <td style={{ padding: '0.875rem 1rem', fontWeight: 800, fontSize: '1rem' }}>
+                            {m.freePass
+                              ? <span style={{ color: '#0891b2' }}>$0</span>
+                              : amount !== null
+                              ? <span style={{ color: '#7c3aed' }}>${amount}</span>
+                              : <span style={{ color: '#cbd5e1' }}>—</span>
+                            }
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: '#f8fafc', borderTop: '2px solid #e2e8f0' }}>
+                      <td colSpan={5} style={{ padding: '0.875rem 1rem', fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Total des revenus</td>
+                      <td style={{ padding: '0.875rem 1rem', fontWeight: 900, fontSize: '1.1rem', color: '#7c3aed' }}>${totalPaid} CAD</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          )
+        })()}
 
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
