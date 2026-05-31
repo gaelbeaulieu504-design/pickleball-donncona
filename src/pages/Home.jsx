@@ -52,10 +52,6 @@ export default function Home() {
       {showWelcome && !user && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,20,50,0.7)', backdropFilter: 'blur(4px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div style={{ background: '#fff', borderRadius: '1.5rem', padding: 'clamp(2rem,5vw,3rem)', width: '100%', maxWidth: 480, boxShadow: '0 24px 80px rgba(0,0,0,0.25)', position: 'relative' }}>
-            <button onClick={closeWelcome} style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#f1f5f9', border: 'none', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <X size={18} color="#64748b" />
-            </button>
-
             <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
               <div style={{ width: 64, height: 64, background: 'linear-gradient(135deg, #14532d, #22c55e)', borderRadius: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/><path d="M3 12 Q8 6 12 12 Q16 18 21 12" stroke="white" strokeWidth="2" fill="none"/><path d="M12 3 Q18 8 12 12 Q6 16 12 21" stroke="white" strokeWidth="1.5" fill="none"/></svg>
