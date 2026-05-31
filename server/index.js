@@ -1,8 +1,12 @@
+import 'dotenv/config'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import cors from 'cors'
+import Stripe from 'stripe'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const USERS_FILE = path.join(__dirname, 'data', 'users.json')
@@ -186,6 +190,24 @@ app.post('/api/tournament-register', (req, res) => {
   tournaments[idx] = tournament
   writeTournaments(tournaments)
   res.json({ success: true, tournament })
+})
+
+// POST create Stripe payment intent
+app.post('/api/create-payment-intent', async (req, res) => {
+  try {
+    const { amount, description } = req.body
+    if (!amount || amount <= 0) return res.status(400).json({ error: 'Montant invalide.' })
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // cents
+      currency: 'cad',
+      description: description || 'Inscription tournoi',
+      automatic_payment_methods: { enabled: true },
+    })
+    res.json({ clientSecret: paymentIntent.client_secret })
+  } catch (err) {
+    console.error('Stripe error:', err)
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // POST grant free pass
