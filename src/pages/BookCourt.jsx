@@ -55,6 +55,16 @@ export default function BookCourt() {
 
   const isAdmin = user?.isAdmin === true
 
+  const activeCourts = selectedSport ? COURTS.filter(c => c.sport === selectedSport) : COURTS
+
+  const weekHours = user && selectedDate && !isAdmin ? getUserWeekHours(user.id, selectedDate) : 0
+  const weekFull = !isAdmin && weekHours >= WEEKLY_HOUR_LIMIT
+
+  const hasSeasonPass = isAdmin || user?.freePass === true || user?.seasonPassPaid === true
+  const passType = isAdmin ? 'resident' : user?.seasonPassType
+  const effectiveType = passType || isResident
+  const price = effectiveType === 'resident' ? PRICING.resident : effectiveType === 'nonResident' ? PRICING.nonResident : null
+
   // Booking window: residents 7 days ahead, non-residents 4 days ahead
   const RESIDENT_WINDOW = 7
   const NON_RESIDENT_WINDOW = 4
@@ -66,16 +76,6 @@ export default function BookCourt() {
     const diffDays = Math.round((startOfDay(day) - today) / (1000 * 60 * 60 * 24))
     return diffDays > bookingWindow
   }
-
-  const activeCourts = selectedSport ? COURTS.filter(c => c.sport === selectedSport) : COURTS
-
-  const weekHours = user && selectedDate && !isAdmin ? getUserWeekHours(user.id, selectedDate) : 0
-  const weekFull = !isAdmin && weekHours >= WEEKLY_HOUR_LIMIT
-
-  const hasSeasonPass = isAdmin || user?.freePass === true || user?.seasonPassPaid === true
-  const passType = isAdmin ? 'resident' : user?.seasonPassType
-  const effectiveType = passType || isResident
-  const price = effectiveType === 'resident' ? PRICING.resident : effectiveType === 'nonResident' ? PRICING.nonResident : null
 
   function dateStr(date) { return format(date, 'yyyy-MM-dd') }
 
