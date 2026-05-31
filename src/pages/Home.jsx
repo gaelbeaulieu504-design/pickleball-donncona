@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star, Clock, Shield, X } from 'lucide-react'
+import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star, Clock, Shield } from 'lucide-react'
 import { useBookings } from '../context/BookingContext'
 import { useAuth } from '../context/AuthContext'
 import { COURTS, START_TIMES } from '../data/courts'
