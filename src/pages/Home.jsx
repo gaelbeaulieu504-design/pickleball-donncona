@@ -66,7 +66,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <button onClick={() => { closeWelcome(); navigate('/register') }}
                 style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', border: 'none', borderRadius: '0.875rem', padding: '1rem', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                 Créer un compte
@@ -76,10 +76,6 @@ export default function Home() {
                 Se connecter
               </button>
             </div>
-
-            <button onClick={closeWelcome} style={{ width: '100%', background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.875rem', cursor: 'pointer', padding: '0.5rem' }}>
-              Continuer sans compte
-            </button>
           </div>
         </div>
       )}
