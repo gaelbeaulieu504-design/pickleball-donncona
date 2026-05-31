@@ -23,7 +23,7 @@ export default function Footer() {
               <img src="/logo.png" alt="Pickleball Donnacona" style={{ height: 48, width: 'auto' }} />
             </div>
             <p style={{ fontSize: '0.9rem', lineHeight: 1.7, maxWidth: 260 }}>
-              L'installation de pickleball de référence à Donnacona. 4 terrains extérieurs, ouverts aux résidents et aux visiteurs.
+              Les installations sportives de Donnacona. 6 terrains de pickleball et 2 terrains de tennis, ouverts à tous — sans réservation.
             </p>
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
               {[Facebook, Instagram].map((Icon, i) => (

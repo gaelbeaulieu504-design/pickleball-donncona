@@ -22,7 +22,9 @@ export default function Home() {
   const dateStr = format(selectedDate, 'yyyy-MM-dd')
   const dateLabel = format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })
 
-  const availability = COURTS.map(court => {
+  const pickleballCourts = COURTS.filter(c => c.sport === 'pickleball')
+
+  const availability = pickleballCourts.map(court => {
     const booked = getBookedIndices(court.id, dateStr)
     return {
       ...court,
@@ -31,7 +33,7 @@ export default function Home() {
   })
 
   const totalAvailable = availability.reduce((sum, c) => sum + c.slots.filter(s => s.available).length, 0)
-  const totalSlots = COURTS.length * START_TIMES.length
+  const totalSlots = pickleballCourts.length * START_TIMES.length
 
   return (
     <div style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -65,7 +67,7 @@ export default function Home() {
           </h1>
 
           <p style={{ fontSize: 'clamp(1rem, 2.2vw, 1.25rem)', color: 'rgba(255,255,255,0.82)', maxWidth: 540, lineHeight: 1.75, marginBottom: '2.25rem' }}>
-            4 terrains de pickleball et 2 terrains de tennis à Donnacona.<br />Réservez en ligne — résidents et visiteurs bienvenus.
+            6 terrains de pickleball et 2 terrains de tennis à Donnacona.<br />Accès libre pour tous — résidents et visiteurs bienvenus.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.875rem', marginBottom: '3rem' }}>
@@ -82,7 +84,7 @@ export default function Home() {
           {/* Stats */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
             {[
-              { value: '6', label: 'Terrains extérieurs' },
+              { value: '8', label: 'Terrains extérieurs' },
               { value: '$40', label: 'Passe résident / été' },
               { value: '$85', label: 'Passe non-résident / été' },
               { value: '6h–22h', label: "Heures d'ouverture" },
@@ -110,7 +112,7 @@ export default function Home() {
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span className="section-tag">En temps réel</span>
             <h2 className="section-title">Disponibilités des terrains</h2>
-            <p className="section-subtitle">Choisissez une date pour voir les créneaux libres sur chacun des 4 terrains.</p>
+            <p className="section-subtitle">Choisissez une date pour voir les créneaux libres sur chacun des 6 terrains de pickleball.</p>
           </div>
 
           {/* Date picker */}
@@ -283,9 +285,9 @@ export default function Home() {
         <div className="container" style={{ maxWidth: 900 }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span className="section-tag">Bon à savoir</span>
-            <h2 className="section-title">Pas besoin de passe pour jouer !</h2>
+            <h2 className="section-title">Accès libre pour tout le monde !</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Les terrains de pickleball 1 à 4 sont accessibles librement — venez jouer sans réservation.
+              Les 6 terrains de pickleball et les 2 terrains de tennis sont ouverts à tous — sans réservation et sans passe.
             </p>
           </div>
 
@@ -296,30 +298,30 @@ export default function Home() {
               <div style={{ width: 52, height: 52, borderRadius: '1rem', background: '#dcfce7', border: '2px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
                 <Users size={24} color="#166534" />
               </div>
-              <h3 style={{ fontWeight: 800, color: '#14532d', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Accès libre — Terrains 1 à 4</h3>
+              <h3 style={{ fontWeight: 800, color: '#14532d', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Accès libre — tous les terrains</h3>
               <p style={{ color: '#166534', lineHeight: 1.75, fontSize: '0.9375rem', margin: 0 }}>
-                Vous pouvez vous présenter directement sur les terrains de pickleball <strong>sans réservation et sans passe</strong>. C'est gratuit et ouvert à tous.
+                Les <strong>6 terrains de pickleball</strong> et les <strong>2 terrains de tennis</strong> sont accessibles à tous <strong>sans réservation et sans passe</strong>. Venez jouer librement !
               </p>
             </div>
 
-            {/* Passe = priorité */}
+            {/* Réservation = priorité */}
             <div style={{ background: 'linear-gradient(135deg, #fefce8, #fef9c3)', border: '1.5px solid #fde68a', borderRadius: '1.5rem', padding: '2.25rem 2rem', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: '-1.5rem', right: '-1.5rem', width: 100, height: 100, background: 'rgba(253,230,138,0.2)', borderRadius: '50%' }} />
               <div style={{ width: 52, height: 52, borderRadius: '1rem', background: '#fef9c3', border: '2px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
                 <Star size={24} color="#b45309" />
               </div>
-              <h3 style={{ fontWeight: 800, color: '#78350f', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Passe saisonnier = priorité</h3>
+              <h3 style={{ fontWeight: 800, color: '#78350f', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Réservation = priorité</h3>
               <p style={{ color: '#92400e', lineHeight: 1.75, fontSize: '0.9375rem', margin: 0 }}>
-                Les détenteurs d'un passe ($40 résident / $85 non-résident) ont la <strong>priorité sur les terrains 1 à 4</strong>. Si un passeur arrive, les joueurs sans passe doivent leur céder le terrain.
+                Les personnes ayant une <strong>réservation en ligne</strong> ont la priorité sur les terrains. Si un joueur avec réservation arrive, les joueurs sans réservation doivent lui céder le terrain.
               </p>
             </div>
           </div>
 
-          {/* Note tennis */}
+          {/* Passe saisonnier */}
           <div style={{ background: 'linear-gradient(135deg, #eff6ff, #dbeafe)', border: '1.5px solid #bfdbfe', borderRadius: '1.5rem', padding: '1.5rem 2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: '1rem', background: '#dbeafe', border: '2px solid #93c5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.5rem' }}>🎾</div>
+            <div style={{ width: 48, height: 48, borderRadius: '1rem', background: '#dbeafe', border: '2px solid #93c5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.5rem' }}>🎫</div>
             <p style={{ color: '#1e40af', fontSize: '0.9375rem', lineHeight: 1.7, margin: 0 }}>
-              <strong>Terrains de tennis (5 & 6) :</strong> la réservation en ligne avec passe saisonnier est requise pour accéder aux terrains de tennis.
+              <strong>Passe saisonnier ($40 résident / $85 non-résident) :</strong> obtenez votre passe une seule fois et réservez vos terrains en ligne tout l'été pour garantir votre place.
             </p>
           </div>
         </div>

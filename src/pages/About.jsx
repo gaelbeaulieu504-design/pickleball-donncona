@@ -11,7 +11,7 @@ export default function About() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <span className="section-tag">Nos installations</span>
-          <h1 className="section-title">Les terrains de pickleball de Donnacona</h1>
+          <h1 className="section-title">Les terrains de pickleball et tennis de Donnacona</h1>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
             Quatre terrains extérieurs de qualité dans un cadre communautaire accueillant — conçus pour tous les niveaux.
           </p>
@@ -39,7 +39,7 @@ export default function About() {
               4 Terrains extérieurs,<br />Ouverts à tous
             </h2>
             <p style={{ color: '#bbf7d0', lineHeight: 1.75, fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
-              Nos installations comprennent 4 terrains extérieurs de pickleball aux dimensions réglementaires, avec des surfaces de qualité, des filets permanents et un éclairage adéquat. Que vous débutiez ou que vous soyez un joueur compétitif, ces terrains sont pour vous.
+              Nos installations comprennent 6 terrains extérieurs de pickleball et 2 terrains de tennis aux dimensions réglementaires, avec des surfaces de qualité, des filets permanents et un éclairage adéquat. Tous les terrains sont ouverts à tous sans réservation ni passe — venez jouer librement !
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
               {['Filets permanents', 'Éclairage des terrains', 'Accessible', 'Stationnement gratuit'].map(tag => (
