@@ -34,25 +34,34 @@ export async function sendBookingConfirmation(params) {
   }
 }
 
+const BROADCAST_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_BROADCAST_TEMPLATE_ID || TEMPLATE_ID
+
 export async function sendBroadcast({ to_name, to_email, subject, message }) {
   if (!configured) {
     console.warn('[EmailJS] Non configuré — broadcast non envoyé pour:', to_email)
     return { success: false, notConfigured: true }
   }
   try {
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-      to_name,
-      to_email,
-      subject,
-      message,
-      court: '',
-      date: '',
-      time_slot: '',
-      duration: '',
-      pass_type: '',
-      amount_paid: '',
-      week_hours: '',
-    }, PUBLIC_KEY)
+    // Use broadcast template if available, otherwise fall back to booking template
+    // with all fields populated to avoid template errors
+    const templateId = BROADCAST_TEMPLATE_ID
+    const params = BROADCAST_TEMPLATE_ID !== TEMPLATE_ID
+      ? { to_name, to_email, subject, message }
+      : {
+          to_name,
+          to_email,
+          subject,
+          message,
+          // Fill booking fields with readable fallback so template renders
+          court: '—',
+          date: '—',
+          time_slot: '—',
+          duration: '—',
+          pass_type: '—',
+          amount_paid: '—',
+          week_hours: '—',
+        }
+    await emailjs.send(SERVICE_ID, templateId, params, PUBLIC_KEY)
     return { success: true }
   } catch (err) {
     console.error('[EmailJS] Erreur broadcast:', err)
