@@ -106,6 +106,50 @@ export default function Home() {
 
       </section>
 
+      {/* ── ACCÈS LIBRE vs PASSE ── */}
+      <section style={{ padding: 'clamp(3rem, 7vw, 5rem) 0', background: '#fff' }}>
+        <div className="container" style={{ maxWidth: 900 }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <span className="section-tag">Bon à savoir</span>
+            <h2 className="section-title">Accès libre pour tout le monde !</h2>
+            <p className="section-subtitle" style={{ margin: '0 auto' }}>
+              Les 6 terrains de pickleball et les 2 terrains de tennis sont ouverts à tous — sans réservation et sans passe.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
+            <div style={{ background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', border: '1.5px solid #86efac', borderRadius: '1.5rem', padding: '2.25rem 2rem', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-1.5rem', right: '-1.5rem', width: 100, height: 100, background: 'rgba(134,239,172,0.15)', borderRadius: '50%' }} />
+              <div style={{ width: 52, height: 52, borderRadius: '1rem', background: '#dcfce7', border: '2px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                <Users size={24} color="#166534" />
+              </div>
+              <h3 style={{ fontWeight: 800, color: '#14532d', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Accès libre — tous les terrains</h3>
+              <p style={{ color: '#166534', lineHeight: 1.75, fontSize: '0.9375rem', margin: 0 }}>
+                Les <strong>6 terrains de pickleball</strong> et les <strong>2 terrains de tennis</strong> sont accessibles à tous <strong>sans réservation et sans passe</strong>. Venez jouer librement !
+              </p>
+            </div>
+
+            <div style={{ background: 'linear-gradient(135deg, #fefce8, #fef9c3)', border: '1.5px solid #fde68a', borderRadius: '1.5rem', padding: '2.25rem 2rem', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-1.5rem', right: '-1.5rem', width: 100, height: 100, background: 'rgba(253,230,138,0.2)', borderRadius: '50%' }} />
+              <div style={{ width: 52, height: 52, borderRadius: '1rem', background: '#fef9c3', border: '2px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                <Star size={24} color="#b45309" />
+              </div>
+              <h3 style={{ fontWeight: 800, color: '#78350f', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Réservation = priorité</h3>
+              <p style={{ color: '#92400e', lineHeight: 1.75, fontSize: '0.9375rem', margin: 0 }}>
+                Les personnes ayant une <strong>réservation en ligne</strong> ont la priorité sur les terrains. Si un joueur avec réservation arrive, les joueurs sans réservation doivent lui céder le terrain.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ background: 'linear-gradient(135deg, #eff6ff, #dbeafe)', border: '1.5px solid #bfdbfe', borderRadius: '1.5rem', padding: '1.5rem 2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ width: 48, height: 48, borderRadius: '1rem', background: '#dbeafe', border: '2px solid #93c5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.5rem' }}>🎫</div>
+            <p style={{ color: '#1e40af', fontSize: '0.9375rem', lineHeight: 1.7, margin: 0 }}>
+              <strong>Passe saisonnier ($40 résident / $85 non-résident) :</strong> obtenez votre passe une seule fois et réservez vos terrains en ligne tout l'été pour garantir votre place.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── DISPONIBILITÉS ── */}
       <section style={{ padding: 'clamp(3.5rem, 9vw, 6rem) 0', background: '#f8fafc' }}>
         <div className="container">
@@ -276,53 +320,6 @@ export default function Home() {
                 onMouseLeave={e => e.currentTarget.style.transform = 'none'}
               >Réserver (non-résident)</button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── ACCÈS LIBRE vs PASSE ── */}
-      <section style={{ padding: 'clamp(3.5rem, 9vw, 6rem) 0', background: '#fff' }}>
-        <div className="container" style={{ maxWidth: 900 }}>
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <span className="section-tag">Bon à savoir</span>
-            <h2 className="section-title">Accès libre pour tout le monde !</h2>
-            <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Les 6 terrains de pickleball et les 2 terrains de tennis sont ouverts à tous — sans réservation et sans passe.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
-            {/* Accès libre */}
-            <div style={{ background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', border: '1.5px solid #86efac', borderRadius: '1.5rem', padding: '2.25rem 2rem', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-1.5rem', right: '-1.5rem', width: 100, height: 100, background: 'rgba(134,239,172,0.15)', borderRadius: '50%' }} />
-              <div style={{ width: 52, height: 52, borderRadius: '1rem', background: '#dcfce7', border: '2px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                <Users size={24} color="#166534" />
-              </div>
-              <h3 style={{ fontWeight: 800, color: '#14532d', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Accès libre — tous les terrains</h3>
-              <p style={{ color: '#166534', lineHeight: 1.75, fontSize: '0.9375rem', margin: 0 }}>
-                Les <strong>6 terrains de pickleball</strong> et les <strong>2 terrains de tennis</strong> sont accessibles à tous <strong>sans réservation et sans passe</strong>. Venez jouer librement !
-              </p>
-            </div>
-
-            {/* Réservation = priorité */}
-            <div style={{ background: 'linear-gradient(135deg, #fefce8, #fef9c3)', border: '1.5px solid #fde68a', borderRadius: '1.5rem', padding: '2.25rem 2rem', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-1.5rem', right: '-1.5rem', width: 100, height: 100, background: 'rgba(253,230,138,0.2)', borderRadius: '50%' }} />
-              <div style={{ width: 52, height: 52, borderRadius: '1rem', background: '#fef9c3', border: '2px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                <Star size={24} color="#b45309" />
-              </div>
-              <h3 style={{ fontWeight: 800, color: '#78350f', fontSize: '1.2rem', marginBottom: '0.75rem' }}>Réservation = priorité</h3>
-              <p style={{ color: '#92400e', lineHeight: 1.75, fontSize: '0.9375rem', margin: 0 }}>
-                Les personnes ayant une <strong>réservation en ligne</strong> ont la priorité sur les terrains. Si un joueur avec réservation arrive, les joueurs sans réservation doivent lui céder le terrain.
-              </p>
-            </div>
-          </div>
-
-          {/* Passe saisonnier */}
-          <div style={{ background: 'linear-gradient(135deg, #eff6ff, #dbeafe)', border: '1.5px solid #bfdbfe', borderRadius: '1.5rem', padding: '1.5rem 2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: '1rem', background: '#dbeafe', border: '2px solid #93c5fd', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.5rem' }}>🎫</div>
-            <p style={{ color: '#1e40af', fontSize: '0.9375rem', lineHeight: 1.7, margin: 0 }}>
-              <strong>Passe saisonnier ($40 résident / $85 non-résident) :</strong> obtenez votre passe une seule fois et réservez vos terrains en ligne tout l'été pour garantir votre place.
-            </p>
           </div>
         </div>
       </section>
