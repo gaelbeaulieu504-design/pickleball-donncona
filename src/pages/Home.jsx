@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star, Clock, Shield } from 'lucide-react'
+import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star, Clock, Shield, X } from 'lucide-react'
 import { useBookings } from '../context/BookingContext'
+import { useAuth } from '../context/AuthContext'
 import { COURTS, START_TIMES } from '../data/courts'
 import { format, addDays, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -10,14 +11,23 @@ const HERO_PHOTOS = ['/terrain1.jpg', '/terrain2.jpg', '/terrain3.jpg']
 
 export default function Home() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { getBookedIndices } = useBookings()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [heroPhoto, setHeroPhoto] = useState(0)
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !sessionStorage.getItem('pb_welcome_seen')
+  })
 
   useEffect(() => {
     const t = setInterval(() => setHeroPhoto(p => (p + 1) % HERO_PHOTOS.length), 5000)
     return () => clearInterval(t)
   }, [])
+
+  function closeWelcome() {
+    sessionStorage.setItem('pb_welcome_seen', '1')
+    setShowWelcome(false)
+  }
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd')
   const dateLabel = format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })
@@ -37,6 +47,42 @@ export default function Home() {
 
   return (
     <div style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+
+      {/* ── MODAL BIENVENUE ── */}
+      {showWelcome && !user && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,20,50,0.7)', backdropFilter: 'blur(4px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: '1.5rem', padding: 'clamp(2rem,5vw,3rem)', width: '100%', maxWidth: 480, boxShadow: '0 24px 80px rgba(0,0,0,0.25)', position: 'relative' }}>
+            <button onClick={closeWelcome} style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#f1f5f9', border: 'none', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <X size={18} color="#64748b" />
+            </button>
+
+            <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+              <div style={{ width: 64, height: 64, background: 'linear-gradient(135deg, #14532d, #22c55e)', borderRadius: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/><path d="M3 12 Q8 6 12 12 Q16 18 21 12" stroke="white" strokeWidth="2" fill="none"/><path d="M12 3 Q18 8 12 12 Q6 16 12 21" stroke="white" strokeWidth="1.5" fill="none"/></svg>
+              </div>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.5rem' }}>Bienvenue à Donnacona !</h2>
+              <p style={{ color: '#64748b', fontSize: '0.9375rem', lineHeight: 1.6 }}>
+                Créez un compte ou connectez-vous pour réserver un terrain de pickleball ou de tennis.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <button onClick={() => { closeWelcome(); navigate('/register') }}
+                style={{ background: 'linear-gradient(135deg, #14532d, #166534)', color: '#fff', border: 'none', borderRadius: '0.875rem', padding: '1rem', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                Créer un compte
+              </button>
+              <button onClick={() => { closeWelcome(); navigate('/login') }}
+                style={{ background: '#f8fafc', color: '#0f172a', border: '2px solid #e2e8f0', borderRadius: '0.875rem', padding: '1rem', fontSize: '1rem', fontWeight: 700, cursor: 'pointer' }}>
+                Se connecter
+              </button>
+            </div>
+
+            <button onClick={closeWelcome} style={{ width: '100%', background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.875rem', cursor: 'pointer', padding: '0.5rem' }}>
+              Continuer sans compte
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── HERO ── */}
       <section style={{ position: 'relative', minHeight: 'clamp(680px, 92vh, 920px)', overflow: 'hidden', color: '#fff' }}>

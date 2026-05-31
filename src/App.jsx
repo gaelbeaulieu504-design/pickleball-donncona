@@ -12,6 +12,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import AdminPanel from './pages/AdminPanel'
 import Tournaments from './pages/Tournaments'
+import Welcome from './pages/Welcome'
 import ScrollToTop from './components/ScrollToTop'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/tournaments" element={<Tournaments />} />
+              <Route path="/bienvenue" element={<Welcome />} />
             </Routes>
           </main>
           <Footer />

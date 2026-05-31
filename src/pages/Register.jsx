@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { User, Mail, Lock, UserPlus, Eye, EyeOff, Phone } from 'lucide-react'
+import { User, Mail, Lock, UserPlus, Eye, EyeOff, Phone, MapPin, CheckCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+
+function detectResidency(city) {
+  return city.trim().toLowerCase() === 'donnacona'
+}
 
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', city: '', password: '', confirm: '' })
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -14,6 +18,8 @@ export default function Register() {
   function set(field) {
     return e => setForm(p => ({ ...p, [field]: e.target.value }))
   }
+
+  const isResident = form.city ? detectResidency(form.city) : null
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -25,11 +31,12 @@ export default function Register() {
       name: form.name,
       email: form.email,
       phone: form.phone,
+      address: form.city,
       password: form.password,
-      isResident: null,
+      isResident: form.city ? isResident : null,
     })
     if (result.error) { setError(result.error); setLoading(false) }
-    else navigate('/book')
+    else navigate('/bienvenue')
   }
 
   const inputStyle = {
@@ -44,7 +51,6 @@ export default function Register() {
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', background: '#f8fafc' }}>
       <div style={{ background: '#fff', borderRadius: '1.5rem', padding: 'clamp(2rem, 5vw, 3rem)', width: '100%', maxWidth: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' }}>
 
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, #14532d, #22c55e)', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -70,7 +76,6 @@ export default function Register() {
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Informations personnelles</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
 
-              {/* Name */}
               <div>
                 <label style={labelStyle}>Nom complet</label>
                 <div style={{ position: 'relative' }}>
@@ -80,7 +85,6 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Email */}
               <div>
                 <label style={labelStyle}>Adresse courriel</label>
                 <div style={{ position: 'relative' }}>
@@ -90,13 +94,33 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Phone */}
               <div>
-                <label style={labelStyle}>Numéro de téléphone <span style={{ color: '#94a3b8', fontWeight: 400, fontSize: '0.85rem' }}>(optionnel)</span></label>
+                <label style={labelStyle}>Téléphone <span style={{ color: '#94a3b8', fontWeight: 400, fontSize: '0.85rem' }}>(optionnel)</span></label>
                 <div style={{ position: 'relative' }}>
                   <Phone size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input type="tel" placeholder="418-555-0123" value={form.phone} onChange={set('phone')}
                     style={inputStyle} onFocus={e => e.target.style.borderColor = '#166534'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                </div>
+              </div>
+
+              <div>
+                <label style={labelStyle}>
+                  Ville
+                  {form.city && isResident !== null && (
+                    <span style={{ marginLeft: '0.5rem', fontSize: '0.8rem', color: isResident ? '#166534' : '#b45309', fontWeight: 600 }}>
+                      {isResident ? '✓ Donnacona' : '— autre ville'}
+                    </span>
+                  )}
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <MapPin size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <input type="text" placeholder="Donnacona" value={form.city} onChange={set('city')}
+                    style={{
+                      ...inputStyle,
+                      borderColor: form.city && isResident !== null ? (isResident ? '#bbf7d0' : '#fde68a') : '#e2e8f0'
+                    }}
+                    onFocus={e => e.target.style.borderColor = '#166534'}
+                    onBlur={e => e.target.style.borderColor = form.city && isResident !== null ? (isResident ? '#bbf7d0' : '#fde68a') : '#e2e8f0'} />
                 </div>
               </div>
             </div>
@@ -117,7 +141,7 @@ export default function Register() {
                     <input type={showPw ? 'text' : 'password'} required placeholder={f.placeholder}
                       value={form[f.id]} onChange={set(f.id)}
                       style={{ ...inputStyle, paddingRight: '3rem' }}
-                      onFocus={e => e.target.style.borderColor = '#166534'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                      onFocus={e => e.target.style.borderColor = '#166634'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                     {f.id === 'confirm' && (
                       <button type="button" onClick={() => setShowPw(v => !v)}
                         style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}>
