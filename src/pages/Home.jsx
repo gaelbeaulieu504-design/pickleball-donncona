@@ -324,6 +324,25 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── VIDÉO ── */}
+      <section style={{ padding: 'clamp(3rem, 7vw, 5rem) 0', background: '#f8fafc' }}>
+        <div className="container" style={{ maxWidth: 860 }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <span className="section-tag">Nos terrains</span>
+            <h2 className="section-title">Voyez nos installations</h2>
+            <p className="section-subtitle" style={{ margin: '0 auto' }}>Découvrez les terrains de pickleball et tennis de Donnacona en vidéo.</p>
+          </div>
+          <div style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)', aspectRatio: '16/9', background: '#000' }}>
+            <iframe
+              src="https://drive.google.com/file/d/1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7/preview"
+              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              allow="autoplay"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section style={{ background: 'linear-gradient(135deg, #0f3460 0%, #1B4E8B 50%, #1e5fa8 100%)', padding: 'clamp(4rem, 10vw, 6rem) 0', textAlign: 'center', color: '#fff', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-4rem', left: '10%', width: 300, height: 300, background: 'rgba(255,255,255,0.03)', borderRadius: '50%' }} />

@@ -58,9 +58,14 @@ export default function About() {
             </div>
           </div>
 
-          {/* Photo terrain */}
-          <div style={{ flex: '1 1 280px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
-            <img src="/terrain1.jpg" alt="Terrains de pickleball Donnacona vus du ciel" style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }} />
+          {/* Vidéo terrain */}
+          <div style={{ flex: '1 1 280px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.3)', aspectRatio: '16/9' }}>
+            <iframe
+              src="https://drive.google.com/file/d/1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7/preview"
+              style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: 220 }}
+              allow="autoplay"
+              allowFullScreen
+            />
           </div>
         </div>
 
