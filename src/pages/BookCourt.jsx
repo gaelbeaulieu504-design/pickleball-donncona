@@ -251,13 +251,14 @@ export default function BookCourt() {
         )}
 
         {/* Sport selector */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.875rem', fontSize: '1rem' }}>
+        <div style={{ marginBottom: '1.75rem' }}>
+          <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '1rem', fontSize: '1rem' }}>
             Choisir un sport
           </div>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {SPORTS.map(sport => {
               const sel = selectedSport === sport.id
+              const isPb = sport.id === 'pickleball'
               return (
                 <button key={sport.id} onClick={() => {
                   setSelectedSport(sport.id)
@@ -268,30 +269,44 @@ export default function BookCourt() {
                   goToStep(0)
                 }}
                   style={{
-                    flex: '1 1 160px',
-                    padding: '1.125rem 1.5rem',
-                    borderRadius: '1rem',
+                    padding: '1.5rem 1.25rem',
+                    borderRadius: '1.25rem',
                     border: sel ? `2.5px solid ${sport.color}` : '2px solid #e2e8f0',
-                    background: sel ? `${sport.color}10` : '#fff',
+                    background: sel
+                      ? `linear-gradient(135deg, ${sport.color}18, ${sport.color}08)`
+                      : '#fff',
                     cursor: 'pointer',
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.875rem',
-                    transition: 'all 0.15s',
-                    boxShadow: sel ? `0 4px 16px ${sport.color}20` : 'none',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '0.75rem',
+                    transition: 'all 0.18s',
+                    boxShadow: sel ? `0 6px 24px ${sport.color}30` : '0 1px 4px rgba(0,0,0,0.04)',
+                    position: 'relative',
+                    overflow: 'hidden',
                   }}
-                  onMouseEnter={e => { if (!sel) e.currentTarget.style.background = '#f8fafc' }}
-                  onMouseLeave={e => { if (!sel) e.currentTarget.style.background = '#fff' }}
+                  onMouseEnter={e => { if (!sel) { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)' }}}
+                  onMouseLeave={e => { if (!sel) { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)' }}}
                 >
+                  {/* Icon circle */}
+                  <div style={{
+                    width: 48, height: 48, borderRadius: '0.875rem',
+                    background: sel ? sport.color : `${sport.color}18`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '1.5rem', transition: 'all 0.18s',
+                  }}>
+                    <span style={{ fontSize: '1.4rem' }}>{isPb ? '🏓' : '🎾'}</span>
+                  </div>
 
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 800, fontSize: '1.0625rem', color: sel ? sport.color : '#0f172a' }}>{sport.label}</div>
-                    <div style={{ fontSize: '0.8125rem', color: '#64748b', marginTop: '0.125rem' }}>
-                      {sport.id === 'pickleball' ? '6 terrains disponibles' : '2 terrains disponibles'}
+                    <div style={{ fontWeight: 900, fontSize: '1.125rem', color: sel ? sport.color : '#0f172a', letterSpacing: '-0.01em' }}>{sport.label}</div>
+                    <div style={{ fontSize: '0.8125rem', color: sel ? sport.color : '#94a3b8', marginTop: '0.2rem', fontWeight: 600 }}>
+                      {isPb ? '6 terrains' : '2 terrains'}
                     </div>
                   </div>
+
                   {sel && (
-                    <div style={{ marginLeft: 'auto', width: 22, height: 22, borderRadius: '50%', background: sport.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ position: 'absolute', top: '0.875rem', right: '0.875rem', width: 22, height: 22, borderRadius: '50%', background: sport.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <CheckCircle size={14} color="#fff" />
                     </div>
                   )}
