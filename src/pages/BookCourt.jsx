@@ -304,7 +304,7 @@ export default function BookCourt() {
                   <div style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 900, fontSize: '1.125rem', color: sel ? sport.color : '#0f172a', letterSpacing: '-0.01em' }}>{sport.label}</div>
                     <div style={{ fontSize: '0.8125rem', color: sel ? sport.color : '#94a3b8', marginTop: '0.2rem', fontWeight: 600 }}>
-                      {isPb ? '6 terrains' : '2 terrains'}
+                      {isPb ? '4 terrains réservables' : '2 terrains réservables'}
                     </div>
                   </div>
 
