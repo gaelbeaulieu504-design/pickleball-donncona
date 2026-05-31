@@ -36,7 +36,7 @@ export default function About() {
               Nos installations
             </div>
             <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#fff', marginBottom: '1rem', lineHeight: 1.3 }}>
-              8 Terrains extérieurs,<br />Ouverts à tous
+              6 Terrains de pickleball,<br />Ouverts à tous
             </h2>
             <p style={{ color: '#bbf7d0', lineHeight: 1.75, fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
               Nos installations comprennent 6 terrains extérieurs de pickleball et 2 terrains de tennis aux dimensions réglementaires, avec des surfaces de qualité, des filets permanents et un éclairage adéquat. Tous les terrains sont ouverts à tous sans réservation ni passe — venez jouer librement !
