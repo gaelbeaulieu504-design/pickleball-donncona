@@ -339,7 +339,7 @@ export default function Home() {
             ].map(id => (
               <div key={id} style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', aspectRatio: '16/9', background: '#000' }}>
                 <iframe
-                  src={`https://drive.google.com/file/d/${id}/preview`}
+                  src={`https://drive.google.com/file/d/${id}/preview?autoplay=1&loop=1`}
                   style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
                   allow="autoplay"
                   allowFullScreen

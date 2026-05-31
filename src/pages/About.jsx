@@ -63,7 +63,7 @@ export default function About() {
             {['1MXvYYwdBDqJJe25hUhQAEPwEclTXdB-7', '1ic1sQd-pUUSSZPUJTYoc0MLjvyEfQF-e'].map(id => (
               <div key={id} style={{ borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.3)', aspectRatio: '16/9' }}>
                 <iframe
-                  src={`https://drive.google.com/file/d/${id}/preview`}
+                  src={`https://drive.google.com/file/d/${id}/preview?autoplay=1&loop=1`}
                   style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: 160 }}
                   allow="autoplay"
                   allowFullScreen
