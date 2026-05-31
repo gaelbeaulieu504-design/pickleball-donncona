@@ -283,7 +283,7 @@ export default function BookCourt() {
                   onMouseEnter={e => { if (!sel) e.currentTarget.style.background = '#f8fafc' }}
                   onMouseLeave={e => { if (!sel) e.currentTarget.style.background = '#fff' }}
                 >
-                  <span style={{ fontSize: '2rem', lineHeight: 1 }}>{sport.emoji}</span>
+
                   <div style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 800, fontSize: '1.0625rem', color: sel ? sport.color : '#0f172a' }}>{sport.label}</div>
                     <div style={{ fontSize: '0.8125rem', color: '#64748b', marginTop: '0.125rem' }}>
