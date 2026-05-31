@@ -27,7 +27,7 @@ export default function BookCourt() {
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
   }
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 2, 1))
+  const [currentMonth, setCurrentMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1) })
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedCourt, setSelectedCourt] = useState(null)
   const [selectedDuration, setSelectedDuration] = useState(null)
