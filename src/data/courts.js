@@ -8,8 +8,8 @@ export const COURTS = [
   { id: 2, name: 'Terrain 2', color: '#1d4ed8', sport: 'pickleball' },
   { id: 3, name: 'Terrain 3', color: '#7c3aed', sport: 'pickleball' },
   { id: 4, name: 'Terrain 4', color: '#b45309', sport: 'pickleball' },
-  { id: 5, name: 'Terrain 5', color: '#0f766e', sport: 'pickleball' },
-  { id: 6, name: 'Terrain 6', color: '#b91c1c', sport: 'pickleball' },
+  { id: 5, name: 'Terrain 5', color: '#0f766e', sport: 'pickleball', bookable: false },
+  { id: 6, name: 'Terrain 6', color: '#b91c1c', sport: 'pickleball', bookable: false },
   { id: 7, name: 'Tennis 1',  color: '#1B4E8B', sport: 'tennis' },
   { id: 8, name: 'Tennis 2',  color: '#0e7490', sport: 'tennis' },
 ]

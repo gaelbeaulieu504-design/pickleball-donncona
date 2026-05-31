@@ -55,7 +55,7 @@ export default function BookCourt() {
 
   const isAdmin = user?.isAdmin === true
 
-  const activeCourts = selectedSport ? COURTS.filter(c => c.sport === selectedSport) : COURTS
+  const activeCourts = selectedSport ? COURTS.filter(c => c.sport === selectedSport && c.bookable !== false) : COURTS.filter(c => c.bookable !== false)
 
   const weekHours = user && selectedDate && !isAdmin ? getUserWeekHours(user.id, selectedDate) : 0
   const weekFull = !isAdmin && weekHours >= WEEKLY_HOUR_LIMIT
