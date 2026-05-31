@@ -112,14 +112,17 @@ export default function AdminPanel() {
     setSending(true)
     setSendResult(null)
     let sent = 0, failed = 0, notConfigured = false
+    const errors = []
     for (const member of emailTargetMembers) {
       const result = await sendBroadcast({ to_name: member.name, to_email: member.email, subject: emailSubject, message: emailMessage })
       if (result.notConfigured) { notConfigured = true; break }
       if (result.success) sent++
-      else failed++
+      else { failed++; errors.push(`${member.email}: ${result.error?.text || result.error?.message || JSON.stringify(result.error)}`) }
+      // Délai entre chaque envoi pour éviter le rate-limiting EmailJS
+      if (emailTargetMembers.length > 1) await new Promise(r => setTimeout(r, 800))
     }
     setSending(false)
-    setSendResult({ sent, failed, notConfigured, total: emailTargetMembers.length })
+    setSendResult({ sent, failed, notConfigured, total: emailTargetMembers.length, errors })
   }
 
   const tabStyle = (tab) => ({
@@ -423,7 +426,14 @@ export default function AdminPanel() {
                   <div style={{ fontSize: '0.875rem', color: '#334155' }}>
                     {sendResult.notConfigured
                       ? <><strong>EmailJS non configuré.</strong> Vérifiez vos clés dans le fichier <code>.env</code>.</>
-                      : <><strong>{sendResult.sent} courriel{sendResult.sent > 1 ? 's' : ''} envoyé{sendResult.sent > 1 ? 's' : ''}</strong>{sendResult.failed > 0 ? ` · ${sendResult.failed} échec(s)` : ' avec succès !'}</>
+                      : <>
+                          <strong>{sendResult.sent} courriel{sendResult.sent > 1 ? 's' : ''} envoyé{sendResult.sent > 1 ? 's' : ''}</strong>{sendResult.failed > 0 ? ` · ${sendResult.failed} échec(s)` : ' avec succès !'}
+                          {sendResult.errors?.length > 0 && (
+                            <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#dc2626', fontFamily: 'monospace', background: '#fff', borderRadius: '0.375rem', padding: '0.5rem', border: '1px solid #fecaca' }}>
+                              {sendResult.errors.map((e, i) => <div key={i}>{e}</div>)}
+                            </div>
+                          )}
+                        </>
                     }
                   </div>
                 </div>
