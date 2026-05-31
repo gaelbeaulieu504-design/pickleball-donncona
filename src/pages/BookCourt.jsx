@@ -293,9 +293,12 @@ export default function BookCourt() {
                     width: 48, height: 48, borderRadius: '0.875rem',
                     background: sel ? sport.color : `${sport.color}18`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '1.5rem', transition: 'all 0.18s',
+                    transition: 'all 0.18s',
                   }}>
-                    <span style={{ fontSize: '1.4rem' }}>{isPb ? '🏓' : '🎾'}</span>
+                    {isPb
+                      ? <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke={sel ? '#fff' : sport.color} strokeWidth="2"/><path d="M3 12 Q8 6 12 12 Q16 18 21 12" stroke={sel ? '#fff' : sport.color} strokeWidth="2" fill="none"/><path d="M12 3 Q18 8 12 12 Q6 16 12 21" stroke={sel ? '#fff' : sport.color} strokeWidth="1.5" fill="none"/></svg>
+                      : <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke={sel ? '#fff' : sport.color} strokeWidth="2"/><path d="M5 7 Q12 12 19 7" stroke={sel ? '#fff' : sport.color} strokeWidth="1.5" fill="none"/><path d="M5 17 Q12 12 19 17" stroke={sel ? '#fff' : sport.color} strokeWidth="1.5" fill="none"/><line x1="12" y1="3" x2="12" y2="21" stroke={sel ? '#fff' : sport.color} strokeWidth="1.5"/></svg>
+                    }
                   </div>
 
                   <div style={{ textAlign: 'left' }}>
