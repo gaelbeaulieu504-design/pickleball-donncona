@@ -28,6 +28,18 @@ export default function Courses() {
     return course.maxParticipants && course.registrations?.length >= course.maxParticipants
   }
 
+  // Helper: get dates array (supports both old `date` string and new `dates` array)
+  function getDates(course) {
+    if (course.dates) return course.dates
+    if (course.date) return [course.date]
+    return []
+  }
+
+  function formatDates(course) {
+    const dates = getDates(course)
+    return dates.map(d => format(parseISO(d), 'd MMMM yyyy', { locale: fr })).join(' et ')
+  }
+
   async function handlePaymentSuccess(paymentInfo) {
     if (!selectedCourse || registering) return
     setRegistering(true)
@@ -45,7 +57,7 @@ export default function Courses() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'inscription')
+      if (!res.ok) throw new Error(data.error || "Erreur lors de l'inscription")
       setCourses(prev => prev.map(c => c.id === data.course.id ? data.course : c))
       setStep('done')
     } catch (e) {
@@ -74,20 +86,20 @@ export default function Courses() {
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Inscription confirmée !</h2>
           <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: 1.7 }}>
-            Vous êtes inscrit au cours du <strong>{format(parseISO(selectedCourse.date), 'EEEE d MMMM yyyy', { locale: fr })}</strong>.<br />
-            Rendez-vous à <strong>{selectedCourse.time}</strong> aux terrains de pickleball de Donnacona.
+            Vous êtes inscrit aux 2 séances du cours.<br />
+            Rendez-vous les <strong>{formatDates(selectedCourse)}</strong> à <strong>{selectedCourse.time}</strong> aux terrains de pickleball de Donnacona.
           </p>
           <div style={{ background: '#f0fdf4', borderRadius: '1rem', padding: '1.25rem', marginBottom: '1.5rem', textAlign: 'left' }}>
             {[
               { label: 'Cours', value: selectedCourse.name },
-              { label: 'Date', value: format(parseISO(selectedCourse.date), 'EEEE d MMMM yyyy', { locale: fr }) },
+              { label: 'Séances', value: formatDates(selectedCourse) },
               { label: 'Horaire', value: selectedCourse.time },
               { label: 'Lieu', value: 'Terrains de pickleball Donnacona' },
-              { label: 'Montant payé', value: `$${selectedCourse.price} CAD` },
+              { label: 'Montant payé', value: `$${selectedCourse.price} CAD (2 séances)` },
             ].map(r => (
-              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', marginBottom: '0.5rem', borderBottom: '1px solid #dcfce7' }}>
-                <span style={{ color: '#64748b', fontSize: '0.875rem' }}>{r.label}</span>
-                <span style={{ fontWeight: 700, color: '#14532d', fontSize: '0.875rem' }}>{r.value}</span>
+              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', marginBottom: '0.5rem', borderBottom: '1px solid #dcfce7', gap: '1rem' }}>
+                <span style={{ color: '#64748b', fontSize: '0.875rem', flexShrink: 0 }}>{r.label}</span>
+                <span style={{ fontWeight: 700, color: '#14532d', fontSize: '0.875rem', textAlign: 'right' }}>{r.value}</span>
               </div>
             ))}
           </div>
@@ -113,11 +125,9 @@ export default function Courses() {
           </p>
         </div>
 
-        {/* Payment / Confirm step */}
+        {/* Confirm / Payment step */}
         {(step === 'confirm' || step === 'payment') && selectedCourse && (
           <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', padding: 'clamp(1.5rem,4vw,2.5rem)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', marginBottom: '2rem' }}>
-
-            {/* Breadcrumb */}
             <button onClick={() => { setStep('list'); setError('') }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem', marginBottom: '1.5rem', padding: 0 }}>
               <ChevronLeft size={16} /> Retour aux cours
@@ -128,14 +138,32 @@ export default function Courses() {
                 <h2 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <GraduationCap size={22} color="#166534" /> Confirmer l'inscription
                 </h2>
+
                 <div style={{ background: '#f0fdf4', borderRadius: '0.875rem', padding: '1.25rem', marginBottom: '1.5rem' }}>
-                  <div style={{ fontWeight: 800, color: '#14532d', fontSize: '1.05rem', marginBottom: '0.75rem' }}>{selectedCourse.name}</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px,1fr))', gap: '0.75rem' }}>
+                  <div style={{ fontWeight: 800, color: '#14532d', fontSize: '1.05rem', marginBottom: '0.875rem' }}>{selectedCourse.name}</div>
+
+                  {/* Dates list */}
+                  <div style={{ marginBottom: '0.875rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.72rem', color: '#16a34a', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                      <Calendar size={13} /> Séances incluses (2)
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                      {getDates(selectedCourse).map((d, i) => (
+                        <div key={d} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', background: '#fff', borderRadius: '0.5rem', padding: '0.5rem 0.75rem', border: '1px solid #bbf7d0' }}>
+                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, flexShrink: 0 }}>{i + 1}</div>
+                          <span style={{ fontWeight: 700, color: '#14532d', fontSize: '0.875rem' }}>
+                            {format(parseISO(d), 'EEEE d MMMM yyyy', { locale: fr })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px,1fr))', gap: '0.75rem' }}>
                     {[
-                      { icon: <Calendar size={14} />, label: 'Date', value: format(parseISO(selectedCourse.date), 'EEEE d MMMM yyyy', { locale: fr }) },
-                      { icon: <Clock size={14} />, label: 'Horaire', value: selectedCourse.time },
-                      { icon: <MapPin size={14} />, label: 'Lieu', value: 'Terrains de pickleball Donnacona' },
-                      { icon: <Users size={14} />, label: 'Places', value: `${selectedCourse.registrations.length} / ${selectedCourse.maxParticipants}` },
+                      { icon: <Clock size={13} />, label: 'Horaire', value: selectedCourse.time },
+                      { icon: <MapPin size={13} />, label: 'Lieu', value: 'Terrains Donnacona' },
+                      { icon: <Users size={13} />, label: 'Places', value: `${selectedCourse.registrations.length} / ${selectedCourse.maxParticipants}` },
                     ].map(r => (
                       <div key={r.label}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.72rem', color: '#16a34a', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.2rem' }}>{r.icon}{r.label}</div>
@@ -144,13 +172,15 @@ export default function Courses() {
                     ))}
                   </div>
                 </div>
+
                 <div style={{ background: 'linear-gradient(135deg,#14532d,#166534)', color: '#fff', borderRadius: '0.875rem', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <div style={{ fontSize: '0.8rem', color: '#86efac', fontWeight: 600, textTransform: 'uppercase' }}>Frais d'inscription</div>
                     <div style={{ fontWeight: 900, fontSize: '2rem' }}>${selectedCourse.price} CAD</div>
                   </div>
-                  <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>Paiement unique<br />par session</div>
+                  <div style={{ fontSize: '0.875rem', color: '#bbf7d0', textAlign: 'right' }}>2 séances incluses<br />Paiement unique</div>
                 </div>
+
                 {error && (
                   <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '0.875rem 1rem', marginBottom: '1.25rem', display: 'flex', gap: '0.5rem', alignItems: 'center', color: '#dc2626', fontSize: '0.9rem' }}>
                     <AlertCircle size={16} style={{ flexShrink: 0 }} /> {error}
@@ -168,8 +198,8 @@ export default function Courses() {
             {step === 'payment' && (
               <PaymentStep
                 amount={selectedCourse.price}
-                description={`Initiation au pickleball – ${format(parseISO(selectedCourse.date), 'd MMMM yyyy', { locale: fr })}`}
-                label={`Cours – ${format(parseISO(selectedCourse.date), 'd MMM', { locale: fr })}`}
+                description={`Initiation au pickleball – ${getDates(selectedCourse).map(d => format(parseISO(d), 'd MMM', { locale: fr })).join(' & ')} 2026`}
+                label="Cours initiation — 2 séances"
                 onSuccess={handlePaymentSuccess}
                 onBack={() => setStep('confirm')}
               />
@@ -187,8 +217,8 @@ export default function Courses() {
               </div>
               <div>
                 <div style={{ fontWeight: 800, color: '#14532d', fontSize: '1rem', marginBottom: '0.25rem' }}>Cours d'initiation au pickleball — Été 2026</div>
-                <div style={{ fontSize: '0.875rem', color: '#166534', lineHeight: 1.6 }}>
-                  Deux sessions disponibles · <strong>$45 / personne</strong> · 9h00 à 11h00 · Équipement fourni · Max 16 participants
+                <div style={{ fontSize: '0.875rem', color: '#166634', lineHeight: 1.6 }}>
+                  <strong>$45 pour les 2 séances</strong> · 20 et 27 juin · 9h00 à 11h00 · Équipement fourni · Max 16 participants
                 </div>
               </div>
             </div>
@@ -198,18 +228,23 @@ export default function Courses() {
                 const registered = isRegistered(course)
                 const full = isFull(course)
                 const spotsLeft = course.maxParticipants - (course.registrations?.length || 0)
-                const dateObj = parseISO(course.date)
+                const dates = getDates(course)
 
                 return (
                   <div key={course.id} style={{ background: '#fff', borderRadius: '1.25rem', border: `2px solid ${registered ? '#bbf7d0' : '#e2e8f0'}`, padding: '1.5rem', boxShadow: '0 4px 16px rgba(0,0,0,0.05)', display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
-                    {/* Date badge */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: registered ? 'linear-gradient(135deg,#14532d,#166534)' : 'linear-gradient(135deg,#1B4E8B,#2563eb)', color: '#fff', borderRadius: '1rem', padding: '0.875rem 1.125rem', minWidth: 72, flexShrink: 0, textAlign: 'center' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', opacity: 0.85 }}>
-                        {format(dateObj, 'MMM', { locale: fr })}
-                      </span>
-                      <span style={{ fontSize: '2.25rem', fontWeight: 900, lineHeight: 1 }}>{format(dateObj, 'd')}</span>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 600, opacity: 0.8 }}>{format(dateObj, 'yyyy')}</span>
+                    {/* Date badges */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
+                      {dates.map((d, i) => {
+                        const dt = parseISO(d)
+                        return (
+                          <div key={d} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: registered ? 'linear-gradient(135deg,#14532d,#166534)' : 'linear-gradient(135deg,#1B4E8B,#2563eb)', color: '#fff', borderRadius: '0.875rem', padding: '0.625rem 0.875rem', minWidth: 60, textAlign: 'center' }}>
+                            <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', opacity: 0.85 }}>{format(dt, 'MMM', { locale: fr })}</span>
+                            <span style={{ fontSize: '1.75rem', fontWeight: 900, lineHeight: 1 }}>{format(dt, 'd')}</span>
+                            <span style={{ fontSize: '0.6rem', fontWeight: 600, opacity: 0.75 }}>Séance {i + 1}</span>
+                          </div>
+                        )
+                      })}
                     </div>
 
                     {/* Details */}
@@ -218,7 +253,7 @@ export default function Courses() {
                         <h3 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.125rem', margin: 0 }}>{course.name}</h3>
                         {registered && (
                           <span style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.2rem 0.625rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                            <CheckCircle size={11} /> Inscrit
+                            <CheckCircle size={11} /> Inscrit(e)
                           </span>
                         )}
                         {full && !registered && (
@@ -242,17 +277,17 @@ export default function Courses() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem', flexShrink: 0 }}>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontWeight: 900, fontSize: '1.75rem', color: '#166534', lineHeight: 1 }}>${course.price}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>CAD / pers.</div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>CAD · 2 séances</div>
                       </div>
                       {registered ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#166534', fontWeight: 700, fontSize: '0.875rem' }}>
-                          <CheckCircle size={16} /> Vous êtes inscrit
+                          <CheckCircle size={16} /> Vous êtes inscrit(e)
                         </div>
                       ) : full ? (
                         <span style={{ color: '#94a3b8', fontSize: '0.875rem', fontWeight: 600 }}>Aucune place disponible</span>
                       ) : (
                         <button
-                          onClick={() => { setSelectedCourse(course); setStep('confirm'); setError(''); window.scrollTo(0,0) }}
+                          onClick={() => { setSelectedCourse(course); setStep('confirm'); setError(''); window.scrollTo(0, 0) }}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg,#14532d,#166534)', color: '#fff', border: 'none', borderRadius: '0.875rem', padding: '0.75rem 1.5rem', fontSize: '0.9375rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                           S'inscrire <ChevronRight size={16} />
                         </button>

@@ -91,22 +91,12 @@ export async function setTournaments(tournaments) {
 // ── Courses ───────────────────────────────────────────────────────────────────
 const DEFAULT_COURSES = [
   {
-    id: 'cours-20-juin-2026',
+    id: 'initiation-pickleball-ete-2026',
     name: 'Initiation au pickleball',
-    date: '2026-06-20',
+    dates: ['2026-06-20', '2026-06-27'],
     time: '9h00 – 11h00',
     price: 45,
-    description: 'Cours d\'initiation au pickleball pour débutants. Apprenez les règles, les techniques de base et amusez-vous en compagnie d\'autres joueurs. Équipement fourni.',
-    maxParticipants: 16,
-    registrations: [],
-  },
-  {
-    id: 'cours-27-juin-2026',
-    name: 'Initiation au pickleball',
-    date: '2026-06-27',
-    time: '9h00 – 11h00',
-    price: 45,
-    description: 'Cours d\'initiation au pickleball pour débutants. Apprenez les règles, les techniques de base et amusez-vous en compagnie d\'autres joueurs. Équipement fourni.',
+    description: 'Cours d\'initiation au pickleball pour débutants sur 2 séances. Apprenez les règles, les techniques de base et amusez-vous en compagnie d\'autres joueurs. Équipement fourni.',
     maxParticipants: 16,
     registrations: [],
   },
