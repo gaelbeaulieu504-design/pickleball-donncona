@@ -1,9 +1,9 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth,
          eachDayOfInterval, isSameDay, isToday, isPast, startOfDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, CalendarCheck, Clock, User, CreditCard,
-         CheckCircle, LogIn, AlertTriangle, Ban, Star, Shield, Info } from 'lucide-react'
+         CheckCircle, LogIn, AlertTriangle, Ban, Star, Shield, Info, Users, Search, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
@@ -18,6 +18,17 @@ export default function BookCourt() {
   const navigate = useNavigate()
   const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking } = useBookings()
   const bookingInProgress = useRef(false)
+
+  const [allMembers, setAllMembers] = useState([])
+  const [companions, setCompanions] = useState([])
+  const [memberSearch, setMemberSearch] = useState('')
+  const [showMemberDropdown, setShowMemberDropdown] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/users').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setAllMembers(data.filter(m => m.seasonPassPaid || m.freePass))
+    }).catch(() => {})
+  }, [])
 
   const [selectedSport, setSelectedSport] = useState(null)
   const [step, setStep] = useState(0)
@@ -114,6 +125,7 @@ export default function BookCourt() {
       isResident: effectiveType === 'resident',
       price: hasSeasonPass ? 0 : price,
       paymentInfo,
+      companions: companions.map(c => ({ id: c.id, name: c.name, email: c.email })),
     })
     // Send confirmation email
     await sendBookingConfirmation({
@@ -189,6 +201,7 @@ export default function BookCourt() {
               { label: 'Date', value: format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr }) },
               { label: 'Heure', value: slotLabel(selectedStart, selectedDuration) },
               { label: 'Durée', value: `${selectedDuration}h` },
+              { label: 'Joueurs', value: companions.length > 0 ? `Vous + ${companions.map(c => c.name).join(', ')}` : 'Vous seul(e)' },
               { label: 'Passe saisonnier', value: effectiveType === 'resident' ? 'Résident · $40/été' : 'Non-résident · $85/été' },
               { label: "Payé aujourd'hui", value: hasSeasonPass ? '$0 (déjà payé)' : `$${price}` },
             ].map(r => (
@@ -493,6 +506,117 @@ export default function BookCourt() {
                   </div>
                 </div>
               )}
+
+              {/* ── Companion picker ── */}
+              {selectedCourt && selectedStart && (() => {
+                const eligibleMembers = allMembers.filter(m =>
+                  m.id !== user?.id &&
+                  (m.name.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                   m.email.toLowerCase().includes(memberSearch.toLowerCase()))
+                )
+                const canAddMore = companions.length < 3
+                return (
+                  <div style={{ marginTop: '1.75rem', background: '#f8fafc', borderRadius: '1rem', border: '1px solid #e2e8f0', padding: '1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                      <Users size={18} color="#1B4E8B" />
+                      <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '1rem' }}>Joueurs qui vous accompagnent</span>
+                      <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '0.1rem 0.4rem', borderRadius: '2rem' }}>Requis</span>
+                    </div>
+                    <p style={{ fontSize: '0.825rem', color: '#64748b', marginBottom: '1rem' }}>
+                      Sélectionnez les membres abonnés qui jouent avec vous (max 3). Si vous jouez seul, confirmez avec 0 accompagnateur.
+                    </p>
+
+                    {/* Selected chips */}
+                    {companions.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.875rem' }}>
+                        {companions.map(m => (
+                          <span key={m.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', background: '#EBF3FB', color: '#1B4E8B', border: '1px solid #bfdbfe', borderRadius: '2rem', padding: '0.3rem 0.75rem', fontSize: '0.825rem', fontWeight: 700 }}>
+                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#1B4E8B', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, flexShrink: 0 }}>
+                              {m.name[0].toUpperCase()}
+                            </div>
+                            {m.name}
+                            <button onClick={() => setCompanions(prev => prev.filter(c => c.id !== m.id))}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: '#1B4E8B' }}>
+                              <X size={13} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Search input */}
+                    {canAddMore && (
+                      <div style={{ position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', background: '#fff', border: `1.5px solid ${showMemberDropdown ? '#1B4E8B' : '#e2e8f0'}`, borderRadius: '0.75rem', padding: '0.625rem 1rem', cursor: 'text', transition: 'border-color 0.15s' }}
+                          onClick={() => setShowMemberDropdown(true)}>
+                          <Search size={16} color="#94a3b8" />
+                          <input
+                            value={memberSearch}
+                            onChange={e => { setMemberSearch(e.target.value); setShowMemberDropdown(true) }}
+                            onFocus={() => setShowMemberDropdown(true)}
+                            placeholder="Rechercher un membre abonné…"
+                            style={{ border: 'none', outline: 'none', fontSize: '0.9rem', color: '#0f172a', background: 'transparent', flex: 1, fontFamily: 'inherit' }}
+                          />
+                        </div>
+
+                        {/* Dropdown */}
+                        {showMemberDropdown && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: '0.75rem', marginTop: '0.375rem', boxShadow: '0 8px 30px rgba(0,0,0,0.1)', zIndex: 100, maxHeight: 260, overflowY: 'auto' }}>
+                            {eligibleMembers.length === 0 ? (
+                              <div style={{ padding: '1.25rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.875rem' }}>
+                                {memberSearch ? 'Aucun membre trouvé' : 'Aucun membre abonné disponible'}
+                              </div>
+                            ) : eligibleMembers.map(m => {
+                              const alreadySelected = companions.find(c => c.id === m.id)
+                              return (
+                                <button key={m.id}
+                                  disabled={!!alreadySelected}
+                                  onClick={() => {
+                                    if (!alreadySelected) {
+                                      setCompanions(prev => [...prev, m])
+                                      setMemberSearch('')
+                                      setShowMemberDropdown(false)
+                                    }
+                                  }}
+                                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', background: alreadySelected ? '#f8fafc' : 'transparent', border: 'none', cursor: alreadySelected ? 'default' : 'pointer', textAlign: 'left', transition: 'background 0.1s', opacity: alreadySelected ? 0.5 : 1 }}
+                                  onMouseEnter={e => { if (!alreadySelected) e.currentTarget.style.background = '#f0f9ff' }}
+                                  onMouseLeave={e => { if (!alreadySelected) e.currentTarget.style.background = 'transparent' }}
+                                >
+                                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#EBF3FB', color: '#1B4E8B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.875rem', flexShrink: 0 }}>
+                                    {m.name[0].toUpperCase()}
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.875rem' }}>{m.name}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{m.email}</div>
+                                  </div>
+                                  {m.freePass
+                                    ? <span style={{ background: '#ecfeff', color: '#0891b2', border: '1px solid #a5f3fc', padding: '0.15rem 0.5rem', borderRadius: '2rem', fontSize: '0.7rem', fontWeight: 700 }}>Gratuit</span>
+                                    : <span style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.15rem 0.5rem', borderRadius: '2rem', fontSize: '0.7rem', fontWeight: 700 }}>Abonné</span>
+                                  }
+                                  {alreadySelected && <CheckCircle size={16} color="#166534" />}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Overlay to close dropdown */}
+                    {showMemberDropdown && (
+                      <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => { setShowMemberDropdown(false); setMemberSearch('') }} />
+                    )}
+
+                    {/* Summary */}
+                    <div style={{ marginTop: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#475569' }}>
+                      <Users size={14} color="#64748b" />
+                      <span><strong>{1 + companions.length}</strong> joueur{companions.length > 0 ? 's' : ''} au total
+                        {companions.length === 0 && <span style={{ color: '#94a3b8' }}> (vous seul)</span>}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })()}
 
               <div style={{ marginTop: '1.75rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <button className="btn-secondary" onClick={() => goToStep(0)}><ChevronLeft size={18} />Retour</button>
