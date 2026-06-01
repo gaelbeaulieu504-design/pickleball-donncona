@@ -14,7 +14,7 @@ const navLinks = [
 const inscriptionItems = [
   { icon: Trophy, label: 'Tournois', color: '#b45309', to: '/tournaments' },
   { icon: Users, label: 'Ligues', color: '#1B4E8B', to: null },
-  { icon: GraduationCap, label: 'Cours', color: '#166534', to: null },
+  { icon: GraduationCap, label: 'Cours', color: '#166534', to: '/cours' },
 ]
 
 export default function Navbar() {

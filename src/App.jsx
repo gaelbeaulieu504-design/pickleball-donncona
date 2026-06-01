@@ -13,6 +13,7 @@ import Register from './pages/Register'
 import AdminPanel from './pages/AdminPanel'
 import Tournaments from './pages/Tournaments'
 import Welcome from './pages/Welcome'
+import Courses from './pages/Courses'
 import ScrollToTop from './components/ScrollToTop'
 
 function RequireAuth({ children }) {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/contact" element={<RequireAuth><Contact /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
               <Route path="/tournaments" element={<RequireAuth><Tournaments /></RequireAuth>} />
+              <Route path="/cours" element={<RequireAuth><Courses /></RequireAuth>} />
             </Routes>
           </main>
           <Footer />

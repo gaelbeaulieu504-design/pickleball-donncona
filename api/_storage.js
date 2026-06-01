@@ -87,3 +87,39 @@ export async function setTournaments(tournaments) {
   if (useEdge()) { await edgeSet('tournaments', tournaments); return }
   writeJson('tournaments.json', tournaments)
 }
+
+// ── Courses ───────────────────────────────────────────────────────────────────
+const DEFAULT_COURSES = [
+  {
+    id: 'cours-20-juin-2026',
+    name: 'Initiation au pickleball',
+    date: '2026-06-20',
+    time: '9h00 – 11h00',
+    price: 45,
+    description: 'Cours d\'initiation au pickleball pour débutants. Apprenez les règles, les techniques de base et amusez-vous en compagnie d\'autres joueurs. Équipement fourni.',
+    maxParticipants: 16,
+    registrations: [],
+  },
+  {
+    id: 'cours-27-juin-2026',
+    name: 'Initiation au pickleball',
+    date: '2026-06-27',
+    time: '9h00 – 11h00',
+    price: 45,
+    description: 'Cours d\'initiation au pickleball pour débutants. Apprenez les règles, les techniques de base et amusez-vous en compagnie d\'autres joueurs. Équipement fourni.',
+    maxParticipants: 16,
+    registrations: [],
+  },
+]
+export async function getCourses() {
+  if (useEdge()) {
+    const val = await edgeGet('courses')
+    if (val !== null) return val
+  }
+  const stored = readJson('courses.json')
+  return stored.length ? stored : DEFAULT_COURSES
+}
+export async function setCourses(courses) {
+  if (useEdge()) { await edgeSet('courses', courses); return }
+  writeJson('courses.json', courses)
+}

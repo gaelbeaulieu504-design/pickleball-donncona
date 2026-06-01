@@ -233,6 +233,37 @@ app.post('/api/grant-free-pass', (req, res) => {
   res.json({ success: true, user: safeUser })
 })
 
+// Courses data
+const COURSES_FILE = path.join(__dirname, 'data', 'courses.json')
+const DEFAULT_COURSES = [
+  { id: 'cours-20-juin-2026', name: 'Initiation au pickleball', date: '2026-06-20', time: '9h00 – 11h00', price: 45, description: "Cours d'initiation au pickleball pour débutants. Apprenez les règles, les techniques de base et amusez-vous. Équipement fourni.", maxParticipants: 16, registrations: [] },
+  { id: 'cours-27-juin-2026', name: 'Initiation au pickleball', date: '2026-06-27', time: '9h00 – 11h00', price: 45, description: "Cours d'initiation au pickleball pour débutants. Apprenez les règles, les techniques de base et amusez-vous. Équipement fourni.", maxParticipants: 16, registrations: [] },
+]
+function readCourses() {
+  try {
+    const data = JSON.parse(fs.readFileSync(COURSES_FILE, 'utf8'))
+    return data.length ? data : DEFAULT_COURSES
+  } catch { return DEFAULT_COURSES }
+}
+function writeCourses(courses) { fs.writeFileSync(COURSES_FILE, JSON.stringify(courses, null, 2)) }
+
+app.get('/api/courses', (req, res) => res.json(readCourses()))
+
+app.post('/api/courses', (req, res) => {
+  const { courseId, userName, userEmail, userId, paymentInfo } = req.body
+  if (!courseId || !userName || !userEmail) return res.status(400).json({ error: 'Paramètres manquants' })
+  const courses = readCourses()
+  const idx = courses.findIndex(c => c.id === courseId)
+  if (idx === -1) return res.status(404).json({ error: 'Cours introuvable' })
+  const course = courses[idx]
+  if (course.registrations.find(r => r.email === userEmail)) return res.status(400).json({ error: 'Vous êtes déjà inscrit à ce cours' })
+  if (course.maxParticipants && course.registrations.length >= course.maxParticipants) return res.status(400).json({ error: 'Ce cours est complet' })
+  course.registrations.push({ userId: userId || null, name: userName, email: userEmail, registeredAt: new Date().toISOString(), paymentInfo: paymentInfo || null })
+  courses[idx] = course
+  writeCourses(courses)
+  res.json({ success: true, course })
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`✅ API server running on http://localhost:${PORT}`)
