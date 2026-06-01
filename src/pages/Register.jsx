@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { User, Mail, Lock, UserPlus, Eye, EyeOff, Phone, MapPin, CheckCircle } from 'lucide-react'
+import { User, Mail, Lock, UserPlus, Eye, EyeOff, Phone, MapPin, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 function detectResidency(city) {
@@ -45,23 +45,72 @@ export default function Register() {
     fontSize: '0.9375rem', fontFamily: 'inherit', color: '#0f172a',
     outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box',
   }
-  const labelStyle = { display: 'block', fontWeight: 600, color: '#334155', marginBottom: '0.375rem', fontSize: '0.9375rem' }
+  const labelStyle = { display: 'block', fontWeight: 600, color: '#334155', marginBottom: '0.375rem', fontSize: '0.9rem' }
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', background: '#f8fafc' }}>
-      <div style={{ background: '#fff', borderRadius: '1.5rem', padding: 'clamp(2rem, 5vw, 3rem)', width: '100%', maxWidth: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' }}>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem 1rem',
+      background: 'linear-gradient(160deg, #0f2d4a 0%, #1B4E8B 45%, #166534 100%)',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Background decorative circles */}
+      <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
 
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, #14532d, #22c55e)', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
-              <path d="M3 12 Q8 6 12 12 Q16 18 21 12" stroke="white" strokeWidth="2" fill="none"/>
-              <path d="M12 3 Q18 8 12 12 Q6 16 12 21" stroke="white" strokeWidth="1.5" fill="none"/>
-            </svg>
-          </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.375rem' }}>Créer un compte</h1>
-          <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>Inscrivez-vous pour commencer à réserver</p>
+      {/* Logo + Club name */}
+      <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        <img
+          src="/logo.png"
+          alt="Pickleball Donnacona"
+          style={{ width: 130, height: 130, objectFit: 'contain', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}
+        />
+        <div style={{ marginTop: '0.75rem', color: 'rgba(255,255,255,0.65)', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          Été 2026
         </div>
+      </div>
+
+      {/* Access required banner */}
+      <div style={{
+        background: 'rgba(255,255,255,0.12)',
+        backdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '1rem',
+        padding: '0.875rem 1.25rem',
+        marginBottom: '1.5rem',
+        maxWidth: 480,
+        width: '100%',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '0.75rem',
+      }}>
+        <ShieldCheck size={20} color="#4ade80" style={{ flexShrink: 0, marginTop: 1 }} />
+        <div>
+          <div style={{ color: '#fff', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.2rem' }}>
+            Compte requis pour accéder au site
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem', lineHeight: 1.5 }}>
+            Créez votre compte membre gratuit pour accéder aux réservations de terrains, aux tournois et aux cours.
+          </div>
+        </div>
+      </div>
+
+      {/* Card */}
+      <div style={{
+        background: '#fff',
+        borderRadius: '1.5rem',
+        padding: 'clamp(1.75rem, 5vw, 2.5rem)',
+        width: '100%',
+        maxWidth: 480,
+        boxShadow: '0 24px 64px rgba(0,0,0,0.25)',
+      }}>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem' }}>Créer un compte</h1>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Inscrivez-vous pour commencer à réserver des terrains.</p>
 
         {error && (
           <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#dc2626', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
@@ -73,7 +122,7 @@ export default function Register() {
 
           {/* Informations personnelles */}
           <div style={{ background: '#f8fafc', borderRadius: '0.875rem', padding: '1.125rem', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Informations personnelles</div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Informations personnelles</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
 
               <div>
@@ -81,7 +130,7 @@ export default function Register() {
                 <div style={{ position: 'relative' }}>
                   <User size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input type="text" required placeholder="Jean Tremblay" value={form.name} onChange={set('name')}
-                    style={inputStyle} onFocus={e => e.target.style.borderColor = '#166534'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                    style={inputStyle} onFocus={e => e.target.style.borderColor = '#1B4E8B'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                 </div>
               </div>
 
@@ -90,7 +139,7 @@ export default function Register() {
                 <div style={{ position: 'relative' }}>
                   <Mail size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input type="email" required placeholder="vous@exemple.com" value={form.email} onChange={set('email')}
-                    style={inputStyle} onFocus={e => e.target.style.borderColor = '#166534'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                    style={inputStyle} onFocus={e => e.target.style.borderColor = '#1B4E8B'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                 </div>
               </div>
 
@@ -99,7 +148,7 @@ export default function Register() {
                 <div style={{ position: 'relative' }}>
                   <Phone size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input type="tel" placeholder="418-555-0123" value={form.phone} onChange={set('phone')}
-                    style={inputStyle} onFocus={e => e.target.style.borderColor = '#166534'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                    style={inputStyle} onFocus={e => e.target.style.borderColor = '#1B4E8B'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                 </div>
               </div>
 
@@ -119,7 +168,7 @@ export default function Register() {
                       ...inputStyle,
                       borderColor: form.city && isResident !== null ? (isResident ? '#bbf7d0' : '#fde68a') : '#e2e8f0'
                     }}
-                    onFocus={e => e.target.style.borderColor = '#166534'}
+                    onFocus={e => e.target.style.borderColor = '#1B4E8B'}
                     onBlur={e => e.target.style.borderColor = form.city && isResident !== null ? (isResident ? '#bbf7d0' : '#fde68a') : '#e2e8f0'} />
                 </div>
               </div>
@@ -128,7 +177,7 @@ export default function Register() {
 
           {/* Mot de passe */}
           <div style={{ background: '#f8fafc', borderRadius: '0.875rem', padding: '1.125rem', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Sécurité</div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Sécurité</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               {[
                 { id: 'password', label: 'Mot de passe', placeholder: 'Min. 6 caractères' },
@@ -141,7 +190,7 @@ export default function Register() {
                     <input type={showPw ? 'text' : 'password'} required placeholder={f.placeholder}
                       value={form[f.id]} onChange={set(f.id)}
                       style={{ ...inputStyle, paddingRight: '3rem' }}
-                      onFocus={e => e.target.style.borderColor = '#166634'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                      onFocus={e => e.target.style.borderColor = '#1B4E8B'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                     {f.id === 'confirm' && (
                       <button type="button" onClick={() => setShowPw(v => !v)}
                         style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}>
@@ -162,11 +211,23 @@ export default function Register() {
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#64748b', fontSize: '0.9375rem' }}>
-          Déjà un compte ?{' '}
-          <Link to="/login" style={{ color: '#166534', fontWeight: 700 }}>Se connecter</Link>
-        </p>
+        <div style={{ borderTop: '1px solid #f1f5f9', marginTop: '1.5rem', paddingTop: '1.25rem', textAlign: 'center' }}>
+          <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
+            Déjà un compte ?
+          </p>
+          <Link to="/login" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+            marginTop: '0.5rem', color: '#166534', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none',
+          }}>
+            Se connecter →
+          </Link>
+        </div>
       </div>
+
+      <p style={{ marginTop: '1.5rem', color: 'rgba(255,255,255,0.45)', fontSize: '0.8rem', textAlign: 'center' }}>
+        © 2026 Pickleball Donnacona
+      </p>
+
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
