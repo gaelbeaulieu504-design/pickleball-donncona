@@ -103,6 +103,7 @@ app.post('/api/season-pass', (req, res) => {
   if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
   users[idx].seasonPassPaid = true
   users[idx].seasonPassType = passType
+  users[idx].passPaymentDate = new Date().toISOString()
   writeUsers(users)
   const { password: _, ...safeUser } = users[idx]
   res.json({ success: true, user: safeUser })
@@ -220,6 +221,12 @@ app.post('/api/grant-free-pass', (req, res) => {
   if (grant) {
     users[idx].seasonPassPaid = true
     users[idx].seasonPassType = users[idx].seasonPassType || 'resident'
+    users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
+    users[idx].freePassGrantedDate = new Date().toISOString()
+  } else {
+    users[idx].seasonPassPaid = false
+    users[idx].seasonPassType = null
+    users[idx].freePassGrantedDate = null
   }
   writeUsers(users)
   const { password: _, ...safeUser } = users[idx]

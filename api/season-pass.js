@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
   users[idx].seasonPassPaid = true
   users[idx].seasonPassType = passType
+  users[idx].passPaymentDate = new Date().toISOString()
   await setUsers(users)
   const { password: _, ...safeUser } = users[idx]
   res.json({ success: true, user: safeUser })
