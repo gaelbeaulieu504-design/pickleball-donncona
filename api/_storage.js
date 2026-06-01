@@ -97,7 +97,7 @@ const DEFAULT_COURSES = [
     time: '9h00 – 11h00',
     price: 45,
     description: 'Cours d\'initiation au pickleball pour débutants sur 2 séances. Apprenez les règles, les techniques de base et amusez-vous en compagnie d\'autres joueurs. Équipement fourni.',
-    maxParticipants: 16,
+    maxParticipants: 8,
     registrations: [],
   },
 ]

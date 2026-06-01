@@ -236,7 +236,7 @@ app.post('/api/grant-free-pass', (req, res) => {
 // Courses data
 const COURSES_FILE = path.join(__dirname, 'data', 'courses.json')
 const DEFAULT_COURSES = [
-  { id: 'initiation-pickleball-ete-2026', name: 'Initiation au pickleball', dates: ['2026-06-20', '2026-06-27'], time: '9h00 – 11h00', price: 45, description: "Cours d'initiation au pickleball pour débutants sur 2 séances. Apprenez les règles, les techniques de base et amusez-vous. Équipement fourni.", maxParticipants: 16, registrations: [] },
+  { id: 'initiation-pickleball-ete-2026', name: 'Initiation au pickleball', dates: ['2026-06-20', '2026-06-27'], time: '9h00 – 11h00', price: 45, description: "Cours d'initiation au pickleball pour débutants sur 2 séances. Apprenez les règles, les techniques de base et amusez-vous. Équipement fourni.", maxParticipants: 8, registrations: [] },
 ]
 function readCourses() {
   try {

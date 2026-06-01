@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar, FileText, Download } from 'lucide-react'
+import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar, FileText, Download, GraduationCap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { WEEKLY_HOUR_LIMIT } from '../data/courts'
@@ -28,11 +28,13 @@ export default function AdminPanel() {
 
   const [memberFilter, setMemberFilter] = useState('all')
   const [expandedMember, setExpandedMember] = useState(null)
+  const [courses, setCourses] = useState([])
 
   useEffect(() => {
     if (user?.isAdmin) {
       getAllUsers().then(setMembers).catch(() => setMembers([]))
       fetch('/api/tournaments').then(r => r.json()).then(d => setTournaments(Array.isArray(d) ? d : [])).catch(() => {})
+      fetch('/api/courses').then(r => r.json()).then(d => setCourses(Array.isArray(d) ? d : [])).catch(() => {})
     }
   }, [user])
 
@@ -190,6 +192,10 @@ export default function AdminPanel() {
           <button style={tabStyle('report')} onClick={() => setActiveTab('report')}>
             <FileText size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
             Rapport
+          </button>
+          <button style={tabStyle('courses')} onClick={() => setActiveTab('courses')}>
+            <GraduationCap size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
+            Cours
           </button>
         </div>
 
@@ -745,6 +751,132 @@ export default function AdminPanel() {
                     </tfoot>
                   </table>
                 </div>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── Tab: Cours ── */}
+        {activeTab === 'courses' && (() => {
+          function fmtDate(iso) {
+            if (!iso) return '—'
+            const d = new Date(iso)
+            return isNaN(d) ? '—' : format(d, 'd MMM yyyy', { locale: fr })
+          }
+
+          const allRegistrations = courses.flatMap(c =>
+            (c.registrations || []).map(r => ({ ...r, courseName: c.name, courseDates: c.dates || (c.date ? [c.date] : []), coursePrice: c.price }))
+          ).sort((a, b) => new Date(b.registeredAt || 0) - new Date(a.registeredAt || 0))
+
+          function exportCourseCSV() {
+            const rows = [['Nom', 'Courriel', 'Cours', 'Séances', 'Date paiement', 'Montant']]
+            allRegistrations.forEach(r => {
+              const seances = (r.courseDates || []).map(d => new Date(d).toLocaleDateString('fr-CA')).join(' & ')
+              const paidAt = r.registeredAt ? new Date(r.registeredAt).toLocaleDateString('fr-CA') : '—'
+              rows.push([r.name || '—', r.email || '—', r.courseName, seances, paidAt, r.coursePrice ? `$${r.coursePrice}` : '—'])
+            })
+            const csv = rows.map(row => row.map(v => `"${v}"`).join(',')).join('\n')
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a'); a.href = url; a.download = 'rapport-cours.csv'; a.click()
+            URL.revokeObjectURL(url)
+          }
+
+          const totalCourseRevenue = allRegistrations.reduce((sum, r) => sum + (r.coursePrice || 0), 0)
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {/* Summary cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                {courses.map(c => (
+                  <div key={c.id} style={{ background: '#f0fdf4', borderRadius: '1rem', padding: '1.25rem', border: '1px solid #bbf7d022' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, marginBottom: '0.25rem' }}>{c.name}</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#166534' }}>{(c.registrations || []).length} <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>/ {c.maxParticipants}</span></div>
+                    <div style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 700, marginTop: '0.25rem' }}>inscrits</div>
+                  </div>
+                ))}
+                <div style={{ background: '#f5f3ff', borderRadius: '1rem', padding: '1.25rem', border: '1px solid #7c3aed22' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, marginBottom: '0.25rem' }}>Revenus cours</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#7c3aed' }}>${totalCourseRevenue}</div>
+                </div>
+              </div>
+
+              {/* Registrations table */}
+              <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+                <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div>
+                    <h2 style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.1rem', marginBottom: '0.125rem' }}>Inscriptions aux cours</h2>
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{allRegistrations.length} inscription{allRegistrations.length !== 1 ? 's' : ''}</p>
+                  </div>
+                  <button onClick={exportCourseCSV} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#166534', color: '#fff', border: 'none', padding: '0.625rem 1.25rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', fontSize: '0.875rem' }}>
+                    <Download size={15} /> Exporter CSV
+                  </button>
+                </div>
+                {allRegistrations.length === 0 ? (
+                  <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+                    <GraduationCap size={40} style={{ marginBottom: '0.75rem', opacity: 0.3 }} />
+                    <div style={{ fontWeight: 600 }}>Aucune inscription pour le moment</div>
+                  </div>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ background: '#f8fafc' }}>
+                          {['#', 'Nom', 'Courriel', 'Cours', 'Séances', 'Date paiement', 'Montant'].map(h => (
+                            <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allRegistrations.map((r, i) => (
+                          <tr key={i}
+                            style={{ borderBottom: i < allRegistrations.length - 1 ? '1px solid #f1f5f9' : 'none', verticalAlign: 'top' }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>{i + 1}</td>
+                            <td style={{ padding: '0.875rem 1rem', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#dcfce7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', flexShrink: 0 }}>
+                                  {(r.name || '?')[0].toUpperCase()}
+                                </div>
+                                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.875rem' }}>{r.name || '—'}</div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.875rem 1rem', whiteSpace: 'nowrap' }}>
+                              <a href={`mailto:${r.email}`} style={{ fontSize: '0.82rem', color: '#1B4E8B', textDecoration: 'none' }}>{r.email || '—'}</a>
+                            </td>
+                            <td style={{ padding: '0.875rem 1rem', fontSize: '0.82rem', color: '#0f172a', fontWeight: 600 }}>{r.courseName}</td>
+                            <td style={{ padding: '0.875rem 1rem', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                {(r.courseDates || []).map((d, idx) => (
+                                  <span key={d} style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', borderRadius: '0.375rem', padding: '0.15rem 0.5rem', fontSize: '0.75rem', fontWeight: 600 }}>
+                                    Séance {idx + 1} · {fmtDate(d)}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.875rem 1rem', fontSize: '0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Calendar size={12} color="#94a3b8" />
+                                {fmtDate(r.registeredAt)}
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.875rem 1rem', fontWeight: 800, fontSize: '1rem', color: '#7c3aed', whiteSpace: 'nowrap' }}>
+                              {r.coursePrice ? `$${r.coursePrice}` : '—'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr style={{ background: '#f8fafc', borderTop: '2px solid #e2e8f0' }}>
+                          <td colSpan={6} style={{ padding: '0.875rem 1rem', fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Total cours</td>
+                          <td style={{ padding: '0.875rem 1rem', fontWeight: 900, fontSize: '1.1rem', color: '#7c3aed' }}>${totalCourseRevenue} CAD</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           )
