@@ -59,9 +59,22 @@ export default function Register() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Background decorative circles */}
-      <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+      {/* Big background logo watermark */}
+      <img
+        src="/logo.png"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 680, height: 680,
+          objectFit: 'contain',
+          opacity: 0.07,
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      />
 
       {/* Logo + Club name */}
       <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
