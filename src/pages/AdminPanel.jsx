@@ -9,7 +9,7 @@ import { fr } from 'date-fns/locale'
 import { sendBroadcast } from '../utils/sendEmail'
 
 export default function AdminPanel() {
-  const { user, getAllUsers, grantFreePass } = useAuth()
+  const { user, getAllUsers, grantFreePass, toggleSeasonPass } = useAuth()
   const { bookings, getUserWeekHours } = useBookings()
   const navigate = useNavigate()
   const [members, setMembers] = useState([])
@@ -59,6 +59,11 @@ export default function AdminPanel() {
 
   async function handleGrantFreePass(memberId, grant) {
     await grantFreePass(memberId, grant)
+    getAllUsers().then(setMembers).catch(() => {})
+  }
+
+  async function handleTogglePass(memberId, active) {
+    await toggleSeasonPass(memberId, active)
     getAllUsers().then(setMembers).catch(() => {})
   }
 
@@ -312,6 +317,25 @@ export default function AdminPanel() {
                                     style={{ background: '#ecfeff', color: '#0891b2', border: '1px solid #a5f3fc', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
                                     <Gift size={13} /> Accorder passe gratuit
                                   </button>
+                              }
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Passe saisonnier</div>
+                              {m.seasonPassPaid
+                                ? <button onClick={e => { e.stopPropagation(); handleTogglePass(m.id, false) }}
+                                    style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                                    <Ban size={13} /> Désactiver le passe
+                                  </button>
+                                : <div style={{ display: 'flex', gap: '0.375rem' }}>
+                                    <button onClick={e => { e.stopPropagation(); handleTogglePass(m.id, true, 'resident') }}
+                                      style={{ background: '#f0fdf4', color: '#2E7D32', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                                      <CheckCircle size={13} /> Activer (résident)
+                                    </button>
+                                    <button onClick={e => { e.stopPropagation(); handleTogglePass(m.id, true, 'nonResident') }}
+                                      style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                                      <CheckCircle size={13} /> Activer (non-résident)
+                                    </button>
+                                  </div>
                               }
                             </div>
                           </div>

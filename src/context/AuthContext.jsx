@@ -70,6 +70,19 @@ export function AuthProvider({ children }) {
     } catch { return false }
   }
 
+  async function toggleSeasonPass(userId, active, passType) {
+    try {
+      const res = await fetch(`${API}/toggle-season-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, active, passType }),
+      })
+      if (!res.ok) return false
+      const data = await res.json()
+      return data.success ? data.user : false
+    } catch { return false }
+  }
+
   async function paySeasonPass(passType) {
     if (!user) return
     try {
@@ -84,7 +97,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers, grantFreePass }}>
+    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers, grantFreePass, toggleSeasonPass }}>
       {children}
     </AuthContext.Provider>
   )
