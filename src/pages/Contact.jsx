@@ -48,8 +48,8 @@ export default function Contact() {
               {
                 icon: <Phone size={20} color="#166534" />,
                 title: 'Téléphone',
-                lines: ['(418) 555-1234'],
-                href: 'tel:+14185551234',
+                lines: ['418 971 0186'],
+                href: 'tel:+14189710186',
               },
               {
                 icon: <Mail size={20} color="#166534" />,
