@@ -200,7 +200,8 @@ export default function AdminPanel() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '0.375rem', background: '#f1f5f9', borderRadius: '0.875rem', padding: '0.375rem', marginBottom: '1.5rem', width: 'fit-content' }}>
+        <div style={{ display: 'flex', gap: '0.375rem', background: '#f1f5f9', borderRadius: '0.875rem', padding: '0.375rem', marginBottom: '1.5rem', overflowX: 'auto', WebkitOverflowScrolling: 'touch', maxWidth: '100%', scrollbarWidth: 'none' }}
+          className="admin-tabs-container">
           <button style={tabStyle('members')} onClick={() => setActiveTab('members')}>
             <Users size={15} style={{ display: 'inline', marginRight: '0.375rem', verticalAlign: 'middle' }} />
             Membres ({members.length})
@@ -961,7 +962,11 @@ export default function AdminPanel() {
         })()}
 
       </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .admin-tabs-container { -ms-overflow-style: none; scrollbar-width: none; }
+        .admin-tabs-container::-webkit-scrollbar { display: none; }
+      `}</style>
     </div>
   )
 }
