@@ -65,6 +65,26 @@ export default async function handler(req, res) {
     return res.status(200).json(newTournament)
   }
 
+  if (req.method === 'PUT') {
+    const { id, name, date, location, description, maxPlayers, price, categories } = req.body
+    if (!id || !name || !date) return res.status(400).json({ error: 'ID, nom et date requis' })
+    const tournaments = await getTournaments()
+    const idx = tournaments.findIndex(t => t.id === id)
+    if (idx === -1) return res.status(404).json({ error: 'Tournoi introuvable' })
+    tournaments[idx] = {
+      ...tournaments[idx],
+      name,
+      date,
+      location: location || 'Terrains de pickleball Donnacona',
+      description: description || '',
+      maxPlayers: maxPlayers ? Number(maxPlayers) : null,
+      price: price ? Number(price) : 0,
+      categories: categories || [],
+    }
+    await saveTournaments(tournaments)
+    return res.status(200).json(tournaments[idx])
+  }
+
   if (req.method === 'DELETE') {
     const { tournamentId } = req.body
     const tournaments = await getTournaments()

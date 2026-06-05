@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar, FileText, Download, GraduationCap } from 'lucide-react'
+import { ShieldCheck, Users, CheckCircle, XCircle, MapPin, Mail, Clock, Ban, Send, AlertCircle, ChevronDown, ChevronUp, Gift, Trophy, Plus, Trash2, Calendar, FileText, Download, GraduationCap, Pencil } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useBookings } from '../context/BookingContext'
 import { WEEKLY_HOUR_LIMIT } from '../data/courts'
@@ -17,6 +17,7 @@ export default function AdminPanel() {
   const [tournaments, setTournaments] = useState([])
   const [tournamentForm, setTournamentForm] = useState({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '', categories: [] })
   const [categoryInput, setCategoryInput] = useState('')
+  const [editingTournamentId, setEditingTournamentId] = useState(null)
 
   function addCategory() {
     const c = categoryInput.trim()
@@ -110,16 +111,23 @@ export default function AdminPanel() {
     setCreatingTournament(true)
     setTournamentResult(null)
     try {
+      const isEditing = !!editingTournamentId
+      const body = isEditing ? { ...tournamentForm, id: editingTournamentId } : tournamentForm
       const res = await fetch('/api/tournaments', {
-        method: 'POST',
+        method: isEditing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tournamentForm),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
-      if (data.id) {
-        setTournaments(ts => [...ts, data])
+      if (isEditing ? data.id : data.id) {
+        if (isEditing) {
+          setTournaments(ts => ts.map(t => t.id === editingTournamentId ? data : t))
+        } else {
+          setTournaments(ts => [...ts, data])
+        }
         setTournamentForm({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '', categories: [] })
         setCategoryInput('')
+        setEditingTournamentId(null)
         setTournamentResult({ ok: true })
         setShowTournamentForm(false)
       } else {
@@ -129,6 +137,29 @@ export default function AdminPanel() {
       setTournamentResult({ error: 'Erreur réseau' })
     }
     setCreatingTournament(false)
+  }
+
+  async function handleEditTournament(t) {
+    setEditingTournamentId(t.id)
+    setTournamentForm({
+      name: t.name,
+      date: t.date,
+      location: t.location || '',
+      description: t.description || '',
+      maxPlayers: t.maxPlayers || '',
+      price: t.price || '',
+      categories: t.categories || [],
+    })
+    setCategoryInput('')
+    setTournamentResult(null)
+    setShowTournamentForm(true)
+  }
+
+  function cancelEdit() {
+    setEditingTournamentId(null)
+    setTournamentForm({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '', categories: [] })
+    setCategoryInput('')
+    setShowTournamentForm(false)
   }
 
   async function handleDeleteTournament(id) {
@@ -557,7 +588,14 @@ export default function AdminPanel() {
             {/* Create form */}
             {showTournamentForm && (
               <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-                <h3 style={{ fontWeight: 700, color: '#0f172a', marginBottom: '1.25rem', fontSize: '1rem' }}>Nouveau tournoi</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <h3 style={{ fontWeight: 700, color: '#0f172a', fontSize: '1rem' }}>{editingTournamentId ? 'Modifier le tournoi' : 'Nouveau tournoi'}</h3>
+                  {editingTournamentId && (
+                    <button onClick={cancelEdit} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'underline' }}>
+                      Annuler
+                    </button>
+                  )}
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                   {[
                     { label: 'Nom du tournoi *', key: 'name', type: 'text', placeholder: 'Ex: Tournoi Été 2026' },
@@ -612,19 +650,27 @@ export default function AdminPanel() {
                 {tournamentResult?.error && (
                   <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.625rem', padding: '0.75rem 1rem', color: '#dc2626', fontSize: '0.875rem', marginBottom: '1rem' }}>{tournamentResult.error}</div>
                 )}
-                <button
-                  onClick={handleCreateTournament}
-                  disabled={creatingTournament || !tournamentForm.name.trim() || !tournamentForm.date}
-                  style={{ background: '#b45309', color: '#fff', border: 'none', padding: '0.75rem 1.75rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', opacity: creatingTournament || !tournamentForm.name.trim() || !tournamentForm.date ? 0.6 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                >
-                  <Trophy size={16} /> {creatingTournament ? 'Création…' : 'Créer le tournoi'}
-                </button>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  {editingTournamentId && (
+                    <button onClick={cancelEdit}
+                      style={{ background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', padding: '0.75rem 1.75rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}>
+                      Annuler
+                    </button>
+                  )}
+                  <button
+                    onClick={handleCreateTournament}
+                    disabled={creatingTournament || !tournamentForm.name.trim() || !tournamentForm.date}
+                    style={{ background: '#b45309', color: '#fff', border: 'none', padding: '0.75rem 1.75rem', borderRadius: '0.625rem', fontWeight: 700, cursor: 'pointer', opacity: creatingTournament || !tournamentForm.name.trim() || !tournamentForm.date ? 0.6 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    <Trophy size={16} /> {creatingTournament ? (editingTournamentId ? 'Enregistrement…' : 'Création…') : (editingTournamentId ? 'Enregistrer' : 'Créer le tournoi')}
+                  </button>
+                </div>
               </div>
             )}
 
             {tournamentResult?.ok && (
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.875rem', padding: '0.875rem 1rem', color: '#166534', fontWeight: 600, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={16} /> Tournoi créé avec succès ! Il est maintenant visible par tous les membres.
+                <CheckCircle size={16} /> {editingTournamentId ? 'Tournoi modifié avec succès !' : 'Tournoi créé avec succès ! Il est maintenant visible par tous les membres.'}
               </div>
             )}
 
@@ -658,13 +704,22 @@ export default function AdminPanel() {
                         </div>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleDeleteTournament(t.id)}
-                      style={{ background: '#fef2f2', border: 'none', borderRadius: '0.5rem', padding: '0.5rem', cursor: 'pointer', color: '#dc2626', flexShrink: 0 }}
-                      title="Supprimer"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.375rem', flexShrink: 0 }}>
+                      <button
+                        onClick={() => handleEditTournament(t)}
+                        style={{ background: '#f1f5f9', border: 'none', borderRadius: '0.5rem', padding: '0.5rem', cursor: 'pointer', color: '#475569', flexShrink: 0 }}
+                        title="Modifier"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTournament(t.id)}
+                        style={{ background: '#fef2f2', border: 'none', borderRadius: '0.5rem', padding: '0.5rem', cursor: 'pointer', color: '#dc2626', flexShrink: 0 }}
+                        title="Supprimer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

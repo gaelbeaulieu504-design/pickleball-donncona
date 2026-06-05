@@ -175,6 +175,27 @@ app.delete('/api/tournaments', (req, res) => {
   res.json({ success: true })
 })
 
+// PUT update tournament
+app.put('/api/tournaments', (req, res) => {
+  const { id, name, date, location, description, maxPlayers, price, categories } = req.body
+  if (!id || !name || !date) return res.status(400).json({ error: 'ID, nom et date requis' })
+  const tournaments = readTournaments()
+  const idx = tournaments.findIndex(t => t.id === id)
+  if (idx === -1) return res.status(404).json({ error: 'Tournoi introuvable' })
+  tournaments[idx] = {
+    ...tournaments[idx],
+    name,
+    date,
+    location: location || 'Terrains de pickleball Donnacona',
+    description: description || '',
+    maxPlayers: maxPlayers ? Number(maxPlayers) : null,
+    price: price ? Number(price) : 0,
+    categories: categories || [],
+  }
+  writeTournaments(tournaments)
+  res.json(tournaments[idx])
+})
+
 // POST register to tournament
 app.post('/api/tournament-register', (req, res) => {
   const { tournamentId, userName, userEmail, category } = req.body
