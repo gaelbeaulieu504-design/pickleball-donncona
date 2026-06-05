@@ -1,19 +1,36 @@
 import { useState } from 'react'
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react'
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { sendBroadcast } from '../utils/sendEmail'
+
+const ADMIN_EMAIL = 'pickleballdonnacona@gmail.com'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!form.name || !form.email || !form.message) return
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    setError(null)
+
+    const result = await sendBroadcast({
+      to_name: 'Pickleball Donnacona',
+      to_email: ADMIN_EMAIL,
+      subject: `[Contact] ${form.subject || 'Nouveau message de ' + form.name}`,
+      message: `De : ${form.name} (${form.email})\n\n${form.message}`,
+    })
+
+    setLoading(false)
+    if (result.notConfigured) {
+      setError("EmailJS n'est pas configuré. Veuillez contacter l'administrateur.")
+    } else if (result.success) {
       setSent(true)
-    }, 1200)
+    } else {
+      setError("Une erreur est survenue lors de l'envoi. Veuillez réessayer.")
+    }
   }
 
   return (
@@ -233,6 +250,18 @@ export default function Contact() {
                       onBlur={e => e.target.style.borderColor = '#e2e8f0'}
                     />
                   </div>
+
+                  {error && (
+                    <div style={{
+                      background: '#fef2f2', border: '1px solid #fecaca',
+                      borderRadius: '0.625rem', padding: '0.75rem 1rem',
+                      display: 'flex', alignItems: 'flex-start', gap: '0.5rem',
+                      fontSize: '0.875rem', color: '#dc2626',
+                    }}>
+                      <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 1 }} />
+                      <span>{error}</span>
+                    </div>
+                  )}
 
                   <button
                     type="submit"
