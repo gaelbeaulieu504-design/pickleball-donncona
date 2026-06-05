@@ -45,7 +45,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { name, date, location, description, maxPlayers, price } = req.body
+    const { name, date, location, description, maxPlayers, price, categories } = req.body
     if (!name || !date) return res.status(400).json({ error: 'Nom et date requis' })
     const tournaments = await getTournaments()
     const newTournament = {
@@ -56,6 +56,7 @@ export default async function handler(req, res) {
       description: description || '',
       maxPlayers: maxPlayers ? Number(maxPlayers) : null,
       price: price ? Number(price) : 0,
+      categories: categories || [],
       registrations: [],
       createdAt: new Date().toISOString(),
     }

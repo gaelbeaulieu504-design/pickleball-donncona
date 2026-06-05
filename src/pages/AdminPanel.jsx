@@ -15,7 +15,19 @@ export default function AdminPanel() {
   const [members, setMembers] = useState([])
   const [activeTab, setActiveTab] = useState('members')
   const [tournaments, setTournaments] = useState([])
-  const [tournamentForm, setTournamentForm] = useState({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '' })
+  const [tournamentForm, setTournamentForm] = useState({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '', categories: [] })
+  const [categoryInput, setCategoryInput] = useState('')
+
+  function addCategory() {
+    const c = categoryInput.trim()
+    if (!c || tournamentForm.categories.includes(c)) return
+    setTournamentForm(v => ({ ...v, categories: [...v.categories, c] }))
+    setCategoryInput('')
+  }
+
+  function removeCategory(i) {
+    setTournamentForm(v => ({ ...v, categories: v.categories.filter((_, idx) => idx !== i) }))
+  }
   const [creatingTournament, setCreatingTournament] = useState(false)
   const [tournamentResult, setTournamentResult] = useState(null)
   const [showTournamentForm, setShowTournamentForm] = useState(false)
@@ -106,7 +118,8 @@ export default function AdminPanel() {
       const data = await res.json()
       if (data.id) {
         setTournaments(ts => [...ts, data])
-        setTournamentForm({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '' })
+        setTournamentForm({ name: '', date: '', location: '', description: '', maxPlayers: '', price: '', categories: [] })
+        setCategoryInput('')
         setTournamentResult({ ok: true })
         setShowTournamentForm(false)
       } else {
@@ -569,6 +582,31 @@ export default function AdminPanel() {
                     onChange={e => setTournamentForm(v => ({ ...v, description: e.target.value }))}
                     style={{ width: '100%', padding: '0.625rem 0.875rem', borderRadius: '0.5rem', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }}
                   />
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontWeight: 600, color: '#334155', fontSize: '0.875rem', marginBottom: '0.375rem' }}>Catégories <span style={{ fontWeight: 400, color: '#94a3b8' }}>(ex: Simple hommes, Double femmes, Mixte…)</span></label>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <input
+                      type="text" value={categoryInput} placeholder="Ajouter une catégorie"
+                      onChange={e => setCategoryInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCategory() } }}
+                      style={{ flex: 1, padding: '0.625rem 0.875rem', borderRadius: '0.5rem', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', fontFamily: 'inherit' }}
+                    />
+                    <button onClick={addCategory} disabled={!categoryInput.trim()}
+                      style={{ background: '#1B4E8B', color: '#fff', border: 'none', padding: '0.625rem 1rem', borderRadius: '0.5rem', fontWeight: 700, cursor: 'pointer', opacity: categoryInput.trim() ? 1 : 0.5, display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem' }}>
+                      <Plus size={15} /> Ajouter
+                    </button>
+                  </div>
+                  {tournamentForm.categories.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                      {tournamentForm.categories.map((cat, i) => (
+                        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', background: '#f1f5f9', color: '#334155', border: '1px solid #e2e8f0', borderRadius: '2rem', padding: '0.25rem 0.75rem', fontSize: '0.8rem', fontWeight: 600 }}>
+                          {cat}
+                          <button onClick={() => removeCategory(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: '#94a3b8', fontSize: '1rem', lineHeight: 1 }}>&times;</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {tournamentResult?.error && (
                   <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.625rem', padding: '0.75rem 1rem', color: '#dc2626', fontSize: '0.875rem', marginBottom: '1rem' }}>{tournamentResult.error}</div>

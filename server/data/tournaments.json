@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "1780628385300",
+    "name": "Test Catégories",
+    "date": "2026-07-15",
+    "location": "Terrains de pickleball Donnacona",
+    "description": "",
+    "maxPlayers": null,
+    "price": 0,
+    "categories": [
+      "Simple hommes",
+      "Double femmes",
+      "Mixte"
+    ],
+    "registrations": [],
+    "createdAt": "2026-06-05T02:59:45.300Z"
+  }
+]

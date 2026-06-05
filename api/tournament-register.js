@@ -39,7 +39,7 @@ async function saveTournaments(tournaments) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { tournamentId, userName, userEmail } = req.body
+  const { tournamentId, userName, userEmail, category } = req.body
   if (!tournamentId || !userName || !userEmail) {
     return res.status(400).json({ error: 'Paramètres manquants' })
   }
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Ce tournoi est complet' })
   }
 
-  tournament.registrations.push({ name: userName, email: userEmail, registeredAt: new Date().toISOString() })
+  tournament.registrations.push({ name: userName, email: userEmail, category: category || null, registeredAt: new Date().toISOString() })
   tournaments[idx] = tournament
   await saveTournaments(tournaments)
 

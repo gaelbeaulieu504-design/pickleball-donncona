@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trophy, Calendar, MapPin, Users, ChevronDown, ChevronUp, CheckCircle, Clock, AlertCircle, CreditCard } from 'lucide-react'
+import { Trophy, Calendar, MapPin, Users, ChevronDown, ChevronUp, CheckCircle, Clock, AlertCircle, CreditCard, List } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { format, parseISO, isPast } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -12,6 +12,7 @@ export default function Tournaments() {
   const [expanded, setExpanded] = useState(null)
   const [registering, setRegistering] = useState(null)
   const [registerResult, setRegisterResult] = useState({})
+  const [selectedCategory, setSelectedCategory] = useState({}) // { [tournamentId]: 'catName' }
   // payingTournament = { id, price, name } when showing payment modal
   const [payingTournament, setPayingTournament] = useState(null)
 
@@ -27,6 +28,10 @@ export default function Tournaments() {
     const tournament = tournaments.find(t => t.id === tournamentId)
     if (!tournament) return
 
+    // If categories exist and none selected yet, require selection
+    const cat = selectedCategory[tournamentId]
+    if (tournament.categories && tournament.categories.length > 0 && !cat) return
+
     // If paid tournament, show payment form first
     if (tournament.price && Number(tournament.price) > 0) {
       setPayingTournament({ id: tournamentId, price: tournament.price, name: tournament.name })
@@ -34,17 +39,17 @@ export default function Tournaments() {
     }
 
     // Free tournament — register directly
-    await doRegister(tournamentId)
+    await doRegister(tournamentId, cat)
   }
 
-  async function doRegister(tournamentId) {
+  async function doRegister(tournamentId, category) {
     setRegistering(tournamentId)
     setRegisterResult(r => ({ ...r, [tournamentId]: null }))
     try {
       const res = await fetch('/api/tournament-register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tournamentId, userName: user.name, userEmail: user.email }),
+        body: JSON.stringify({ tournamentId, userName: user.name, userEmail: user.email, category }),
       })
       const data = await res.json()
       if (data.success) {
@@ -61,7 +66,8 @@ export default function Tournaments() {
 
   async function handlePaymentSuccess(tournamentId) {
     setPayingTournament(null)
-    await doRegister(tournamentId)
+    const cat = selectedCategory[tournamentId]
+    await doRegister(tournamentId, cat)
   }
 
   const upcoming = tournaments.filter(t => !isPast(parseISO(t.date + 'T23:59:59')))
@@ -121,7 +127,7 @@ export default function Tournaments() {
                 <Clock size={18} color="#b45309" /> Tournois à venir
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {upcoming.map(t => <TournamentCard key={t.id} tournament={t} user={user} expanded={expanded} setExpanded={setExpanded} onRegister={handleRegister} registering={registering} result={registerResult[t.id]} />)}
+                {upcoming.map(t => <TournamentCard key={t.id} tournament={t} user={user} expanded={expanded} setExpanded={setExpanded} onRegister={handleRegister} registering={registering} result={registerResult[t.id]} selectedCategory={selectedCategory[t.id]} onSelectCategory={cat => setSelectedCategory(v => ({ ...v, [t.id]: cat }))} />)}
               </div>
             </div>
           )}
@@ -142,7 +148,7 @@ export default function Tournaments() {
   )
 }
 
-function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister, registering, result, isPast }) {
+function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister, registering, result, isPast, selectedCategory, onSelectCategory }) {
   const isExpanded = expanded === t.id
   const alreadyRegistered = user && t.registrations.find(r => r.email === user.email)
   const isFull = t.maxPlayers && t.registrations.length >= t.maxPlayers
@@ -200,12 +206,29 @@ function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister
             </div>
           </div>
 
+          {t.categories && t.categories.length > 0 && (
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                <List size={13} /> Catégories
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                {t.categories.map(cat => (
+                  <span key={cat} style={{ background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', padding: '0.25rem 0.75rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 600 }}>
+                    {cat}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {t.registrations.length > 0 && (
             <div style={{ marginBottom: '1.25rem' }}>
               <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>Participants</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
                 {t.registrations.map((r, i) => (
-                  <span key={i} style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.25rem 0.75rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 600 }}>{r.name}</span>
+                  <span key={i} style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.25rem 0.75rem', borderRadius: '2rem', fontSize: '0.8125rem', fontWeight: 600 }}>
+                    {r.name}{r.category ? ` (${r.category})` : ''}
+                  </span>
                 ))}
               </div>
             </div>
@@ -233,6 +256,18 @@ function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister
                 </div>
               ) : isFull ? (
                 <div style={{ color: '#dc2626', fontWeight: 600 }}>Ce tournoi est complet.</div>
+              ) : t.categories && t.categories.length > 0 && !selectedCategory ? (
+                <div>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>Choisissez votre catégorie</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {t.categories.map(cat => (
+                      <button key={cat} onClick={() => onSelectCategory(cat)}
+                        style={{ background: '#fff', color: '#1B4E8B', border: '2px solid #1B4E8B', borderRadius: '0.625rem', padding: '0.5rem 1rem', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ) : (
                 <button
                   onClick={() => onRegister(t.id)}

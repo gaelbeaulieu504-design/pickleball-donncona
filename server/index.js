@@ -158,6 +158,7 @@ app.post('/api/tournaments', (req, res) => {
     description: description || '',
     maxPlayers: maxPlayers ? Number(maxPlayers) : null,
     price: price ? Number(price) : 0,
+    categories: req.body.categories || [],
     registrations: [],
     createdAt: new Date().toISOString(),
   }
@@ -176,7 +177,7 @@ app.delete('/api/tournaments', (req, res) => {
 
 // POST register to tournament
 app.post('/api/tournament-register', (req, res) => {
-  const { tournamentId, userName, userEmail } = req.body
+  const { tournamentId, userName, userEmail, category } = req.body
   if (!tournamentId || !userName || !userEmail) return res.status(400).json({ error: 'Paramètres manquants' })
   const tournaments = readTournaments()
   const idx = tournaments.findIndex(t => t.id === tournamentId)
@@ -188,7 +189,7 @@ app.post('/api/tournament-register', (req, res) => {
   if (tournament.maxPlayers && tournament.registrations.length >= tournament.maxPlayers) {
     return res.status(400).json({ error: 'Ce tournoi est complet' })
   }
-  tournament.registrations.push({ name: userName, email: userEmail, registeredAt: new Date().toISOString() })
+  tournament.registrations.push({ name: userName, email: userEmail, category: category || null, registeredAt: new Date().toISOString() })
   tournaments[idx] = tournament
   writeTournaments(tournaments)
   res.json({ success: true, tournament })
