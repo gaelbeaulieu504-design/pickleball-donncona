@@ -12,8 +12,7 @@ export default function Tournaments() {
   const [expanded, setExpanded] = useState(null)
   const [registering, setRegistering] = useState(null)
   const [registerResult, setRegisterResult] = useState({})
-  const [selectedCategory, setSelectedCategory] = useState({}) // { [tournamentId]: 'catName' }
-  // payingTournament = { id, price, name } when showing payment modal
+  // payingTournament = { id, price, name, category } when showing payment modal
   const [payingTournament, setPayingTournament] = useState(null)
 
   useEffect(() => {
@@ -23,23 +22,19 @@ export default function Tournaments() {
       .catch(() => setLoading(false))
   }, [])
 
-  async function handleRegister(tournamentId) {
+  async function handleRegister(tournamentId, category) {
     if (!user) return
     const tournament = tournaments.find(t => t.id === tournamentId)
     if (!tournament) return
 
-    // If categories exist and none selected yet, require selection
-    const cat = selectedCategory[tournamentId]
-    if (tournament.categories && tournament.categories.length > 0 && !cat) return
-
     // If paid tournament, show payment form first
     if (tournament.price && Number(tournament.price) > 0) {
-      setPayingTournament({ id: tournamentId, price: tournament.price, name: tournament.name })
+      setPayingTournament({ id: tournamentId, price: tournament.price, name: tournament.name, category })
       return
     }
 
     // Free tournament — register directly
-    await doRegister(tournamentId, cat)
+    await doRegister(tournamentId, category)
   }
 
   async function doRegister(tournamentId, category) {
@@ -65,8 +60,8 @@ export default function Tournaments() {
   }
 
   async function handlePaymentSuccess(tournamentId) {
+    const cat = payingTournament?.category
     setPayingTournament(null)
-    const cat = selectedCategory[tournamentId]
     await doRegister(tournamentId, cat)
   }
 
@@ -127,7 +122,7 @@ export default function Tournaments() {
                 <Clock size={18} color="#b45309" /> Tournois à venir
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {upcoming.map(t => <TournamentCard key={t.id} tournament={t} user={user} expanded={expanded} setExpanded={setExpanded} onRegister={handleRegister} registering={registering} result={registerResult[t.id]} selectedCategory={selectedCategory[t.id]} onSelectCategory={cat => setSelectedCategory(v => ({ ...v, [t.id]: cat }))} />)}
+                {upcoming.map(t => <TournamentCard key={t.id} tournament={t} user={user} expanded={expanded} setExpanded={setExpanded} onRegister={handleRegister} registering={registering} result={registerResult[t.id]} />)}
               </div>
             </div>
           )}
@@ -148,7 +143,7 @@ export default function Tournaments() {
   )
 }
 
-function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister, registering, result, isPast, selectedCategory, onSelectCategory }) {
+function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister, registering, result, isPast }) {
   const isExpanded = expanded === t.id
   const alreadyRegistered = user && t.registrations.find(r => r.email === user.email)
   const isFull = t.maxPlayers && t.registrations.length >= t.maxPlayers
@@ -256,16 +251,19 @@ function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister
                 </div>
               ) : isFull ? (
                 <div style={{ color: '#dc2626', fontWeight: 600 }}>Ce tournoi est complet.</div>
-              ) : t.categories && t.categories.length > 0 && !selectedCategory ? (
+              ) : t.categories && t.categories.length > 0 ? (
                 <div>
-                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>Choisissez votre catégorie</div>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>Choisissez votre catégorie pour vous inscrire</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {t.categories.map(cat => (
-                      <button key={cat} onClick={() => onSelectCategory(cat)}
-                        style={{ background: '#fff', color: '#1B4E8B', border: '2px solid #1B4E8B', borderRadius: '0.625rem', padding: '0.5rem 1rem', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
-                        {cat}
-                      </button>
-                    ))}
+                    {t.categories.map(cat => {
+                      const registeringThis = registering === t.id
+                      return (
+                        <button key={cat} onClick={() => onRegister(t.id, cat)} disabled={registeringThis}
+                          style={{ background: registeringThis ? '#e2e8f0' : '#fff', color: '#1B4E8B', border: `2px solid ${registeringThis ? '#cbd5e1' : '#1B4E8B'}`, borderRadius: '0.625rem', padding: '0.5rem 1.25rem', fontSize: '0.875rem', fontWeight: 700, cursor: registeringThis ? 'not-allowed' : 'pointer', transition: 'all 0.15s', opacity: registeringThis ? 0.6 : 1 }}>
+                          {isPaid ? `$${t.price} — ${cat}` : cat}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               ) : (
