@@ -128,6 +128,8 @@ export default function BookCourt() {
       companions: companions.map(c => ({ id: c.id, name: c.name, email: c.email })),
     })
     // Send confirmation email
+    const companionNames = companions.map(c => c.name)
+    const totalPeople = 1 + companions.length
     await sendBookingConfirmation({
       to_name: user.name,
       to_email: user.email,
@@ -138,6 +140,8 @@ export default function BookCourt() {
       pass_type: effectiveType === 'resident' ? 'Résident ($40)' : 'Non-résident ($85)',
       amount_paid: hasSeasonPass ? '$0 (passe déjà actif)' : `$${price}`,
       week_hours: `${weekHours + selectedDuration}h / ${WEEKLY_HOUR_LIMIT}h`,
+      people_count: `${totalPeople} personne${totalPeople > 1 ? 's' : ''}`,
+      companions: companionNames.length > 0 ? companionNames.join(', ') : 'Aucun',
     })
     setSubmitted(true)
     bookingInProgress.current = false
