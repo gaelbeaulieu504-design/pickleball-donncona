@@ -72,10 +72,10 @@ export function AuthProvider({ children }) {
 
   async function toggleSeasonPass(userId, active, passType) {
     try {
-      const res = await fetch(`${API}/toggle-season-pass`, {
+      const res = await fetch(`${API}/admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, active, passType }),
+        body: JSON.stringify({ action: 'toggle-season-pass', userId, active, passType }),
       })
       if (!res.ok) return false
       const data = await res.json()
@@ -85,10 +85,10 @@ export function AuthProvider({ children }) {
 
   async function deleteUser(userId) {
     try {
-      const res = await fetch(`${API}/delete-user`, {
+      const res = await fetch(`${API}/admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ action: 'delete-user', userId }),
       })
       return res.ok
     } catch { return false }
