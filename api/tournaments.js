@@ -13,7 +13,7 @@ async function getTournaments() {
     return item ? item.value : []
   }
   // Local fallback
-  const { getTournaments: getLocal } = await import('./_storage.js')
+  const { getTournaments: getLocal } = await import('../server/_storage.js')
   return getLocal()
 }
 
@@ -34,7 +34,7 @@ async function saveTournaments(tournaments) {
     return
   }
   // Local fallback
-  const { setTournaments: setLocal } = await import('./_storage.js')
+  const { setTournaments: setLocal } = await import('../server/_storage.js')
   await setLocal(tournaments)
 }
 

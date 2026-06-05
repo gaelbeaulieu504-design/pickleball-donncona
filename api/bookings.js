@@ -1,4 +1,4 @@
-import { getBookings, setBookings } from './_storage.js'
+import { getBookings, setBookings } from '../server/_storage.js'
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {

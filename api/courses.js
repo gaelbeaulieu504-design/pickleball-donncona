@@ -1,4 +1,4 @@
-import { getCourses, setCourses } from './_storage.js'
+import { getCourses, setCourses } from '../server/_storage.js'
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
