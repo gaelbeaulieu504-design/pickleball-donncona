@@ -234,37 +234,40 @@ app.post('/api/grant-free-pass', (req, res) => {
   res.json({ success: true, user: safeUser })
 })
 
-// POST toggle season pass (admin active/désactive)
-app.post('/api/toggle-season-pass', (req, res) => {
-  const { userId, active, passType } = req.body
-  const users = readUsers()
-  const idx = users.findIndex(u => u.id === userId)
-  if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
-  if (active) {
-    users[idx].seasonPassPaid = true
-    users[idx].seasonPassType = passType || 'resident'
-    users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
-  } else {
-    users[idx].seasonPassPaid = false
-    users[idx].seasonPassType = null
-    users[idx].passPaymentDate = null
-  }
-  writeUsers(users)
-  const { password: _, ...safeUser } = users[idx]
-  res.json({ success: true, user: safeUser })
-})
+// POST admin actions (toggle-season-pass, delete-user)
+app.post('/api/admin', (req, res) => {
+  const { action, userId, active, passType } = req.body
 
-// POST delete user account (admin only)
-app.post('/api/delete-user', (req, res) => {
-  const { userId } = req.body
-  if (!userId) return res.status(400).json({ error: 'userId requis.' })
-  let users = readUsers()
-  const idx = users.findIndex(u => u.id === userId)
-  if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
-  if (users[idx].isAdmin) return res.status(403).json({ error: 'Impossible de supprimer un administrateur.' })
-  users = users.filter(u => u.id !== userId)
-  writeUsers(users)
-  res.json({ success: true })
+  if (action === 'toggle-season-pass') {
+    const users = readUsers()
+    const idx = users.findIndex(u => u.id === userId)
+    if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+    if (active) {
+      users[idx].seasonPassPaid = true
+      users[idx].seasonPassType = passType || 'resident'
+      users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
+    } else {
+      users[idx].seasonPassPaid = false
+      users[idx].seasonPassType = null
+      users[idx].passPaymentDate = null
+    }
+    writeUsers(users)
+    const { password: _, ...safeUser } = users[idx]
+    return res.json({ success: true, user: safeUser })
+  }
+
+  if (action === 'delete-user') {
+    if (!userId) return res.status(400).json({ error: 'userId requis.' })
+    let users = readUsers()
+    const idx = users.findIndex(u => u.id === userId)
+    if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+    if (users[idx].isAdmin) return res.status(403).json({ error: 'Impossible de supprimer un administrateur.' })
+    users = users.filter(u => u.id !== userId)
+    writeUsers(users)
+    return res.json({ success: true })
+  }
+
+  res.status(400).json({ error: 'Action invalide.' })
 })
 
 // Courses data
