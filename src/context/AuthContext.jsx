@@ -83,6 +83,17 @@ export function AuthProvider({ children }) {
     } catch { return false }
   }
 
+  async function deleteUser(userId) {
+    try {
+      const res = await fetch(`${API}/delete-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      return res.ok
+    } catch { return false }
+  }
+
   async function paySeasonPass(passType) {
     if (!user) return
     try {
@@ -97,7 +108,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers, grantFreePass, toggleSeasonPass }}>
+    <AuthContext.Provider value={{ user, register, login, logout, paySeasonPass, getAllUsers, grantFreePass, toggleSeasonPass, deleteUser }}>
       {children}
     </AuthContext.Provider>
   )

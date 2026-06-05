@@ -253,6 +253,19 @@ app.post('/api/toggle-season-pass', (req, res) => {
   res.json({ success: true, user: safeUser })
 })
 
+// POST delete user account (admin only)
+app.post('/api/delete-user', (req, res) => {
+  const { userId } = req.body
+  if (!userId) return res.status(400).json({ error: 'userId requis.' })
+  let users = readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+  if (users[idx].isAdmin) return res.status(403).json({ error: 'Impossible de supprimer un administrateur.' })
+  users = users.filter(u => u.id !== userId)
+  writeUsers(users)
+  res.json({ success: true })
+})
+
 // Courses data
 const COURSES_FILE = path.join(__dirname, 'data', 'courses.json')
 const DEFAULT_COURSES = [

@@ -9,7 +9,7 @@ import { fr } from 'date-fns/locale'
 import { sendBroadcast } from '../utils/sendEmail'
 
 export default function AdminPanel() {
-  const { user, getAllUsers, grantFreePass, toggleSeasonPass } = useAuth()
+  const { user, getAllUsers, grantFreePass, toggleSeasonPass, deleteUser } = useAuth()
   const { bookings, getUserWeekHours } = useBookings()
   const navigate = useNavigate()
   const [members, setMembers] = useState([])
@@ -65,6 +65,16 @@ export default function AdminPanel() {
   async function handleTogglePass(memberId, active) {
     await toggleSeasonPass(memberId, active)
     getAllUsers().then(setMembers).catch(() => {})
+  }
+
+  async function handleDeleteUser(memberId, memberName) {
+    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer le compte de ${memberName} ?\n\nCette action est irréversible.`)) return
+    const ok = await deleteUser(memberId)
+    if (ok) {
+      getAllUsers().then(setMembers).catch(() => {})
+    } else {
+      alert('Erreur lors de la suppression du compte.')
+    }
   }
 
   const today = new Date()
@@ -352,6 +362,12 @@ export default function AdminPanel() {
                               </div>
                             </div>
                           )}
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
+                            <button onClick={e => { e.stopPropagation(); handleDeleteUser(m.id, m.name) }}
+                              style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '0.5rem', padding: '0.375rem 0.875rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                              <Trash2 size={13} /> Supprimer le compte
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
