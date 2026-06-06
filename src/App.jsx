@@ -63,19 +63,9 @@ function App() {
                 fontSize: '16px',
                 color: '#555',
                 lineHeight: 1.6,
-                marginBottom: '8px',
                 fontFamily: 'inherit',
               }}>
                 Notre site est actuellement fermé pour une durée indéterminée.
-              </p>
-              <p style={{
-                fontSize: '16px',
-                color: '#555',
-                lineHeight: 1.6,
-                fontWeight: 500,
-                fontFamily: 'inherit',
-              }}>
-                Tous les paiements effectués seront intégralement <strong style={{ color: '#d32f2f' }}>remboursés</strong> dans les prochains jours.
               </p>
               <p style={{
                 fontSize: '14px',
