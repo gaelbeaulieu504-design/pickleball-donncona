@@ -27,6 +27,66 @@ function App() {
     <AuthProvider>
       <BookingProvider>
         <BrowserRouter>
+          {/* Alerte de fermeture temporaire - bloque tout le site */}
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 99999,
+          }}>
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              padding: '48px 40px',
+              maxWidth: '520px',
+              width: '90%',
+              textAlign: 'center',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+              <h1 style={{
+                fontSize: '24px',
+                fontWeight: 700,
+                color: '#1a1a2e',
+                marginBottom: '16px',
+                fontFamily: 'inherit',
+              }}>
+                Site temporairement fermé
+              </h1>
+              <p style={{
+                fontSize: '16px',
+                color: '#555',
+                lineHeight: 1.6,
+                marginBottom: '8px',
+                fontFamily: 'inherit',
+              }}>
+                Notre site est actuellement fermé pour une durée indéterminée.
+              </p>
+              <p style={{
+                fontSize: '16px',
+                color: '#555',
+                lineHeight: 1.6,
+                fontWeight: 500,
+                fontFamily: 'inherit',
+              }}>
+                Tous les paiements effectués seront intégralement <strong style={{ color: '#d32f2f' }}>remboursés</strong> dans les prochains jours.
+              </p>
+              <p style={{
+                fontSize: '14px',
+                color: '#888',
+                marginTop: '24px',
+                fontFamily: 'inherit',
+              }}>
+                Merci de votre compréhension.
+              </p>
+            </div>
+          </div>
           <ScrollToTop />
           <Navbar />
           <main style={{ flex: 1 }}>
