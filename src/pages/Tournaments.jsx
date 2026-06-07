@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trophy, Calendar, MapPin, Users, ChevronDown, ChevronUp, CheckCircle, Clock, CreditCard, List } from 'lucide-react'
+import { Trophy, Calendar, MapPin, Users, ChevronDown, ChevronUp, CheckCircle, Clock, AlertCircle, CreditCard, List } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { format, parseISO, isPast } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -230,9 +230,53 @@ function TournamentCard({ tournament: t, user, expanded, setExpanded, onRegister
           )}
 
           {!isPast && (
-            <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#78350f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              ⚠️ Les inscriptions sont temporairement fermées. Ce tournoi est visible à titre informatif seulement.
-            </div>
+            <>
+              {result?.ok && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#166534', fontWeight: 600, marginBottom: '1rem' }}>
+                  <CheckCircle size={16} /> Vous êtes inscrit ! Un email a été envoyé à l'administrateur.
+                </div>
+              )}
+              {result?.error && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#dc2626', fontWeight: 600, marginBottom: '1rem' }}>
+                  <AlertCircle size={16} /> {result.error}
+                </div>
+              )}
+              {!user ? (
+                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.75rem', padding: '0.875rem 1rem', color: '#78350f', fontSize: '0.9rem' }}>
+                  Vous devez être <a href="/login" style={{ color: '#b45309', fontWeight: 700 }}>connecté</a> pour vous inscrire.
+                </div>
+              ) : alreadyRegistered ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#166534', fontWeight: 700, fontSize: '0.9375rem' }}>
+                  <CheckCircle size={18} /> Vous êtes inscrit à ce tournoi
+                </div>
+              ) : isFull ? (
+                <div style={{ color: '#dc2626', fontWeight: 600 }}>Ce tournoi est complet.</div>
+              ) : t.categories && t.categories.length > 0 ? (
+                <div>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>Choisissez votre catégorie pour vous inscrire</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {t.categories.map(cat => {
+                      const registeringThis = registering === t.id
+                      return (
+                        <button key={cat} onClick={() => onRegister(t.id, cat)} disabled={registeringThis}
+                          style={{ background: registeringThis ? '#e2e8f0' : '#fff', color: '#1B4E8B', border: `2px solid ${registeringThis ? '#cbd5e1' : '#1B4E8B'}`, borderRadius: '0.625rem', padding: '0.5rem 1.25rem', fontSize: '0.875rem', fontWeight: 700, cursor: registeringThis ? 'not-allowed' : 'pointer', transition: 'all 0.15s', opacity: registeringThis ? 0.6 : 1 }}>
+                          {isPaid ? `$${t.price} — ${cat}` : cat}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => onRegister(t.id)}
+                  disabled={registering === t.id}
+                  style={{ background: isPaid ? 'linear-gradient(135deg, #92400e, #b45309)' : 'linear-gradient(135deg, #b45309, #d97706)', color: '#fff', border: 'none', padding: '0.875rem 2rem', borderRadius: '0.75rem', fontWeight: 700, fontSize: '1rem', cursor: registering === t.id ? 'not-allowed' : 'pointer', opacity: registering === t.id ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  {isPaid ? <CreditCard size={16} /> : <Trophy size={16} />}
+                  {registering === t.id ? 'Inscription…' : isPaid ? `Payer $${t.price} et s'inscrire` : "S'inscrire au tournoi"}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}

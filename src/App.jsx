@@ -123,13 +123,13 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/bienvenue" element={<Welcome />} />
-          <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+          <Route path="/" element={<Home />} />
           <Route path="/book" element={<RequireAuth><BookCourt /></RequireAuth>} />
           <Route path="/pricing" element={<RequireAuth><Pricing /></RequireAuth>} />
           <Route path="/about" element={<RequireAuth><About /></RequireAuth>} />
           <Route path="/contact" element={<RequireAuth><Contact /></RequireAuth>} />
           <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
-          <Route path="/tournaments" element={<Tournaments />} />
+          <Route path="/tournaments" element={<RequireAuth><Tournaments /></RequireAuth>} />
           <Route path="/cours" element={<RequireAuth><Courses /></RequireAuth>} />
         </Routes>
       </main>
