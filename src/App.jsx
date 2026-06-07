@@ -29,6 +29,7 @@ const OVERLAY_EXCLUDED = ['/tournaments', '/login', '/register', '/bienvenue']
 function SiteClosedOverlay() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [tournament, setTournament] = useState(null)
 
   useEffect(() => {
@@ -44,6 +45,7 @@ function SiteClosedOverlay() {
       .catch(() => setTournament(null))
   }, [])
 
+  if (user?.isAdmin) return null
   if (OVERLAY_EXCLUDED.includes(location.pathname)) return null
 
   return (
