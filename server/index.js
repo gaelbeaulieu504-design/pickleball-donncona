@@ -322,6 +322,11 @@ app.post('/api/courses', (req, res) => {
   res.json({ success: true, course })
 })
 
+// SPA fallback – toutes les routes non-API servent index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'))
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`✅ API server running on http://localhost:${PORT}`)
