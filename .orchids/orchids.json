@@ -2,7 +2,6 @@
   "projectId": "9730135f-2911-485d-8087-21c73bec4756",
   "templateId": "any",
   "startupCommands": [
-    "bun install; node server/index.js",
-    "bun install; bun run dev"
+    "npm install; npm run build; node server/index.js"
   ]
 }
