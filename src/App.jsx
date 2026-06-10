@@ -53,6 +53,12 @@ function SiteClosedOverlay() {
         <p style={{ fontSize: 14, color: '#888', marginTop: 24 }}>
           Merci de votre compréhension.
         </p>
+        <a href="/login" style={{
+          display: 'inline-block', marginTop: 16, fontSize: '0.8125rem',
+          color: '#94a3b8', textDecoration: 'underline', cursor: 'pointer',
+        }}>
+          Connexion administrateur
+        </a>
       </div>
     </div>
   )
