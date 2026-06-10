@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { BookingProvider } from './context/BookingContext'
 import Navbar from './components/Navbar'
@@ -22,11 +22,10 @@ function RequireAuth({ children }) {
   return children
 }
 
-const OVERLAY_EXCLUDED = ['/tournaments', '/login', '/register', '/bienvenue']
+const OVERLAY_EXCLUDED = ['/login', '/register', '/bienvenue']
 
 function SiteClosedOverlay() {
   const location = useLocation()
-  const navigate = useNavigate()
   const { user } = useAuth()
 
   if (user?.isAdmin) return null
@@ -51,20 +50,6 @@ function SiteClosedOverlay() {
         <p style={{ fontSize: 16, color: '#555', lineHeight: 1.6, margin: 0 }}>
           Notre site est actuellement fermé pour une durée indéterminée.
         </p>
-        <button
-          onClick={() => navigate('/tournaments')}
-          style={{
-            marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'linear-gradient(135deg, #b45309, #d97706)',
-            color: '#fff', border: 'none', padding: '14px 32px',
-            borderRadius: 12, fontWeight: 700, fontSize: '1rem',
-            cursor: 'pointer', transition: 'opacity 0.15s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-        >
-          🏆 Voir les tournois
-        </button>
         <p style={{ fontSize: 14, color: '#888', marginTop: 24 }}>
           Merci de votre compréhension.
         </p>
