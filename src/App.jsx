@@ -1,6 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { isPast, parseISO } from 'date-fns'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { BookingProvider } from './context/BookingContext'
 import Navbar from './components/Navbar'
@@ -30,20 +28,6 @@ function SiteClosedOverlay() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [tournament, setTournament] = useState(null)
-
-  useEffect(() => {
-    fetch('/api/tournaments')
-      .then(r => r.json())
-      .then(data => {
-        const ts = Array.isArray(data) ? data : []
-        const upcoming = ts.filter(t => {
-          try { return !isPast(parseISO(t.date + 'T23:59:59')) } catch { return false }
-        })
-        setTournament(upcoming[0] || null)
-      })
-      .catch(() => setTournament(null))
-  }, [])
 
   if (user?.isAdmin) return null
   if (OVERLAY_EXCLUDED.includes(location.pathname)) return null
@@ -67,46 +51,20 @@ function SiteClosedOverlay() {
         <p style={{ fontSize: 16, color: '#555', lineHeight: 1.6, margin: 0 }}>
           Notre site est actuellement fermé pour une durée indéterminée.
         </p>
-        {tournament ? (
-          <div style={{ marginTop: 24, padding: '16px 20px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 12 }}>
-            <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-              🏆 Inscrivez-vous au tournoi
-            </div>
-            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1a1a2e', marginBottom: 4 }}>{tournament.name}</div>
-            <div style={{ fontSize: '0.875rem', color: '#78350f', marginBottom: 12 }}>
-              {tournament.date} — {tournament.location}
-            </div>
-            <button
-              onClick={() => navigate('/tournaments')}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: 'linear-gradient(135deg, #b45309, #d97706)',
-                color: '#fff', border: 'none', padding: '12px 28px',
-                borderRadius: 10, fontWeight: 700, fontSize: '0.9375rem',
-                cursor: 'pointer', transition: 'opacity 0.15s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              🏆 Voir le tournoi et s'inscrire
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => navigate('/tournaments')}
-            style={{
-              marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: 'linear-gradient(135deg, #b45309, #d97706)',
-              color: '#fff', border: 'none', padding: '14px 32px',
-              borderRadius: 12, fontWeight: 700, fontSize: '1rem',
-              cursor: 'pointer', transition: 'opacity 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-          >
-            🏆 Voir les tournois
-          </button>
-        )}
+        <button
+          onClick={() => navigate('/tournaments')}
+          style={{
+            marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'linear-gradient(135deg, #b45309, #d97706)',
+            color: '#fff', border: 'none', padding: '14px 32px',
+            borderRadius: 12, fontWeight: 700, fontSize: '1rem',
+            cursor: 'pointer', transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+        >
+          🏆 Voir les tournois
+        </button>
         <p style={{ fontSize: 14, color: '#888', marginTop: 24 }}>
           Merci de votre compréhension.
         </p>
