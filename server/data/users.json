@@ -4,21 +4,263 @@
     "name": "Administrateur",
     "email": "pickleballdonnacona@gmail.com",
     "password": "Sienna1213",
-    "address": "",
-    "isResident": true,
     "isAdmin": true,
     "seasonPassPaid": true,
-    "seasonPassType": "resident"
+    "seasonPassType": "resident",
+    "isResident": true
   },
   {
     "id": "1774110319807",
     "name": "gael beaulieu",
     "email": "gaelbeaulieu504@gmail.com",
     "password": "Avion1213",
-    "address": "",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
     "isResident": null,
+    "freePass": true
+  },
+  {
+    "id": "1780261721090",
+    "name": "Martin Germain",
+    "email": "martingermain68@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "isResident": null
+  },
+  {
+    "id": "1780621609974",
+    "name": "Guy Beaupré",
+    "email": "guybeaupre72@gmail.com",
+    "password": "pickleball2026",
     "isAdmin": false,
     "seasonPassPaid": false,
-    "seasonPassType": null
+    "seasonPassType": null,
+    "isResident": null
+  },
+  {
+    "id": "1780623350560",
+    "name": "Dany Bézier",
+    "email": "bezier.dany@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": false
+  },
+  {
+    "id": "1780623567347",
+    "name": "Isabelle Paulin",
+    "email": "ipaulin1977@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "isResident": null
+  },
+  {
+    "id": "1780623774274",
+    "name": "Rejean hardy",
+    "email": "rehar11960@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780657201994",
+    "name": "Paul Brisson",
+    "email": "paul.brisson.27@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "isResident": false,
+    "freePass": true
+  },
+  {
+    "id": "1780657815299",
+    "name": "Sophie Roberge",
+    "email": "so_roberge@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780658052406",
+    "name": "Martin sauvageau",
+    "email": "martinsauvageau41@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "isResident": true
+  },
+  {
+    "id": "1780659572239",
+    "name": "Simon Beaulieu",
+    "email": "simonbeaulieu@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "isResident": true,
+    "freePass": true
+  },
+  {
+    "id": "1780661649990",
+    "name": "Carole St-Onge",
+    "email": "carolestonge57@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780662803799",
+    "name": "Jean-Marc chabot",
+    "email": "chabojm@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780663579096",
+    "name": "Manon Leclerc",
+    "email": "manonleclerccs@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": false
+  },
+  {
+    "id": "1780663630834",
+    "name": "Jocelyne Rochette",
+    "email": "joerochette26@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": true,
+    "seasonPassType": "resident",
+    "isResident": true,
+    "freePass": true
+  },
+  {
+    "id": "1780666706297",
+    "name": "Colette Brisson",
+    "email": "brissoncolette@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": null
+  },
+  {
+    "id": "1780679463827",
+    "name": "Diane Lamontagne",
+    "email": "diane.ca.lamontagne@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780690971268",
+    "name": "Steven drolet",
+    "email": "stevendrolet_321@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780695674308",
+    "name": "Martine Genest",
+    "email": "mgenest834@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780696277464",
+    "name": "Louise Gauthier",
+    "email": "mamlou1027@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": null
+  },
+  {
+    "id": "1780698816830",
+    "name": "Sylvain Trépanier",
+    "email": "strepanier834@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780699752543",
+    "name": "Charles letreut",
+    "email": "charlesletreut@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780699850170",
+    "name": "André Paquet",
+    "email": "alpha911@outlook.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780700015582",
+    "name": "Kevin St-Gelais",
+    "email": "st-gelais21@hotmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": false
+  },
+  {
+    "id": "1780700161260",
+    "name": "Kevin st-Gelais",
+    "email": "kevin.st-gelais@avantis.coop",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": true
+  },
+  {
+    "id": "1780708666571",
+    "name": "Alain Dube",
+    "email": "alaindube00@gmail.com",
+    "password": "pickleball2026",
+    "isAdmin": false,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isResident": null
   }
 ]
