@@ -1,65 +1,32 @@
 import 'dotenv/config'
 import express from 'express'
-import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import cors from 'cors'
 import Stripe from 'stripe'
+import { getUsers, setUsers, getBookings, setBookings, getTournaments, setTournaments, getCourses, setCourses } from './_storage.js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const USERS_FILE = path.join(__dirname, 'data', 'users.json')
-const BOOKINGS_FILE = path.join(__dirname, 'data', 'bookings.json')
-const TOURNAMENTS_FILE = path.join(__dirname, 'data', 'tournaments.json')
-
-function readBookings() {
-  try {
-    return JSON.parse(fs.readFileSync(BOOKINGS_FILE, 'utf8'))
-  } catch {
-    return []
-  }
-}
-
-function writeBookings(bookings) {
-  fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2))
-}
-
-function readTournaments() {
-  try { return JSON.parse(fs.readFileSync(TOURNAMENTS_FILE, 'utf8')) }
-  catch { return [] }
-}
-function writeTournaments(tournaments) {
-  fs.writeFileSync(TOURNAMENTS_FILE, JSON.stringify(tournaments, null, 2))
-}
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, '..', 'dist')))
 
-function readUsers() {
-  try {
-    return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'))
-  } catch {
-    return []
-  }
-}
-
-function writeUsers(users) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2))
-}
+// ── Users ─────────────────────────────────────────────────────────────────────
 
 // GET all users (admin only — filtré côté client)
-app.get('/api/users', (req, res) => {
-  const users = readUsers().map(({ password, ...u }) => u)
+app.get('/api/users', async (req, res) => {
+  const users = (await getUsers()).map(({ password, ...u }) => u)
   res.json(users)
 })
 
 // POST register
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
   const { name, email, password, address, isResident } = req.body
-  const users = readUsers()
+  const users = await getUsers()
   const emailNorm = email.trim().toLowerCase()
 
   if (users.find(u => u.email.trim().toLowerCase() === emailNorm)) {
@@ -78,15 +45,15 @@ app.post('/api/register', (req, res) => {
     isAdmin: false,
   }
 
-  writeUsers([...users, newUser])
+  await setUsers([...users, newUser])
   const { password: _, ...safeUser } = newUser
   res.json({ success: true, user: safeUser })
 })
 
 // POST login
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { email, password } = req.body
-  const users = readUsers()
+  const users = await getUsers()
   const emailNorm = email.trim().toLowerCase()
   const found = users.find(
     u => u.email.trim().toLowerCase() === emailNorm && u.password === password.trim()
@@ -97,59 +64,121 @@ app.post('/api/login', (req, res) => {
 })
 
 // POST season pass
-app.post('/api/season-pass', (req, res) => {
+app.post('/api/season-pass', async (req, res) => {
   const { userId, passType } = req.body
-  const users = readUsers()
+  const users = await getUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
   users[idx].seasonPassPaid = true
   users[idx].seasonPassType = passType
   users[idx].passPaymentDate = new Date().toISOString()
-  writeUsers(users)
+  await setUsers(users)
   const { password: _, ...safeUser } = users[idx]
   res.json({ success: true, user: safeUser })
 })
 
 // GET single user
-app.get('/api/users/:id', (req, res) => {
-  const users = readUsers()
+app.get('/api/users/:id', async (req, res) => {
+  const users = await getUsers()
   const found = users.find(u => u.id === req.params.id)
   if (!found) return res.status(404).json({ error: 'Introuvable.' })
   const { password: _, ...safeUser } = found
   res.json(safeUser)
 })
 
+// POST grant free pass
+app.post('/api/grant-free-pass', async (req, res) => {
+  const { userId, grant } = req.body
+  const users = await getUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+  users[idx].freePass = grant === true
+  if (grant) {
+    users[idx].seasonPassPaid = true
+    users[idx].seasonPassType = users[idx].seasonPassType || 'resident'
+    users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
+    users[idx].freePassGrantedDate = new Date().toISOString()
+  } else {
+    users[idx].seasonPassPaid = false
+    users[idx].seasonPassType = null
+    users[idx].freePassGrantedDate = null
+  }
+  await setUsers(users)
+  const { password: _, ...safeUser } = users[idx]
+  res.json({ success: true, user: safeUser })
+})
+
+// POST admin actions (toggle-season-pass, delete-user)
+app.post('/api/admin', async (req, res) => {
+  const { action, userId, active, passType } = req.body
+
+  if (action === 'toggle-season-pass') {
+    const users = await getUsers()
+    const idx = users.findIndex(u => u.id === userId)
+    if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+    if (active) {
+      users[idx].seasonPassPaid = true
+      users[idx].seasonPassType = passType || 'resident'
+      users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
+    } else {
+      users[idx].seasonPassPaid = false
+      users[idx].seasonPassType = null
+      users[idx].passPaymentDate = null
+    }
+    await setUsers(users)
+    const { password: _, ...safeUser } = users[idx]
+    return res.json({ success: true, user: safeUser })
+  }
+
+  if (action === 'delete-user') {
+    if (!userId) return res.status(400).json({ error: 'userId requis.' })
+    let users = await getUsers()
+    const idx = users.findIndex(u => u.id === userId)
+    if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
+    if (users[idx].isAdmin) return res.status(403).json({ error: 'Impossible de supprimer un administrateur.' })
+    users = users.filter(u => u.id !== userId)
+    await setUsers(users)
+    return res.json({ success: true })
+  }
+
+  res.status(400).json({ error: 'Action invalide.' })
+})
+
+// ── Bookings ──────────────────────────────────────────────────────────────────
+
 // GET all bookings
-app.get('/api/bookings', (req, res) => {
-  res.json(readBookings())
+app.get('/api/bookings', async (req, res) => {
+  res.json(await getBookings())
 })
 
 // POST new booking
-app.post('/api/bookings', (req, res) => {
-  const bookings = readBookings()
+app.post('/api/bookings', async (req, res) => {
+  const bookings = await getBookings()
   const booking = { ...req.body, id: Date.now().toString(), createdAt: new Date().toISOString() }
   bookings.push(booking)
-  writeBookings(bookings)
+  await setBookings(bookings)
   res.json({ success: true, booking })
 })
 
 // DELETE booking
-app.delete('/api/bookings/:id', (req, res) => {
-  const bookings = readBookings().filter(b => b.id !== req.params.id)
-  writeBookings(bookings)
+app.delete('/api/bookings/:id', async (req, res) => {
+  const bookings = (await getBookings()).filter(b => b.id !== req.params.id)
+  await setBookings(bookings)
   res.json({ success: true })
 })
 
+// ── Tournaments ───────────────────────────────────────────────────────────────
+
 // GET tournaments
-app.get('/api/tournaments', (req, res) => {
-  res.json(readTournaments())
+app.get('/api/tournaments', async (req, res) => {
+  res.json(await getTournaments())
 })
 
 // POST create tournament
-app.post('/api/tournaments', (req, res) => {
+app.post('/api/tournaments', async (req, res) => {
   const { name, date, location, description, maxPlayers, price } = req.body
   if (!name || !date) return res.status(400).json({ error: 'Nom et date requis' })
-  const tournaments = readTournaments()
+  const tournaments = await getTournaments()
   const newTournament = {
     id: Date.now().toString(),
     name,
@@ -163,23 +192,23 @@ app.post('/api/tournaments', (req, res) => {
     createdAt: new Date().toISOString(),
   }
   tournaments.push(newTournament)
-  writeTournaments(tournaments)
+  await setTournaments(tournaments)
   res.json(newTournament)
 })
 
 // DELETE tournament
-app.delete('/api/tournaments', (req, res) => {
+app.delete('/api/tournaments', async (req, res) => {
   const { tournamentId } = req.body
-  const updated = readTournaments().filter(t => t.id !== tournamentId)
-  writeTournaments(updated)
+  const updated = (await getTournaments()).filter(t => t.id !== tournamentId)
+  await setTournaments(updated)
   res.json({ success: true })
 })
 
 // PUT update tournament
-app.put('/api/tournaments', (req, res) => {
+app.put('/api/tournaments', async (req, res) => {
   const { id, name, date, location, description, maxPlayers, price, categories } = req.body
   if (!id || !name || !date) return res.status(400).json({ error: 'ID, nom et date requis' })
-  const tournaments = readTournaments()
+  const tournaments = await getTournaments()
   const idx = tournaments.findIndex(t => t.id === id)
   if (idx === -1) return res.status(404).json({ error: 'Tournoi introuvable' })
   tournaments[idx] = {
@@ -192,15 +221,15 @@ app.put('/api/tournaments', (req, res) => {
     price: price ? Number(price) : 0,
     categories: categories || [],
   }
-  writeTournaments(tournaments)
+  await setTournaments(tournaments)
   res.json(tournaments[idx])
 })
 
 // POST register to tournament
-app.post('/api/tournament-register', (req, res) => {
+app.post('/api/tournament-register', async (req, res) => {
   const { tournamentId, userName, userEmail, category } = req.body
   if (!tournamentId || !userName || !userEmail) return res.status(400).json({ error: 'Paramètres manquants' })
-  const tournaments = readTournaments()
+  const tournaments = await getTournaments()
   const idx = tournaments.findIndex(t => t.id === tournamentId)
   if (idx === -1) return res.status(404).json({ error: 'Tournoi introuvable' })
   const tournament = tournaments[idx]
@@ -212,9 +241,11 @@ app.post('/api/tournament-register', (req, res) => {
   }
   tournament.registrations.push({ name: userName, email: userEmail, category: category || null, registeredAt: new Date().toISOString() })
   tournaments[idx] = tournament
-  writeTournaments(tournaments)
+  await setTournaments(tournaments)
   res.json({ success: true, tournament })
 })
+
+// ── Stripe ────────────────────────────────────────────────────────────────────
 
 // POST create Stripe payment intent
 app.post('/api/create-payment-intent', async (req, res) => {
@@ -234,83 +265,14 @@ app.post('/api/create-payment-intent', async (req, res) => {
   }
 })
 
-// POST grant free pass
-app.post('/api/grant-free-pass', (req, res) => {
-  const { userId, grant } = req.body
-  const users = readUsers()
-  const idx = users.findIndex(u => u.id === userId)
-  if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
-  users[idx].freePass = grant === true
-  if (grant) {
-    users[idx].seasonPassPaid = true
-    users[idx].seasonPassType = users[idx].seasonPassType || 'resident'
-    users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
-    users[idx].freePassGrantedDate = new Date().toISOString()
-  } else {
-    users[idx].seasonPassPaid = false
-    users[idx].seasonPassType = null
-    users[idx].freePassGrantedDate = null
-  }
-  writeUsers(users)
-  const { password: _, ...safeUser } = users[idx]
-  res.json({ success: true, user: safeUser })
-})
+// ── Courses ───────────────────────────────────────────────────────────────────
 
-// POST admin actions (toggle-season-pass, delete-user)
-app.post('/api/admin', (req, res) => {
-  const { action, userId, active, passType } = req.body
+app.get('/api/courses', async (req, res) => res.json(await getCourses()))
 
-  if (action === 'toggle-season-pass') {
-    const users = readUsers()
-    const idx = users.findIndex(u => u.id === userId)
-    if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
-    if (active) {
-      users[idx].seasonPassPaid = true
-      users[idx].seasonPassType = passType || 'resident'
-      users[idx].passPaymentDate = users[idx].passPaymentDate || new Date().toISOString()
-    } else {
-      users[idx].seasonPassPaid = false
-      users[idx].seasonPassType = null
-      users[idx].passPaymentDate = null
-    }
-    writeUsers(users)
-    const { password: _, ...safeUser } = users[idx]
-    return res.json({ success: true, user: safeUser })
-  }
-
-  if (action === 'delete-user') {
-    if (!userId) return res.status(400).json({ error: 'userId requis.' })
-    let users = readUsers()
-    const idx = users.findIndex(u => u.id === userId)
-    if (idx === -1) return res.status(404).json({ error: 'Utilisateur introuvable.' })
-    if (users[idx].isAdmin) return res.status(403).json({ error: 'Impossible de supprimer un administrateur.' })
-    users = users.filter(u => u.id !== userId)
-    writeUsers(users)
-    return res.json({ success: true })
-  }
-
-  res.status(400).json({ error: 'Action invalide.' })
-})
-
-// Courses data
-const COURSES_FILE = path.join(__dirname, 'data', 'courses.json')
-const DEFAULT_COURSES = [
-  { id: 'initiation-pickleball-ete-2026', name: 'Initiation au pickleball', dates: ['2026-06-20', '2026-06-27'], time: '9h00 – 11h00', price: 45, description: "Cours d'initiation au pickleball pour débutants sur 2 séances. Apprenez les règles, les techniques de base et amusez-vous. Équipement fourni.", maxParticipants: 8, registrations: [] },
-]
-function readCourses() {
-  try {
-    const data = JSON.parse(fs.readFileSync(COURSES_FILE, 'utf8'))
-    return data.length ? data : DEFAULT_COURSES
-  } catch { return DEFAULT_COURSES }
-}
-function writeCourses(courses) { fs.writeFileSync(COURSES_FILE, JSON.stringify(courses, null, 2)) }
-
-app.get('/api/courses', (req, res) => res.json(readCourses()))
-
-app.post('/api/courses', (req, res) => {
+app.post('/api/courses', async (req, res) => {
   const { courseId, userName, userEmail, userId, paymentInfo } = req.body
   if (!courseId || !userName || !userEmail) return res.status(400).json({ error: 'Paramètres manquants' })
-  const courses = readCourses()
+  const courses = await getCourses()
   const idx = courses.findIndex(c => c.id === courseId)
   if (idx === -1) return res.status(404).json({ error: 'Cours introuvable' })
   const course = courses[idx]
@@ -318,17 +280,22 @@ app.post('/api/courses', (req, res) => {
   if (course.maxParticipants && course.registrations.length >= course.maxParticipants) return res.status(400).json({ error: 'Ce cours est complet' })
   course.registrations.push({ userId: userId || null, name: userName, email: userEmail, registeredAt: new Date().toISOString(), paymentInfo: paymentInfo || null })
   courses[idx] = course
-  writeCourses(courses)
+  await setCourses(courses)
   res.json({ success: true, course })
 })
 
-// SPA fallback – toutes les routes non-API servent index.html
+// ── SPA fallback ──────────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) return next()
   res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'))
 })
 
-const PORT = 3001
-app.listen(PORT, () => {
-  console.log(`✅ API server running on http://localhost:${PORT}`)
-})
+// Démarrer le serveur localement (sur Vercel, c'est géré automatiquement)
+if (!process.env.VERCEL) {
+  const PORT = 3001
+  app.listen(PORT, () => {
+    console.log(`✅ API server running on http://localhost:${PORT}`)
+  })
+}
+
+export default app

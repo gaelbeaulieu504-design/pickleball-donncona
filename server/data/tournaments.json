@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "id": "1780659573736",
+    "name": "Tournoi d'ouverture mixte",
+    "date": "2026-07-04",
+    "location": "Derrière l'École SEC Donnacona",
+    "description": "Nous nous réservons le droit de mixer les catégories advenant le manque de joueur dans l’une ou l’autre des catégories.",
+    "maxPlayers": null,
+    "price": 25,
+    "categories": [
+      "3.1 à 3.5",
+      "3.6 et plus",
+      "2.0 à 3.0"
+    ],
+    "registrations": [
+      {
+        "name": "Simon Beaulieu",
+        "email": "simonbeaulieu@hotmail.com",
+        "category": "3.6 et plus",
+        "registeredAt": "2026-06-05T16:48:08.055Z"
+      }
+    ],
+    "createdAt": "2026-06-05T11:39:33.736Z"
+  }
+]

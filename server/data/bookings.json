@@ -1,1 +1,80 @@
-[]
+[
+  {
+    "userId": "1774110319807",
+    "userName": "gael beaulieu",
+    "userEmail": "gaelbeaulieu504@gmail.com",
+    "courtId": 1,
+    "date": "2026-05-31",
+    "startSlot": "6h00",
+    "duration": 1,
+    "isResident": true,
+    "price": 0,
+    "id": "1780259490431",
+    "createdAt": "2026-05-31T20:31:30.431Z"
+  },
+  {
+    "userId": "admin",
+    "userName": "Administrateur",
+    "userEmail": "pickleballdonnacona@gmail.com",
+    "courtId": 1,
+    "date": "2026-05-31",
+    "startSlot": "7h00",
+    "duration": 1,
+    "isResident": true,
+    "price": 0,
+    "id": "1780270777349",
+    "createdAt": "2026-05-31T23:39:37.349Z"
+  },
+  {
+    "userId": "admin",
+    "userName": "Administrateur",
+    "userEmail": "pickleballdonnacona@gmail.com",
+    "courtId": 1,
+    "date": "2026-06-18",
+    "startSlot": "18h00",
+    "duration": 2,
+    "isResident": true,
+    "price": 0,
+    "id": "1780600530799",
+    "createdAt": "2026-06-04T19:15:30.799Z"
+  },
+  {
+    "userId": "1780261721090",
+    "userName": "Martin Germain",
+    "userEmail": "martingermain68@gmail.com",
+    "courtId": 1,
+    "date": "2026-06-05",
+    "startSlot": "15h00",
+    "duration": 1,
+    "isResident": true,
+    "price": 40,
+    "id": "1780623767813",
+    "createdAt": "2026-06-05T01:42:47.813Z"
+  },
+  {
+    "userId": "1780623567347",
+    "userName": "Isabelle Paulin",
+    "userEmail": "ipaulin1977@gmail.com",
+    "courtId": 1,
+    "date": "2026-06-05",
+    "startSlot": "16h00",
+    "duration": 1,
+    "isResident": true,
+    "price": 40,
+    "id": "1780624044426",
+    "createdAt": "2026-06-05T01:47:24.426Z"
+  },
+  {
+    "userId": "1780658052406",
+    "userName": "Martin sauvageau",
+    "userEmail": "martinsauvageau41@gmail.com",
+    "courtId": 1,
+    "date": "2026-06-05",
+    "startSlot": "7h00",
+    "duration": 1,
+    "isResident": true,
+    "price": 40,
+    "id": "1780658772466",
+    "createdAt": "2026-06-05T11:26:12.466Z"
+  }
+]

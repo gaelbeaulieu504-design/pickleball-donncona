@@ -4,11 +4,11 @@
     "name": "Administrateur",
     "email": "pickleballdonnacona@gmail.com",
     "password": "Sienna1213",
+    "address": "",
+    "isResident": true,
     "isAdmin": true,
     "seasonPassPaid": true,
-    "seasonPassType": "resident",
-    "address": "",
-    "isResident": true
+    "seasonPassType": "resident"
   },
   {
     "id": "1774110319807",
@@ -17,33 +17,8 @@
     "password": "Avion1213",
     "address": "",
     "isResident": null,
+    "isAdmin": false,
     "seasonPassPaid": false,
-    "seasonPassType": null,
-    "freePass": false,
-    "isAdmin": false
-  },
-  {
-    "id": "1774130211959",
-    "name": "Gael beaulieu",
-    "email": "gaelbeaulieu50@gmail.com",
-    "password": "Avion1213",
-    "address": "",
-    "isResident": null,
-    "seasonPassPaid": false,
-    "seasonPassType": null,
-    "freePass": false,
-    "isAdmin": false
-  },
-  {
-    "id": "1774225171344",
-    "name": "Simon Beaulieu",
-    "email": "simon.sb.beaulieu@alcoa.com",
-    "password": "Vivibo18",
-    "address": "",
-    "isResident": null,
-    "seasonPassPaid": false,
-    "seasonPassType": null,
-    "freePass": false,
-    "isAdmin": false
+    "seasonPassType": null
   }
 ]
