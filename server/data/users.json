@@ -45,5 +45,16 @@
     "seasonPassType": null,
     "freePass": false,
     "isAdmin": false
+  },
+  {
+    "id": "1781212567398",
+    "name": "x",
+    "email": "x@x.com",
+    "password": "123456",
+    "address": "",
+    "isResident": null,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
   }
 ]
