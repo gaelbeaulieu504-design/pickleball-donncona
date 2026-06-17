@@ -46,6 +46,72 @@ async function edgeSet(key, value) {
   } catch { return false }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+//  BACKUP SYSTEM — saves a snapshot before each write so data can be restored
+// ═══════════════════════════════════════════════════════════════════════════════
+
+async function backupBeforeWrite(key, value) {
+  // Save the CURRENT data (before overwrite) as a backup
+  const current = await edgeGet(key)
+  if (current !== null) {
+    await edgeSet(`backup_${key}`, current)
+  }
+}
+
+// ── Full data export ─────────────────────────────────────────────────────────
+export async function exportAllData() {
+  const data = {}
+  const useEdgeConfig = useEdge()
+  for (const key of ['users', 'tournaments', 'bookings', 'courses']) {
+    let val
+    if (useEdgeConfig) {
+      val = await edgeGet(key)
+    }
+    if (val === null || val === undefined) {
+      try { val = readJson(`${key}.json`) } catch { val = null }
+    }
+    if (val !== null) data[key] = val
+  }
+  return data
+}
+
+// ── Full data import ─────────────────────────────────────────────────────────
+export async function importAllData(data) {
+  const results = {}
+  for (const key of Object.keys(data)) {
+    if (['users', 'tournaments', 'bookings', 'courses'].includes(key)) {
+      results[key] = await edgeSet(key, data[key])
+    }
+  }
+  return results
+}
+
+// ── Restore a single key from backup ─────────────────────────────────────────
+export async function restoreFromBackup(key) {
+  const backup = await edgeGet(`backup_${key}`)
+  if (backup === null) return false
+  return await edgeSet(key, backup)
+}
+
+// ── List available backups ───────────────────────────────────────────────────
+export async function listBackups() {
+  const id = process.env.EDGE_CONFIG_ID
+  const token = process.env.VERCEL_API_TOKEN
+  const teamId = process.env.VERCEL_TEAM_ID
+  if (!id || !token) return []
+  try {
+    const res = await fetch(
+      `https://api.vercel.com/v1/edge-config/${id}/items?teamId=${teamId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    const data = await res.json()
+    const items = data.items || data || []
+    return items
+      .filter(i => i.key.startsWith('backup_'))
+      .map(i => ({ key: i.key.replace('backup_', ''), size: JSON.stringify(i.value).length }))
+  } catch { return [] }
+}
+
 const useEdge = () => !!(process.env.EDGE_CONFIG_ID && process.env.VERCEL_API_TOKEN)
 
 // ── Users ────────────────────────────────────────────────────────────────────
@@ -58,7 +124,11 @@ export async function getUsers() {
   return readJson('users.json')
 }
 export async function setUsers(users) {
-  if (useEdge()) { await edgeSet('users', users); return }
+  if (useEdge()) {
+    await backupBeforeWrite('users', users)
+    await edgeSet('users', users)
+    return
+  }
   writeJson('users.json', users)
 }
 
@@ -71,7 +141,11 @@ export async function getBookings() {
   return readJson('bookings.json')
 }
 export async function setBookings(bookings) {
-  if (useEdge()) { await edgeSet('bookings', bookings); return }
+  if (useEdge()) {
+    await backupBeforeWrite('bookings', bookings)
+    await edgeSet('bookings', bookings)
+    return
+  }
   writeJson('bookings.json', bookings)
 }
 
@@ -84,7 +158,11 @@ export async function getTournaments() {
   return readJson('tournaments.json')
 }
 export async function setTournaments(tournaments) {
-  if (useEdge()) { await edgeSet('tournaments', tournaments); return }
+  if (useEdge()) {
+    await backupBeforeWrite('tournaments', tournaments)
+    await edgeSet('tournaments', tournaments)
+    return
+  }
   writeJson('tournaments.json', tournaments)
 }
 
@@ -110,6 +188,10 @@ export async function getCourses() {
   return stored.length ? stored : DEFAULT_COURSES
 }
 export async function setCourses(courses) {
-  if (useEdge()) { await edgeSet('courses', courses); return }
+  if (useEdge()) {
+    await backupBeforeWrite('courses', courses)
+    await edgeSet('courses', courses)
+    return
+  }
   writeJson('courses.json', courses)
 }

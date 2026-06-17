@@ -4,7 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import cors from 'cors'
 import Stripe from 'stripe'
-import { getUsers, setUsers, getBookings, setBookings, getTournaments, setTournaments, getCourses, setCourses } from './_storage.js'
+import { getUsers, setUsers, getBookings, setBookings, getTournaments, setTournaments, getCourses, setCourses, exportAllData, restoreFromBackup, listBackups } from './_storage.js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
@@ -282,6 +282,29 @@ app.post('/api/courses', async (req, res) => {
   courses[idx] = course
   await setCourses(courses)
   res.json({ success: true, course })
+})
+
+// ── Backup / Restore (admin) ─────────────────────────────────────────────────
+
+// GET /api/backup — export all data as JSON
+app.get('/api/backup', async (req, res) => {
+  const data = await exportAllData()
+  res.setHeader('Content-Disposition', `attachment; filename="pickleball-backup-${new Date().toISOString().slice(0, 10)}.json"`)
+  res.json(data)
+})
+
+// POST /api/backup — restore or list backups
+app.post('/api/backup', async (req, res) => {
+  const { action, key } = req.body || {}
+  if (action === 'restore' && key) {
+    const ok = await restoreFromBackup(key)
+    return res.json({ success: ok, message: ok ? `${key} restauré depuis le backup` : `Aucun backup trouvé pour ${key}` })
+  }
+  if (action === 'list') {
+    const backups = await listBackups()
+    return res.json({ success: true, backups })
+  }
+  res.status(400).json({ error: 'Action invalide. Utilisez action=restore&key=X ou action=list' })
 })
 
 // ── SPA fallback ──────────────────────────────────────────────────────────────

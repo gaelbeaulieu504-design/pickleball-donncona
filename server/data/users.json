@@ -262,5 +262,49 @@
     "seasonPassPaid": false,
     "seasonPassType": null,
     "isResident": null
+  },
+  {
+    "id": "1781310874183",
+    "name": "Boileau Mireille",
+    "email": "mireilleboileau@gmail.com",
+    "password": "Jeanne1906",
+    "address": "",
+    "isResident": null,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
+  },
+  {
+    "id": "1781497262548",
+    "name": "BenjaminLajoie",
+    "email": "lajoiebenjamin@icloud.com",
+    "password": "Benlaj34",
+    "address": "Donnacona",
+    "isResident": true,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
+  },
+  {
+    "id": "1781529794046",
+    "name": "Marie-Christine Rail",
+    "email": "mariechrail@hotmail.com",
+    "password": "Frimousse3",
+    "address": "",
+    "isResident": null,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
+  },
+  {
+    "id": "1781549257255",
+    "name": "Thaliane Audet",
+    "email": "thalianeaudet@icloud.com",
+    "password": "Enzo12345.",
+    "address": "Donnacona",
+    "isResident": true,
+    "seasonPassPaid": false,
+    "seasonPassType": null,
+    "isAdmin": false
   }
 ]
