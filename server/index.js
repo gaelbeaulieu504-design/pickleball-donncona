@@ -4,9 +4,24 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import cors from 'cors'
 import Stripe from 'stripe'
+import { createTransport } from 'nodemailer'
 import { getUsers, setUsers, getBookings, setBookings, getTournaments, setTournaments, getCourses, setCourses, exportAllData, restoreFromBackup, listBackups } from './_storage.js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
+
+// ── Email transporter (Gmail) ────────────────────────────────────────────────
+const emailTransporter = (() => {
+  const user = process.env.EMAIL_USER
+  const pass = process.env.EMAIL_PASS
+  if (user && pass) {
+    return createTransport({
+      service: 'gmail',
+      auth: { user, pass },
+    })
+  }
+  console.warn('EMAIL_USER / EMAIL_PASS non configurés — emails désactivés')
+  return null
+})()
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -305,6 +320,31 @@ app.post('/api/backup', async (req, res) => {
     return res.json({ success: true, backups })
   }
   res.status(400).json({ error: 'Action invalide. Utilisez action=restore&key=X ou action=list' })
+})
+
+// ── Email broadcast (admin) ──────────────────────────────────────────────────
+
+// POST /api/send-email — send an email (used for admin broadcasts)
+app.post('/api/send-email', async (req, res) => {
+  const { to, subject, message } = req.body
+  if (!to || !subject || !message) {
+    return res.status(400).json({ error: 'Paramètres manquants: to, subject, message' })
+  }
+  if (!emailTransporter) {
+    return res.status(500).json({ error: 'EMAIL_USER / EMAIL_PASS non configurés sur le serveur' })
+  }
+  try {
+    await emailTransporter.sendMail({
+      from: `"Pickleball Donnacona" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html: message.replace(/\n/g, '<br>'),
+    })
+    res.json({ success: true })
+  } catch (err) {
+    console.error('Email error:', err)
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // ── SPA fallback ──────────────────────────────────────────────────────────────

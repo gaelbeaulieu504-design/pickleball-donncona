@@ -6,7 +6,6 @@ import { useBookings } from '../context/BookingContext'
 import { WEEKLY_HOUR_LIMIT } from '../data/courts'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { sendBroadcast } from '../utils/sendEmail'
 
 export default function AdminPanel() {
   const { user, getAllUsers, grantFreePass, toggleSeasonPass, deleteUser } = useAuth()
@@ -175,12 +174,24 @@ export default function AdminPanel() {
     let sent = 0, failed = 0, notConfigured = false
     const errors = []
     for (const member of emailTargetMembers) {
-      const result = await sendBroadcast({ to_name: member.name, to_email: member.email, subject: emailSubject, message: emailMessage })
-      if (result.notConfigured) { notConfigured = true; break }
-      if (result.success) sent++
-      else { failed++; errors.push(`${member.email}: ${result.error?.text || result.error?.message || JSON.stringify(result.error)}`) }
-      // Délai entre chaque envoi pour éviter le rate-limiting EmailJS
-      if (emailTargetMembers.length > 1) await new Promise(r => setTimeout(r, 800))
+      try {
+        const res = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: member.email, subject: emailSubject, message: emailMessage }),
+        })
+        const data = await res.json()
+        if (data.success) sent++
+        else {
+          if (data.error?.includes('non configurés')) { notConfigured = true; break }
+          failed++
+          errors.push(`${member.email}: ${data.error || 'Erreur inconnue'}`)
+        }
+      } catch (err) {
+        failed++
+        errors.push(`${member.email}: Erreur réseau`)
+      }
+      if (emailTargetMembers.length > 1) await new Promise(r => setTimeout(r, 500))
     }
     setSending(false)
     setSendResult({ sent, failed, notConfigured, total: emailTargetMembers.length, errors })
