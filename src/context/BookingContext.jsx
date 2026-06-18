@@ -45,6 +45,15 @@ export function BookingProvider({ children }) {
     return coveredIndices(startSlot, duration).every(i => !booked.has(i))
   }
 
+  function getSlotBookerName(courtId, dateStr, startSlot) {
+    const booking = bookings.find(b => {
+      if (b.courtId !== courtId || b.date !== dateStr) return false
+      const indices = coveredIndices(b.startSlot, b.duration || 1)
+      return indices.includes(START_TIMES.indexOf(startSlot))
+    })
+    return booking ? booking.userName : null
+  }
+
   function isConsecutiveBlocked(userId, dateStr, startSlot, duration) {
     const userBookings = bookings.filter(b => b.userId === userId && b.date === dateStr)
     if (userBookings.length === 0) return false
@@ -84,6 +93,7 @@ export function BookingProvider({ children }) {
       getUserWeekBookings,
       addBooking,
       getUserBookings,
+      getSlotBookerName,
     }}>
       {children}
     </BookingContext.Provider>

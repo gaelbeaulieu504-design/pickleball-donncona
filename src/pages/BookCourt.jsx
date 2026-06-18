@@ -16,7 +16,7 @@ const STEPS = ['Date', 'Terrain & Heure', 'Détails', 'Paiement']
 export default function BookCourt() {
   const { user, paySeasonPass } = useAuth()
   const navigate = useNavigate()
-  const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking } = useBookings()
+  const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking, getSlotBookerName } = useBookings()
   const bookingInProgress = useRef(false)
 
   const [allMembers, setAllMembers] = useState([])
@@ -490,6 +490,7 @@ export default function BookCourt() {
                       const sel = selectedStart === start
                       const disabled = status !== 'free' || weekHours + selectedDuration > WEEKLY_HOUR_LIMIT
                       const overLimit = weekHours + selectedDuration > WEEKLY_HOUR_LIMIT
+                      const bookerName = status === 'booked' ? getSlotBookerName(selectedCourt, dateStr(selectedDate), start) : null
                       return (
                         <button key={start} disabled={disabled} onClick={() => setSelectedStart(start)}
                           title={status === 'consecutive' ? 'Réservation consécutive interdite.' : overLimit ? 'Dépasse votre limite hebdomadaire.' : ''}
@@ -499,6 +500,7 @@ export default function BookCourt() {
                         >
                           {status === 'consecutive' && <AlertTriangle size={11} />}
                           <span>{slotLabel(start, selectedDuration)}</span>
+                          {bookerName && <span style={{ fontSize: '0.65rem', fontWeight: 700, color: sel ? '#fff' : '#dc2626', opacity: 0.85 }}>{bookerName}</span>}
                         </button>
                       )
                     })}
