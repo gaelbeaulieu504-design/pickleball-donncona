@@ -16,7 +16,7 @@ const STEPS = ['Date', 'Terrain & Heure', 'Détails', 'Paiement']
 export default function BookCourt() {
   const { user, paySeasonPass } = useAuth()
   const navigate = useNavigate()
-  const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking, getSlotBookerName } = useBookings()
+  const { isSlotAvailable, isConsecutiveBlocked, getUserWeekHours, addBooking, getSlotBookerName, getSlotCompanions } = useBookings()
   const bookingInProgress = useRef(false)
 
   const [allMembers, setAllMembers] = useState([])
@@ -491,6 +491,7 @@ export default function BookCourt() {
                       const disabled = status !== 'free' || weekHours + selectedDuration > WEEKLY_HOUR_LIMIT
                       const overLimit = weekHours + selectedDuration > WEEKLY_HOUR_LIMIT
                       const bookerName = status === 'booked' ? getSlotBookerName(selectedCourt, dateStr(selectedDate), start) : null
+                      const companions = status === 'booked' ? getSlotCompanions(selectedCourt, dateStr(selectedDate), start) : []
                       return (
                         <button key={start} disabled={disabled} onClick={() => setSelectedStart(start)}
                           title={status === 'consecutive' ? 'Réservation consécutive interdite.' : overLimit ? 'Dépasse votre limite hebdomadaire.' : ''}
@@ -501,6 +502,11 @@ export default function BookCourt() {
                           {status === 'consecutive' && <AlertTriangle size={11} />}
                           <span>{slotLabel(start, selectedDuration)}</span>
                           {bookerName && <span style={{ fontSize: '0.65rem', fontWeight: 700, color: sel ? '#fff' : '#dc2626', opacity: 0.85 }}>{bookerName}</span>}
+                          {companions.length > 0 && (
+                            <span style={{ fontSize: '0.6rem', color: sel ? '#fff' : '#94a3b8', opacity: 0.8, lineHeight: 1.2, textAlign: 'center' }}>
+                              +{companions.map(c => c.name.split(' ')[0]).join(', ')}
+                            </span>
+                          )}
                         </button>
                       )
                     })}

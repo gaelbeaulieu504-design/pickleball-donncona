@@ -46,12 +46,21 @@ export function BookingProvider({ children }) {
   }
 
   function getSlotBookerName(courtId, dateStr, startSlot) {
-    const booking = bookings.find(b => {
+    const booking = getSlotBooking(courtId, dateStr, startSlot)
+    return booking ? booking.userName : null
+  }
+
+  function getSlotCompanions(courtId, dateStr, startSlot) {
+    const booking = getSlotBooking(courtId, dateStr, startSlot)
+    return booking ? (booking.companions || []) : []
+  }
+
+  function getSlotBooking(courtId, dateStr, startSlot) {
+    return bookings.find(b => {
       if (b.courtId !== courtId || b.date !== dateStr) return false
       const indices = coveredIndices(b.startSlot, b.duration || 1)
       return indices.includes(START_TIMES.indexOf(startSlot))
     })
-    return booking ? booking.userName : null
   }
 
   function isConsecutiveBlocked(userId, dateStr, startSlot, duration) {
@@ -66,11 +75,11 @@ export function BookingProvider({ children }) {
     })
   }
 
-  async function addBooking({ userId, userName, userEmail, courtId, date, startSlot, duration, isResident, price }) {
+  async function addBooking({ userId, userName, userEmail, courtId, date, startSlot, duration, isResident, price, companions }) {
     const res = await fetch(`${API}/bookings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, userName, userEmail, courtId, date, startSlot, duration, isResident, price }),
+      body: JSON.stringify({ userId, userName, userEmail, courtId, date, startSlot, duration, isResident, price, companions }),
     })
     const data = await res.json()
     if (data.success) {
@@ -94,6 +103,7 @@ export function BookingProvider({ children }) {
       addBooking,
       getUserBookings,
       getSlotBookerName,
+      getSlotCompanions,
     }}>
       {children}
     </BookingContext.Provider>
