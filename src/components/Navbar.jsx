@@ -52,7 +52,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <NavLink to="/" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/logo.png" alt="Pickleball Donnacona" style={{ height: 52, width: 'auto', objectFit: 'contain' }} />
+          <img src="/logo-nav.png" alt="Pickleball Donnacona" style={{ height: 52, width: 'auto' }} />
         </NavLink>
 
         {/* Desktop nav */}
