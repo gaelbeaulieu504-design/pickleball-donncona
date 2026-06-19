@@ -15,6 +15,7 @@ import Tournaments from './pages/Tournaments'
 import Welcome from './pages/Welcome'
 import Courses from './pages/Courses'
 import MyReservations from './pages/MyReservations'
+import InstallPWA from './components/InstallPWA'
 import ScrollToTop from './components/ScrollToTop'
 
 function RequireAuth({ children }) {
@@ -87,6 +88,7 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
+      <InstallPWA />
       <SiteClosedOverlay />
     </>
   )

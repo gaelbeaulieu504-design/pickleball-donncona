@@ -1,5 +1,5 @@
 const CACHE = 'pb-cache-v1'
-const STATIC_ASSETS = ['/', '/logo.png', '/manifest.json']
+const STATIC_ASSETS = ['/', '/logo-nav.png', '/icon-192.png', '/icon-512.png', '/manifest.json']
 
 self.addEventListener('install', event => {
   event.waitUntil(
