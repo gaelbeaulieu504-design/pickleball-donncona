@@ -1,0 +1,9 @@
+{
+  "appId": "com.pickleballdonnacona.app",
+  "appName": "Pickleball Donnacona",
+  "webDir": "dist",
+  "server": {
+    "url": "https://pickleballdonnacona.ca",
+    "cleartext": false
+  }
+}
