@@ -18,8 +18,10 @@ workflows:
         script: npm install
       - name: Build web app
         script: npm run build
-      - name: Sync Capacitor
-        script: npx cap sync ios
+      - name: Add and sync Capacitor iOS
+        script: |
+          npx cap add ios || true
+          npx cap sync ios
       - name: Build iOS
         script: |
           cd ios/App
@@ -54,8 +56,10 @@ workflows:
         script: npm install
       - name: Build web app
         script: npm run build
-      - name: Sync Capacitor
-        script: npx cap sync android
+      - name: Add and sync Capacitor Android
+        script: |
+          npx cap add android || true
+          npx cap sync android
       - name: Build Android
         script: cd android && ./gradlew assembleRelease
     artifacts:
