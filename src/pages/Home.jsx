@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star, Clock, Shield, X, User, UsersRound } from 'lucide-react'
+import { CalendarCheck, MapPin, ChevronRight, CheckCircle, ChevronLeft, Users, Star, Clock, Shield, User } from 'lucide-react'
 import { useBookings } from '../context/BookingContext'
 import { useAuth } from '../context/AuthContext'
 import { COURTS, START_TIMES } from '../data/courts'
@@ -15,7 +15,6 @@ export default function Home() {
   const { getBookedIndices, getSlotBookerName, getSlotCompanions } = useBookings()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [heroPhoto, setHeroPhoto] = useState(0)
-  const [showReserved, setShowReserved] = useState(false)
   const [showWelcome, setShowWelcome] = useState(() => {
     return !sessionStorage.getItem('pb_welcome_seen')
   })
@@ -45,19 +44,6 @@ export default function Home() {
 
   const totalAvailable = availability.reduce((sum, c) => sum + c.slots.filter(s => s.available).length, 0)
   const totalSlots = pickleballCourts.length * START_TIMES.length
-  const totalBooked = totalSlots - totalAvailable
-
-  const reservedSlots = availability.flatMap(court =>
-    court.slots
-      .filter(s => !s.available)
-      .map(s => ({
-        courtId: court.id,
-        courtName: court.name,
-        time: s.time,
-        bookerName: getSlotBookerName(court.id, dateStr, s.time),
-        companions: getSlotCompanions(court.id, dateStr, s.time),
-      }))
-  )
 
   return (
     <div style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -234,16 +220,10 @@ export default function Home() {
               <div style={{ width: 12, height: 12, borderRadius: 3, background: '#22c55e' }} />
               <span style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 600 }}>Disponible — {totalAvailable} créneaux</span>
             </div>
-            <button onClick={() => totalBooked > 0 && setShowReserved(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', border: totalBooked > 0 ? '1.5px solid #fca5a5' : '1.5px solid #e2e8f0', borderRadius: '2rem', padding: '0.375rem 1rem', cursor: totalBooked > 0 ? 'pointer' : 'default', background: totalBooked > 0 ? '#fef2f2' : '#fff', transition: 'all 0.2s' }}
-              onMouseEnter={e => { if (totalBooked > 0) { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.borderColor = '#f87171' } }}
-              onMouseLeave={e => { if (totalBooked > 0) { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fca5a5' } }}
-            >
-              <div style={{ width: 12, height: 12, borderRadius: 3, background: totalBooked > 0 ? '#ef4444' : '#e2e8f0' }} />
-              <span style={{ fontSize: '0.875rem', color: totalBooked > 0 ? '#dc2626' : '#94a3b8', fontWeight: 700 }}>
-                Réservé — {totalBooked} créneau{totalBooked > 1 ? 'x' : ''}
-              </span>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: 12, height: 12, borderRadius: 3, background: '#e2e8f0' }} />
+              <span style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 600 }}>Réservé — {totalSlots - totalAvailable} créneaux</span>
+            </div>
           </div>
 
           {/* Grid */}
@@ -263,78 +243,32 @@ export default function Home() {
                   </span>
                 </div>
                 <div style={{ padding: '1rem 1.25rem', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.375rem' }}>
-                  {court.slots.map(slot => (
-                    <div key={slot.time} title={slot.available ? `${slot.time} — Disponible` : `${slot.time} — Réservé`}
-                      style={{ background: slot.available ? '#f0fdf4' : '#f8fafc', border: `1.5px solid ${slot.available ? '#86efac' : '#e2e8f0'}`, borderRadius: '0.375rem', padding: '0.3rem 0.2rem', textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: slot.available ? '#166534' : '#cbd5e1', cursor: slot.available ? 'pointer' : 'default', transition: 'all 0.15s' }}
-                      onClick={() => slot.available && navigate('/book')}
-                      onMouseEnter={e => { if (slot.available) { e.currentTarget.style.background = '#dcfce7'; e.currentTarget.style.borderColor = '#4ade80' } }}
-                      onMouseLeave={e => { if (slot.available) { e.currentTarget.style.background = '#f0fdf4'; e.currentTarget.style.borderColor = '#86efac' } }}
-                    >{slot.time}</div>
-                  ))}
+                  {court.slots.map(slot => {
+                    const bookerName = !slot.available ? getSlotBookerName(court.id, dateStr, slot.time) : null
+                    const companions = !slot.available ? getSlotCompanions(court.id, dateStr, slot.time) : []
+                    return (
+                      <div key={slot.time} title={slot.available ? `${slot.time} — Disponible` : `${slot.time} — Réservé par ${bookerName || '?'}${companions.length ? ' + ' + companions.map(c => c.name).join(', ') : ''}`}
+                        style={{ background: slot.available ? '#f0fdf4' : '#f8fafc', border: `1.5px solid ${slot.available ? '#86efac' : '#e2e8f0'}`, borderRadius: '0.375rem', padding: '0.3rem 0.15rem', textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: slot.available ? '#166534' : '#cbd5e1', cursor: slot.available ? 'pointer' : 'default', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.125rem' }}
+                        onClick={() => slot.available && navigate('/book')}
+                        onMouseEnter={e => { if (slot.available) { e.currentTarget.style.background = '#dcfce7'; e.currentTarget.style.borderColor = '#4ade80' } }}
+                        onMouseLeave={e => { if (slot.available) { e.currentTarget.style.background = '#f0fdf4'; e.currentTarget.style.borderColor = '#86efac' } }}
+                      >
+                        <span>{slot.time}</span>
+                        {bookerName && (
+                          <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#dc2626', lineHeight: 1.2, opacity: 0.85 }}>{bookerName}</span>
+                        )}
+                        {companions.length > 0 && (
+                          <span style={{ fontSize: '0.5rem', color: '#94a3b8', lineHeight: 1.1, opacity: 0.75 }}>
+                            +{companions.map(c => c.name.split(' ')[0]).join(',')}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Réservations Modal */}
-          {showReserved && (
-            <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,20,50,0.6)', backdropFilter: 'blur(4px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
-              onClick={() => setShowReserved(false)}>
-              <div style={{ background: '#fff', borderRadius: '1.25rem', width: '100%', maxWidth: 500, maxHeight: '80vh', overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.2)' }}
-                onClick={e => e.stopPropagation()}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '0.75rem', background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <User size={18} color="#dc2626" />
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem' }}>Créneaux réservés</div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>{dateLabel} · {totalBooked} créneau{totalBooked > 1 ? 'x' : ''}</div>
-                    </div>
-                  </div>
-                  <button onClick={() => setShowReserved(false)} style={{ width: 32, height: 32, borderRadius: '0.5rem', border: 'none', background: '#f1f5f9', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', transition: 'all 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#64748b' }}
-                  ><X size={16} /></button>
-                </div>
-                <div style={{ padding: '0.75rem 1.5rem 1.5rem', overflowY: 'auto', maxHeight: 'calc(80vh - 80px)' }}>
-                  {reservedSlots.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '2rem 0', color: '#94a3b8', fontSize: '0.9rem' }}>Aucun créneau réservé pour cette date.</div>
-                  ) : (
-                    reservedSlots.map((rs, i) => (
-                      <div key={i} style={{ padding: '1rem 0', borderBottom: i < reservedSlots.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-                          <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: '#f0fdf4', border: '1.5px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 800, fontSize: '0.8rem', color: '#166534' }}>
-                            {rs.courtId}
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                              <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>{rs.courtName}</span>
-                              <span style={{ fontWeight: 800, color: '#dc2626', fontSize: '0.8rem', background: '#fef2f2', padding: '0.125rem 0.5rem', borderRadius: '0.375rem' }}>{rs.time}</span>
-                            </div>
-                            <div style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 600 }}>
-                              <User size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} color="#64748b" />
-                              {rs.bookerName || 'Inconnu'}
-                            </div>
-                            {rs.companions.length > 0 && (
-                              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
-                                <UsersRound size={13} color="#94a3b8" />
-                                {rs.companions.map((c, j) => (
-                                  <span key={j} style={{ background: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.375rem', fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>
-                                    {c.name.split(' ')[0]}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
           <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
             <button className="btn-primary" onClick={() => navigate('/book')} style={{ padding: '0.875rem 2.5rem', fontSize: '1rem' }}>
