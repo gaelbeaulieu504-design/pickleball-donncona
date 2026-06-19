@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Menu, X, LogIn, UserPlus, LogOut, ShieldCheck, ChevronDown, Trophy, Users, GraduationCap } from 'lucide-react'
+import { Menu, X, LogIn, UserPlus, LogOut, ShieldCheck, ChevronDown, Trophy, Users, GraduationCap, Calendar } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const navLinks = [
@@ -166,6 +166,20 @@ export default function Navbar() {
                     <div style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{user.email}</div>
                     {user.isAdmin && <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600, marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><ShieldCheck size={12} /> Accès complet sans restrictions</div>}
                   </div>
+                  <button onClick={() => { setUserMenuOpen(false); navigate('/mes-reservations') }}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
+                      padding: '0.625rem 0.875rem', borderRadius: '0.5rem',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#1B4E8B', fontWeight: 600, fontSize: '0.9rem',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#f0f7ff'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                  >
+                    <Calendar size={16} /> Mes réservations
+                  </button>
+                  <div style={{ height: 1, background: '#f1f5f9', margin: '0.25rem 0' }} />
                   <button onClick={() => { logout(); setUserMenuOpen(false) }}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
@@ -279,6 +293,11 @@ export default function Navbar() {
                 <div style={{ fontSize: '0.875rem', color: '#64748b' }}>{user.email}</div>
                 {user.isAdmin && <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600, marginTop: '0.25rem' }}>Accès complet sans restrictions</div>}
               </div>
+              <button onClick={() => { setOpen(false); navigate('/mes-reservations') }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem 1rem', borderRadius: '0.5rem', background: '#f0f7ff', border: '1px solid #bfdbfe', cursor: 'pointer', color: '#1B4E8B', fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.5rem' }}
+              >
+                <Calendar size={16} /> Mes réservations
+              </button>
               <button onClick={() => { logout(); setOpen(false) }} className="btn-secondary" style={{ width: '100%', color: '#dc2626', borderColor: '#fecaca' }}>
                 <LogOut size={16} /> Se déconnecter
               </button>

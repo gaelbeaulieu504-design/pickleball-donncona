@@ -14,6 +14,7 @@ import AdminPanel from './pages/AdminPanel'
 import Tournaments from './pages/Tournaments'
 import Welcome from './pages/Welcome'
 import Courses from './pages/Courses'
+import MyReservations from './pages/MyReservations'
 import ScrollToTop from './components/ScrollToTop'
 
 function RequireAuth({ children }) {
@@ -82,6 +83,7 @@ function AppContent() {
           <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
           <Route path="/tournaments" element={<RequireAuth><Tournaments /></RequireAuth>} />
           <Route path="/cours" element={<RequireAuth><Courses /></RequireAuth>} />
+          <Route path="/mes-reservations" element={<RequireAuth><MyReservations /></RequireAuth>} />
         </Routes>
       </main>
       <Footer />
